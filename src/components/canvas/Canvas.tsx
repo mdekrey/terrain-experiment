@@ -29,7 +29,7 @@ export function Canvas({ children, ...props }: { children?: React.ReactNode } & 
         for (const callback of renderers.values()) {
             callback(context);
         }
-    }, [ref.current, renderers]);
+    }, [ref, renderers]);
     return (
         <canvas ref={ref} {...props}>
             <CanvasContext.Provider value={context}>

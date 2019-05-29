@@ -1,9 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { TerrainGenerator, TerrainResult } from "../terrain-generation/TerrainGenerator";
 import { BiomeCategory } from "../terrain-generation/BiomeCategory";
 import { useCanvas } from "./canvas/useCanvas";
 import { Canvas } from "./canvas/Canvas";
-import { CanvasCallback } from "./canvas/CanvasCallback";
 
 export function Terrain() {
     const terrainGenerator = React.useMemo(() => new TerrainGenerator(), []);
@@ -21,7 +20,7 @@ export function TerrainGrid({ rows, columns, terrain, gridSize, pixelSize }: { g
                 renderTerrainSpot({ x: column, y: row, pixelSize, context, terrain: terrain.getTerrain(row * gridSize, column * gridSize) })
             }
         }
-    }, [ rows, columns, terrain, gridSize ]))
+    }, [ rows, columns, terrain, gridSize, pixelSize ]))
     return null;
 }
 
