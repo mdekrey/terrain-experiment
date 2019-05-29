@@ -1,20 +1,76 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { TerrainGenerator, TerrainResult } from "../terrain-generation/TerrainGenerator";
 import { BiomeCategory } from "../terrain-generation/BiomeCategory";
+import { v4 as uuid } from "uuid";
+
+const px = "15px";
 
 export function Terrain() {
     const terrainGenerator = React.useMemo(() => new TerrainGenerator(), []);
-    return <TerrainGrid rows={40 * 5} columns={60 * 5} terrain={terrainGenerator} gridSize={0.01} />
+    return <TerrainGrid rows={40} columns={60} terrain={terrainGenerator} gridSize={0.001} />
+}
+
+type CanvasCallback = (canvas: CanvasRenderingContext2D) => void;
+type CanvasCallbackEntry = { callback: CanvasCallback, key: string };
+interface CanvasContext {
+    add: (key: string, callback: CanvasCallback) => void;
+    remove: (key: string) => void;
+}
+interface AddAction {
+    action: "add";
+    key: string;
+    callback: CanvasCallback;
+}
+interface RemoveAction {
+    action: "remove";
+    key: string;
+}
+
+const canvasContext = React.createContext<CanvasContext>({ add: () => { }, remove: () => { } });
+function useCanvas(callback: CanvasCallback) {
+    const key = uuid();
+    const context = React.useContext(canvasContext);
+    React.useEffect(() => {
+        context.add(key, callback);
+        return () => context.remove(key);
+    }, [key, context, callback])
 }
 
 export function TerrainGrid({ rows, columns, terrain, gridSize }: { gridSize: number, rows: number, columns: number, terrain: TerrainGenerator }) {
-    return <div style={{display: "inline-grid", gridAutoColumns:"auto", gridAutoRows:"auto"}}>
-        {Array.from(Array(rows).keys()).map(row =>
-        Array.from(Array(columns).keys()).map(column =>
-            <TerrainSpot key={`${row}x${column}`} style={{ gridRowStart:row+1, gridColumnStart: column+1 }} terrain={terrain.getTerrain(row * gridSize, column * gridSize)}></TerrainSpot>
-        )
+    const ref = React.useRef<HTMLCanvasElement | null>(null);
+    const [renderers, dispatch] = React.useReducer(function (state: CanvasCallbackEntry[], action: AddAction | RemoveAction) {
+        if (action.action === 'add') {
+            return [...state, { key: action.key, callback: action.callback }]
+        } else {
+            return state.filter(s => s.key !== action.key);
+        }
+        return state;
+    }, []);
+    const context = React.useMemo((): CanvasContext => ({
+        add: (key, callback) => dispatch({ action: "add", key, callback }),
+        remove: (key) => dispatch({ action: "remove", key }),
+    }), [dispatch]);
+    useEffect(() => {
+        if (!ref.current) {
+            return;
+        }
+        const context = ref.current.getContext("2d");
+        if (!context) {
+            return;
+        }
+        for (const callback of renderers) {
+            callback.callback(context);
+        }
+    }, [ref.current, renderers]);
+    return <canvas ref={ref} width={1200} height={800}>
+        <canvasContext.Provider value={context}>
+            {Array.from(Array(rows).keys()).map(row =>
+                Array.from(Array(columns).keys()).map(column =>
+                    <TerrainSpot key={`${row}x${column}`} x={column} y={row} terrain={terrain.getTerrain(row * gridSize, column * gridSize)} />
+                )
             )}
-    </div>
+        </canvasContext.Provider>
+    </canvas>
 }
 
 const color: Record<BiomeCategory, string> = {
@@ -33,6 +89,12 @@ const color: Record<BiomeCategory, string> = {
     [BiomeCategory.TropicalRainForests]: "rgb(28, 178, 66)",
 }
 
-export function TerrainSpot({ terrain, style, ...props }: { terrain: TerrainResult } & React.HTMLProps<HTMLDivElement>) {
-    return <div {...props} style={{ overflow: "hidden", height: "3px", width: "3px", backgroundColor: color[terrain.biomeCategory], ...style }}></div>
+const pxSize = 20;
+export function TerrainSpot({ terrain, x, y }: { terrain: TerrainResult, x: number, y: number }) {
+    const backgroundColor = terrain.altitude < 0.3 ? "#000088" : terrain.altitude < 0.4 ? "blue" : color[terrain.biomeCategory];
+    useCanvas(React.useCallback((context: CanvasRenderingContext2D) => {
+        context.fillStyle = backgroundColor;
+        context.fillRect(x * pxSize, y * pxSize, pxSize, pxSize);
+    }, [backgroundColor]));
+    return null;
 }
