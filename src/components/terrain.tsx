@@ -6,9 +6,13 @@ import { Canvas } from "./canvas/Canvas";
 
 export function Terrain() {
     const terrainGenerator = React.useMemo(() => new TerrainGenerator(), []);
+    const width = 1200;
+    const height = 800;
+    const pixelSize = 2;
+    const zoom = 200;
     return (
-        <Canvas width={1200} height={800}>
-            <TerrainGrid rows={400} columns={600} terrain={terrainGenerator} gridSize={0.01} pixelSize={2} />
+        <Canvas width={width} height={height}>
+            <TerrainGrid rows={height / pixelSize} columns={width / pixelSize} terrain={terrainGenerator} gridSize={1 / zoom * pixelSize} pixelSize={pixelSize} />
         </Canvas>
     );
 }
@@ -40,10 +44,18 @@ const color: Record<BiomeCategory, string> = {
     [BiomeCategory.TropicalRainForests]: "rgb(28, 178, 66)",
 }
 
-export function renderTerrainSpot({ terrain, x, y, context, pixelSize }: { terrain: TerrainResult, x: number, y: number, context: CanvasRenderingContext2D, pixelSize: number }) {
-    const backgroundColor = terrain.altitude < 0.3 ? "#000088" : terrain.altitude < 0.4 ? "blue" : color[terrain.biomeCategory];
-    // const backgroundColor = `rgb(${Math.min(255, 255 * (2 - terrain.heat * 2))}, ${Math.min(255, Math.max(0, 255 * (terrain.heat)))}, 0)`
+function toRgbRange(input: number) {
+    return Math.min(255, Math.max(0, 255 * (input)));
+}
 
-    context.fillStyle = backgroundColor;
+export function renderTerrainSpot({ terrain, x, y, context, pixelSize }: { terrain: TerrainResult, x: number, y: number, context: CanvasRenderingContext2D, pixelSize: number }) {
+    const backgroundColor = color[terrain.biomeCategory];
+    // const backgroundColor = `rgb(${toRgbRange(2 - terrain.heat * 2)}, ${toRgbRange(terrain.heat)}, 0)`
+    // const backgroundColor = `rgb(${toRgbRange(1 - terrain.humidity)}, 200, 0)`
+    // const backgroundColor = `rgb(${toRgbRange(terrain.altitude)}, ${toRgbRange(terrain.altitude)}, ${toRgbRange(terrain.altitude)})`
+
+    const withWater = terrain.altitude < 0.4 ? "#000088" : terrain.altitude < 0.5 ? "blue" : backgroundColor;
+
+    context.fillStyle = withWater;
     context.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
 }
