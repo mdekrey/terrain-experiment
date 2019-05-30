@@ -4,10 +4,12 @@ export interface Sprite {
     toDrawImageParams(): [CanvasImageSource, number, number, number, number]
 }
 
+export interface SpriteCoordinates { x : number, y : number, width : number, height : number }
+
 class SpriteAtlas {
     private atlas = new Map<string, Promise<HTMLImageElement>>();
 
-    async getSprite(image: string, { x = 0, y = 0, width = 16, height = 16 }): Promise<Sprite> {
+    async getSprite(image: string, { x = 0, y = 0, width = 16, height = 16 }: Partial<SpriteCoordinates>): Promise<Sprite> {
         const img = this.atlas.get(image) ||
             (function () {
                 const temp = new Image();

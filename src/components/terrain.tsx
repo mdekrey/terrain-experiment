@@ -1,7 +1,7 @@
 import React from "react";
 import { TerrainGenerator, TerrainResult } from "../terrain-generation/TerrainGenerator";
 import { BiomeCategory } from "../terrain-generation/BiomeCategory";
-import { useCanvas, SpriteAtlasContext, Sprite } from "./canvas";
+import { useCanvas, useSpritelookup, SpriteDefinition, SpriteLookup } from "./canvas";
 import dw4tiles from "../images/dw4-world-sprites.png";
 import { WaterCategory } from "../terrain-generation/WaterCategory";
 import { TerrainCache } from "../terrain-generation/TerrainCache";
@@ -17,27 +17,36 @@ function* coordinates(columns: number, rows: number, centerX: number, centerY: n
     }
 }
 
+const dw4desert =  { image: dw4tiles, coords: { x: 144, y: 0 } };
+const dw4plains =  { image: dw4tiles, coords: { x: 0, y: 128 } };
+const dw4bushes =  { image: dw4tiles, coords: { x: 48, y: 128 } };
+const dw4snowyBushes =  { image: dw4tiles, coords: { x: 208, y: 160 } };
+const dw4snowyPlains =  { image: dw4tiles, coords: { x: 208, y: 144 } };
+const dw4snowyTwoTrees =  { image: dw4tiles, coords: { x: 224, y: 144 } };
+const dw4clouds = { image: dw4tiles, coords: { x: 240, y: 96 } };
+const dw4singleDeciduousTree = { image: dw4tiles, coords: { x: 0, y: 192 } };
+const dw4greenTwoTrees =  { image: dw4tiles, coords: { x: 144, y: 128 } };
+const dw4greenSomething =  { image: dw4tiles, coords: { x: 208, y: 32 } };
+
+const terrainSpriteDefinitions: SpriteDefinition<BiomeCategory>[] = [
+    { ...dw4desert, key: BiomeCategory.HotDeserts },
+    { ...dw4plains, key: BiomeCategory.CoolDeserts },
+    { ...dw4bushes, key: BiomeCategory.Steppes },
+    { ...dw4bushes, key: BiomeCategory.Chaparral },
+    { ...dw4snowyBushes, key: BiomeCategory.ColdParklands },
+    { ...dw4snowyPlains, key: BiomeCategory.Tundra },
+    { ...dw4snowyTwoTrees, key: BiomeCategory.ConiferousForests },
+    { ...dw4clouds, key: BiomeCategory.Ice },
+    { ...dw4plains, key: BiomeCategory.Savanna },
+    { ...dw4greenSomething, key: BiomeCategory.TropicalSeasonalForests },
+    { ...dw4greenSomething, key: BiomeCategory.TropicalRainForests },
+    { ...dw4singleDeciduousTree, key: BiomeCategory.DeciduousForests },
+    { ...dw4greenTwoTrees, key: BiomeCategory.MixedForests }
+]
+
 export function TerrainGrid({ rows, columns, terrain, gridSize, pixelSize, centerX, centerY }: { gridSize: number, rows: number, columns: number, terrain: TerrainGenerator, pixelSize: number, centerX: number, centerY: number }) {
-
     const terrainCache = React.useMemo(() => new TerrainCache(terrain), [terrain]);
-
-    const spriteAtlas = React.useContext(SpriteAtlasContext);
-    const [ sprites, addSprite ] = React.useReducer((sprites: Partial<BiomeSprites>, { biome, sprite }: { biome: BiomeCategory, sprite: Sprite }) => {
-        return { ...sprites, [biome]: sprite };
-    }, {});
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 144, y: 0 }).then(sprite => addSprite({ biome: BiomeCategory.HotDeserts, sprite })), [spriteAtlas]);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 0, y: 128 }).then(sprite => addSprite({ biome: BiomeCategory.CoolDeserts, sprite })), [spriteAtlas]);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 48, y: 128 }).then(sprite => addSprite({ biome: BiomeCategory.Steppes, sprite })), [spriteAtlas]);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 48, y: 128 }).then(sprite => addSprite({ biome: BiomeCategory.Chaparral, sprite })), [spriteAtlas]);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 208, y: 160 }).then(sprite => addSprite({ biome: BiomeCategory.ColdParklands, sprite })), [spriteAtlas]);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 208, y: 144 }).then(sprite => addSprite({ biome: BiomeCategory.Tundra, sprite })), [spriteAtlas]);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 224, y: 144 }).then(sprite => addSprite({ biome: BiomeCategory.ConiferousForests, sprite })), [spriteAtlas]);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 240, y: 96 }).then(sprite => addSprite({ biome: BiomeCategory.Ice, sprite })), [spriteAtlas]);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 144, y: 0 }).then(sprite => addSprite({ biome: BiomeCategory.Savanna, sprite })), [spriteAtlas]);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 0, y: 192 }).then(sprite => addSprite({ biome: BiomeCategory.TropicalSeasonalForests, sprite })), [spriteAtlas]);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 0, y: 192 }).then(sprite => addSprite({ biome: BiomeCategory.TropicalRainForests, sprite })), [spriteAtlas]);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 0, y: 192 }).then(sprite => addSprite({ biome: BiomeCategory.DeciduousForests, sprite })), [spriteAtlas]);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 144, y: 128 }).then(sprite => addSprite({ biome: BiomeCategory.MixedForests, sprite })), [spriteAtlas]);
+    const sprites = useSpritelookup(terrainSpriteDefinitions);
 
     useCanvas(React.useCallback(context => {
         for (const { screenX, screenY, terrainX, terrainY } of coordinates(columns, rows, centerX, centerY, gridSize)) {
@@ -47,8 +56,6 @@ export function TerrainGrid({ rows, columns, terrain, gridSize, pixelSize, cente
     }, [pixelSize, columns, rows, centerX, centerY, gridSize, sprites, terrainCache]));
     return null;
 }
-
-type BiomeSprites = Record<BiomeCategory, Sprite>;
 
 const color: Record<BiomeCategory, string> = {
     [BiomeCategory.Ice]: "white",
@@ -70,7 +77,7 @@ function toRgbRange(input: number) {
     return Math.min(255, Math.max(0, 255 * (input)));
 }
 
-export function renderTerrainSpot({ terrain, x, y, context, pixelSize, sprites }: { terrain: TerrainResult, x: number, y: number, context: CanvasRenderingContext2D, pixelSize: number, sprites: Partial<BiomeSprites> }) {
+export function renderTerrainSpot({ terrain, x, y, context, pixelSize, sprites }: { terrain: TerrainResult, x: number, y: number, context: CanvasRenderingContext2D, pixelSize: number, sprites: Partial<SpriteLookup<BiomeCategory>> }) {
     if (terrain.waterCategory === WaterCategory.None && sprites[terrain.biomeCategory]) {
         const p = sprites[terrain.biomeCategory]!.toDrawImageParams();
         context.drawImage(p[0], p[1], p[2], p[3], p[4], x * pixelSize, y * pixelSize, pixelSize, pixelSize);
