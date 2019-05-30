@@ -28,13 +28,18 @@ export function Terrain() {
 export function TerrainGrid({ rows, columns, terrain, gridSize, pixelSize, centerX, centerY }: { gridSize: number, rows: number, columns: number, terrain: TerrainGenerator, pixelSize: number, centerX: number, centerY: number }) {
     const offsetX = columns / -2 + centerX;
     const offsetY = rows / -2 + centerY;
+
+    const terrainSpots = React.useMemo(() => {
+        const columnArray = Array.from(Array(columns).keys())
+        return Array.from(Array(rows).keys()).map(row =>
+            columnArray.map(column => terrain.getTerrain((column + offsetX) * gridSize, (row + offsetY) * gridSize))
+        );
+    }, [rows, columns, terrain, gridSize, offsetX, offsetY]);
+
     useCanvas(React.useCallback(context => {
-        for (let row = 0; row < rows; row++) {
-            for (let column = 0; column < columns; column++) {
-                renderTerrainSpot({ x: column, y: row, pixelSize, context, terrain: terrain.getTerrain((column + offsetX) * gridSize, (row + offsetY) * gridSize) })
-            }
-        }
-    }, [rows, columns, terrain, gridSize, pixelSize, offsetX, offsetY]))
+        terrainSpots.forEach((rowData, row) =>
+            rowData.forEach((terrain, column) => renderTerrainSpot({ x: column, y: row, pixelSize, context, terrain })));
+    }, [pixelSize, terrainSpots]))
     return null;
 }
 
