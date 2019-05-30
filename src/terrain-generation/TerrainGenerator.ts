@@ -26,32 +26,45 @@ const toValidRange = (v: number) => {
 const tempsStep = [.126,.235,.406,.561,.634,.876, Number.MAX_VALUE];
 const humidityCurve = (originalHumidity: number, heat: number) => (0.2 + heat * 0.8) * originalHumidity;
 
+class PerlinAnyDirection {
+  private static clamp = clamp(0, 1);
+  private readonly perlin = new Perlin();
+  private readonly overlap: number;
+
+  constructor({ lacunarity = Perlin.DEFAULT_PERLIN_LACUNARITY, seed = Perlin.DEFAULT_PERLIN_SEED, overlap = 1, octaves = Perlin.DEFAULT_PERLIN_OCTAVE_COUNT }) {
+    this.perlin.lacunarity = lacunarity;
+    this.perlin.seed = seed;
+    this.perlin.octaves = octaves;
+    this.overlap = overlap;
+  }
+
+  private weight(x: number, y: number) {
+    return PerlinAnyDirection.clamp(x / this.overlap) * PerlinAnyDirection.clamp(y / this.overlap);
+  }
+
+  getValue(x: number, y: number) {
+    const altx = this.overlap - x, alty = this.overlap - y;
+    const sets: [number,number,number][] = [
+      [x, y, 0],
+      [altx, y, 1],
+      [x, alty, 2],
+      [altx, alty, 3]
+    ];
+    const values = sets.filter(([x, y]) => x >= 0 && y >= 0).map(([x,y,z]) => this.perlin.getValue(x,y,z) * this.weight(x,y));
+    return values.reduce((p, n) => p + n);
+  }
+}
+
 export class TerrainGenerator {
-  private readonly humidity = new Perlin();
-  private readonly heat = new Perlin();
-  private readonly altitude = new Perlin();
-
-  constructor() {
-    this.humidity.lacunarity = 3.2;
-    this.humidity.seed = 0;
-    this.heat.lacunarity = 3.2;
-    this.heat.seed = 1750;
-    this.altitude.lacunarity = 3.2;
-    this.altitude.seed = 3200;
-  }
-
-  private getHeat(x: number, y: number) {
-    return this.heat.getValue(x, y, 0);
-  }
-
-  private getAltitude(x: number, y: number) {
-    return this.altitude.getValue(x, y, 0);
-  }
+  private readonly humidity = new PerlinAnyDirection({ lacunarity: 3.2, seed: 0 });
+  private readonly heat = new PerlinAnyDirection({ lacunarity: 3.2, seed: 1750 });
+  private readonly altitude = new PerlinAnyDirection({ lacunarity: 3.2, seed: 3200 });
 
   public getTerrain(x: number, y: number): TerrainResult {
-    const altitude = toValidRange(this.getAltitude(x, y));
-    const heat = toValidRange(this.getHeat(x, y) - Math.max(0, altitude * 2 - 1.7));
-    const humidity = humidityCurve(toValidRange(this.humidity.getValue(x, y, 0)), heat);
+
+    const altitude = toValidRange(this.altitude.getValue(x, y));
+    const heat = toValidRange(this.heat.getValue(x, y) - Math.max(0, altitude * 2 - 1.7));
+    const humidity = humidityCurve(toValidRange(this.humidity.getValue(x, y)), heat);
     const temperatureCategory = tempsStep.findIndex(v => v > heat) as TemperatureCategory;
     const humidityCategory = Math.min(
       BiomeDetails.biomeLabels[temperatureCategory].length,

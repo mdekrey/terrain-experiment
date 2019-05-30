@@ -27,7 +27,7 @@ export function TerrainGrid({ rows, columns, terrain, gridSize, pixelSize }: { g
                 renderTerrainSpot({ x: column, y: row, pixelSize, context, terrain: terrain.getTerrain((column + offsetX) * gridSize , (row + offsetY) * gridSize ) })
             }
         }
-    }, [ rows, columns, terrain, gridSize, pixelSize ]))
+    }, [ rows, columns, terrain, gridSize, pixelSize, offsetX, offsetY ]))
     return null;
 }
 
@@ -52,13 +52,13 @@ function toRgbRange(input: number) {
 }
 
 export function renderTerrainSpot({ terrain, x, y, context, pixelSize }: { terrain: TerrainResult, x: number, y: number, context: CanvasRenderingContext2D, pixelSize: number }) {
-    // const backgroundColor = color[terrain.biomeCategory];
+    const backgroundColor = color[terrain.biomeCategory];
     // const backgroundColor = `rgb(${toRgbRange(terrain.heat * 2 - 1)}, ${toRgbRange(1 - terrain.heat)}, 0)`
     // const backgroundColor = `rgb(${toRgbRange(1 - terrain.humidity)}, 200, 0)`
-    const backgroundColor = `rgb(${toRgbRange(terrain.altitude)}, ${toRgbRange(terrain.altitude)}, ${toRgbRange(terrain.altitude)})`
+    // const backgroundColor = `rgb(${toRgbRange(terrain.altitude)}, ${toRgbRange(terrain.altitude)}, ${toRgbRange(terrain.altitude)})`
 
     const withWater = terrain.altitude < 0.35 ? "#000088" : terrain.altitude < 0.45 ? "blue" : backgroundColor;
 
-    context.fillStyle = backgroundColor;
+    context.fillStyle = withWater;
     context.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
 }
