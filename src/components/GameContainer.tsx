@@ -2,6 +2,9 @@ import React from "react";
 import { TerrainGenerator } from "../terrain-generation/TerrainGenerator";
 import { Canvas } from "./canvas";
 import { TerrainGrid } from "./terrain";
+import { useSubscription } from "../rxjs";
+import { useCommand } from "./keymap";
+
 const pixelSize = 16;
 const gameReducer = (
     { centerX = 0, centerY = 0, zoomExp = 4 },
@@ -46,6 +49,10 @@ export function GameContainer() {
     const height = 800;
     const zoom = Math.pow(10, zoomExp) * 2;
     const gridSize = 1 / zoom * pixelSize;
+    useSubscription(useCommand("MOVE_LEFT"), React.useCallback(() => dispatch("left"), []));
+    useSubscription(useCommand("MOVE_RIGHT"), React.useCallback(() => dispatch("right"), []));
+    useSubscription(useCommand("MOVE_UP"), React.useCallback(() => dispatch("up"), []));
+    useSubscription(useCommand("MOVE_DOWN"), React.useCallback(() => dispatch("down"), []));
     return (<>
         <button onClick={() => dispatch("left")}>Left</button>
         <button onClick={() => dispatch("down")}>Down</button>
