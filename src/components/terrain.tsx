@@ -14,13 +14,13 @@ export function Terrain() {
     const moveAmount = 1;
     return (
         <>
-        <button onClick={() => setCenter({ centerX: centerX - moveAmount, centerY })}>Left</button>
-        <button onClick={() => setCenter({ centerX, centerY: centerY + moveAmount })}>Down</button>
-        <button onClick={() => setCenter({ centerX, centerY: centerY - moveAmount })}>Up</button>
-        <button onClick={() => setCenter({ centerX: centerX + moveAmount, centerY })}>Right</button>
-        <Canvas width={width} height={height}>
-            <TerrainGrid rows={height / pixelSize} columns={width / pixelSize} terrain={terrainGenerator} gridSize={1 / zoom * pixelSize} pixelSize={pixelSize} centerX={centerX} centerY={centerY} />
-        </Canvas>
+            <button onClick={() => setCenter({ centerX: centerX - moveAmount, centerY })}>Left</button>
+            <button onClick={() => setCenter({ centerX, centerY: centerY + moveAmount })}>Down</button>
+            <button onClick={() => setCenter({ centerX, centerY: centerY - moveAmount })}>Up</button>
+            <button onClick={() => setCenter({ centerX: centerX + moveAmount, centerY })}>Right</button>
+            <Canvas width={width} height={height}>
+                <TerrainGrid rows={height / pixelSize} columns={width / pixelSize} terrain={terrainGenerator} gridSize={1 / zoom * pixelSize} pixelSize={pixelSize} centerX={centerX} centerY={centerY} />
+            </Canvas>
         </>
     );
 }
@@ -31,10 +31,10 @@ export function TerrainGrid({ rows, columns, terrain, gridSize, pixelSize, cente
     useCanvas(React.useCallback(context => {
         for (let row = 0; row < rows; row++) {
             for (let column = 0; column < columns; column++) {
-                renderTerrainSpot({ x: column, y: row, pixelSize, context, terrain: terrain.getTerrain((column + offsetX) * gridSize , (row + offsetY) * gridSize ) })
+                renderTerrainSpot({ x: column, y: row, pixelSize, context, terrain: terrain.getTerrain((column + offsetX) * gridSize, (row + offsetY) * gridSize) })
             }
         }
-    }, [ rows, columns, terrain, gridSize, pixelSize, offsetX, offsetY ]))
+    }, [rows, columns, terrain, gridSize, pixelSize, offsetX, offsetY]))
     return null;
 }
 
