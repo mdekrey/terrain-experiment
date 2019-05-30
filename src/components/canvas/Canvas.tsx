@@ -6,7 +6,7 @@ import { CanvasContext } from "./CanvasContext";
 
 export function Canvas({ children, ...props }: { children?: React.ReactNode } & React.HTMLProps<HTMLCanvasElement>) {
     const ref = React.useRef<HTMLCanvasElement | null>(null);
-    const [{ renderers }, dispatch] = React.useReducer(function ({ renderers }: { renderers: Map<string, CanvasCallback> }, action: AddAction | RemoveAction) {
+    const [renderer, dispatch] = React.useReducer(function ({ renderers }: { renderers: Map<string, CanvasCallback> }, action: AddAction | RemoveAction) {
         if (action.action === 'add') {
             renderers.set(action.key, action.callback);
         } else {
@@ -26,10 +26,10 @@ export function Canvas({ children, ...props }: { children?: React.ReactNode } & 
         if (!context) {
             return;
         }
-        for (const callback of renderers.values()) {
+        for (const callback of renderer.renderers.values()) {
             callback(context);
         }
-    }, [ref, renderers]);
+    }, [ref, renderer]);
     return (
         <canvas ref={ref} {...props}>
             <CanvasContext.Provider value={context}>

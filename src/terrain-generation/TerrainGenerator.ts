@@ -17,9 +17,6 @@ export interface TerrainResult {
 
 const clamper = clamp(0, 1 - Number.EPSILON);
 const toValidRange = (v: number) => {
-  if (v < -1.5 || v > 1.5) {
-    console.log(v);
-  }
   return clamper((1.5 + v) / 3);
 }
 

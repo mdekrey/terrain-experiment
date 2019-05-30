@@ -5,25 +5,35 @@ import { useCanvas } from "./canvas/useCanvas";
 import { Canvas } from "./canvas/Canvas";
 
 export function Terrain() {
+    const [{ centerX, centerY }, setCenter] = React.useState({ centerX: 0, centerY: 0 });
     const terrainGenerator = React.useMemo(() => new TerrainGenerator(), []);
     const width = 1200;
     const height = 800;
-    const pixelSize = 2;
-    const zoom = 200;
+    const pixelSize = 20;
+    const zoom = 2000;
+    const moveAmount = 1;
     return (
+        <>
+        <button onClick={() => setCenter({ centerX: centerX - moveAmount, centerY })}>Left</button>
+        <button onClick={() => setCenter({ centerX, centerY: centerY + moveAmount })}>Down</button>
+        <button onClick={() => setCenter({ centerX, centerY: centerY - moveAmount })}>Up</button>
+        <button onClick={() => setCenter({ centerX: centerX + moveAmount, centerY })}>Right</button>
         <Canvas width={width} height={height}>
-            <TerrainGrid rows={height / pixelSize} columns={width / pixelSize} terrain={terrainGenerator} gridSize={1 / zoom * pixelSize} pixelSize={pixelSize} />
+            <TerrainGrid rows={height / pixelSize} columns={width / pixelSize} terrain={terrainGenerator} gridSize={1 / zoom * pixelSize} pixelSize={pixelSize} centerX={centerX} centerY={centerY} />
         </Canvas>
+        </>
     );
 }
 
-export function TerrainGrid({ rows, columns, terrain, gridSize, pixelSize }: { gridSize: number, rows: number, columns: number, terrain: TerrainGenerator, pixelSize: number }) {
-    const offsetX = columns / -2;
-    const offsetY = rows / -2;
-    console.log(offsetX, offsetY);
+export function TerrainGrid({ rows, columns, terrain, gridSize, pixelSize, centerX, centerY }: { gridSize: number, rows: number, columns: number, terrain: TerrainGenerator, pixelSize: number, centerX: number, centerY: number }) {
+    const offsetX = columns / -2 + centerX;
+    const offsetY = rows / -2 + centerY;
     useCanvas(React.useCallback(context => {
         for (let row = 0; row < rows; row++) {
             for (let column = 0; column < columns; column++) {
+                if (row === 0 && column === 0) {
+                    console.log((column + offsetX) * gridSize , (row + offsetY) * gridSize );
+                }
                 renderTerrainSpot({ x: column, y: row, pixelSize, context, terrain: terrain.getTerrain((column + offsetX) * gridSize , (row + offsetY) * gridSize ) })
             }
         }
@@ -57,7 +67,7 @@ export function renderTerrainSpot({ terrain, x, y, context, pixelSize }: { terra
     // const backgroundColor = `rgb(${toRgbRange(1 - terrain.humidity)}, 200, 0)`
     // const backgroundColor = `rgb(${toRgbRange(terrain.altitude)}, ${toRgbRange(terrain.altitude)}, ${toRgbRange(terrain.altitude)})`
 
-    const withWater = terrain.altitude < 0.35 ? "#000088" : terrain.altitude < 0.45 ? "blue" : backgroundColor;
+    const withWater = terrain.altitude < 0.4 ? "#000088" : terrain.altitude < 0.5 ? "blue" : backgroundColor;
 
     context.fillStyle = withWater;
     context.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
