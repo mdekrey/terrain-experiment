@@ -26,6 +26,7 @@ export function Canvas({ children, ...props }: { children?: React.ReactNode } & 
         if (!context) {
             return;
         }
+        context.imageSmoothingEnabled  = false;
         for (const callback of renderer.renderers.values()) {
             callback(context);
         }

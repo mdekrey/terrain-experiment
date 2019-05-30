@@ -4,6 +4,7 @@ import { HumidityCategory } from "./HumidityCategory";
 import { BiomeCategory } from "./BiomeCategory";
 import { BiomeLabel } from "./BiomeLabel";
 import { BiomeDetails } from "./BiomeDetails";
+import { WaterCategory } from "./WaterCategory";
 
 export interface TerrainResult {
     humidity: number,
@@ -12,7 +13,8 @@ export interface TerrainResult {
     temperatureCategory : TemperatureCategory,
     humidityCategory: HumidityCategory,
     biomeLabel: BiomeLabel,
-    biomeCategory: BiomeCategory
+    biomeCategory: BiomeCategory;
+    waterCategory: WaterCategory;
 }
 
 const clamper = clamp(0, 1 - Number.EPSILON);
@@ -70,6 +72,7 @@ export class TerrainGenerator {
     const biomeLabel =
       BiomeDetails.biomeLabels[temperatureCategory][humidityCategory];
     const biomeCategory = BiomeDetails.categoryLookup[biomeLabel];
+    const waterCategory = altitude < 0.4 ? WaterCategory.DeepWater : altitude < 0.5 ? WaterCategory.ShallowWater : WaterCategory.None;
     return {
       humidity,
       heat,
@@ -77,7 +80,8 @@ export class TerrainGenerator {
       temperatureCategory,
       humidityCategory,
       biomeLabel,
-      biomeCategory
+      biomeCategory,
+      waterCategory
     };
   }
 }
