@@ -6,15 +6,15 @@ import dw4tiles from "../images/dw4-world-sprites.png";
 import { WaterCategory } from "../terrain-generation/WaterCategory";
 
 export function TerrainGrid({ rows, columns, terrain, gridSize, pixelSize, centerX, centerY }: { gridSize: number, rows: number, columns: number, terrain: TerrainGenerator, pixelSize: number, centerX: number, centerY: number }) {
-    const offsetX = columns / -2 + centerX;
-    const offsetY = rows / -2 + centerY;
+    const offsetX = columns / -2;
+    const offsetY = rows / -2;
 
     const terrainSpots = React.useMemo(() => {
         const columnArray = Array.from(Array(columns).keys())
         return Array.from(Array(rows).keys()).map(row =>
-            columnArray.map(column => terrain.getTerrain((column + offsetX) * gridSize, (row + offsetY) * gridSize))
+            columnArray.map(column => terrain.getTerrain((column + offsetX) * gridSize + centerX, (row + offsetY) * gridSize + centerY))
         );
-    }, [rows, columns, terrain, gridSize, offsetX, offsetY]);
+    }, [rows, columns, terrain, gridSize, offsetX, offsetY, centerX, centerY]);
 
     const spriteAtlas = React.useContext(SpriteAtlasContext);
     const [ sprites, addSprite ] = React.useReducer((sprites: Partial<BiomeSprites>, { biome, sprite }: { biome: BiomeCategory, sprite: Sprite }) => {
