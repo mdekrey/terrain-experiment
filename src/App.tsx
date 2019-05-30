@@ -12,11 +12,9 @@ const keyMap = {
 
 const App: React.FC = () => {
   return (
-    <div className="App">
-      <BindHotKeys keyMap={keyMap}>
+      <BindHotKeys keyMap={keyMap} className="App">
         <GameContainer />
       </BindHotKeys>
-    </div>
   );
 }
 

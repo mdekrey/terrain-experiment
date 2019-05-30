@@ -1,5 +1,5 @@
 import React from "react";
-import { HotKeys } from "react-hotkeys";
+import { HotKeys, HotKeysProps } from "react-hotkeys";
 import { KeymapCommand } from "./KeymapCommand";
 import { KeymapContext } from "./KeymapContext";
 
@@ -7,11 +7,12 @@ type Handlers<T extends KeymapCommand> = Record<T, string>;
 
 export function BindHotKeys<T extends KeymapCommand>({
   children,
-  keyMap
+  keyMap,
+  ...props
 }: {
   keyMap: Handlers<T>;
   children?: React.ReactNode;
-}) {
+} & Omit<HotKeysProps, "handlers" | "keymap">) {
   const commandEmitter = React.useContext(KeymapContext);
   const handlers = React.useMemo(
     () =>
@@ -26,7 +27,7 @@ export function BindHotKeys<T extends KeymapCommand>({
   );
 
   return (
-    <HotKeys handlers={handlers} keyMap={keyMap}>
+    <HotKeys handlers={handlers} keyMap={keyMap} {...props}>
       {children}
     </HotKeys>
   );

@@ -4,17 +4,22 @@ import { BiomeCategory } from "../terrain-generation/BiomeCategory";
 import { useCanvas, SpriteAtlasContext, Sprite } from "./canvas";
 import dw4tiles from "../images/dw4-world-sprites.png";
 import { WaterCategory } from "../terrain-generation/WaterCategory";
+import { TerrainCache } from "../terrain-generation/TerrainCache";
+
+function* coordinates(columns: number, rows: number, centerX: number, centerY: number, gridSize: number) {
+    const offsetX = Math.floor(columns / -2);
+    const offsetY = Math.floor(rows / -2);
+
+    for (let x = 0; x < columns; x++) {
+        for (let y = 0; y < columns; y++) {
+            yield { screenX: x, screenY: y, terrainX: (x + offsetX) * gridSize + centerX, terrainY: (y + offsetY) * gridSize + centerY }
+        }
+    }
+}
 
 export function TerrainGrid({ rows, columns, terrain, gridSize, pixelSize, centerX, centerY }: { gridSize: number, rows: number, columns: number, terrain: TerrainGenerator, pixelSize: number, centerX: number, centerY: number }) {
-    const offsetX = columns / -2;
-    const offsetY = rows / -2;
 
-    const terrainSpots = React.useMemo(() => {
-        const columnArray = Array.from(Array(columns).keys())
-        return Array.from(Array(rows).keys()).map(row =>
-            columnArray.map(column => terrain.getTerrain((column + offsetX) * gridSize + centerX, (row + offsetY) * gridSize + centerY))
-        );
-    }, [rows, columns, terrain, gridSize, offsetX, offsetY, centerX, centerY]);
+    const terrainCache = React.useMemo(() => new TerrainCache(terrain), [terrain]);
 
     const spriteAtlas = React.useContext(SpriteAtlasContext);
     const [ sprites, addSprite ] = React.useReducer((sprites: Partial<BiomeSprites>, { biome, sprite }: { biome: BiomeCategory, sprite: Sprite }) => {
@@ -24,8 +29,8 @@ export function TerrainGrid({ rows, columns, terrain, gridSize, pixelSize, cente
     React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 0, y: 128 }).then(sprite => addSprite({ biome: BiomeCategory.CoolDeserts, sprite })), [spriteAtlas]);
     React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 48, y: 128 }).then(sprite => addSprite({ biome: BiomeCategory.Steppes, sprite })), [spriteAtlas]);
     React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 48, y: 128 }).then(sprite => addSprite({ biome: BiomeCategory.Chaparral, sprite })), [spriteAtlas]);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 208, y: 144 }).then(sprite => addSprite({ biome: BiomeCategory.ColdParklands, sprite })), [spriteAtlas]);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 208, y: 160 }).then(sprite => addSprite({ biome: BiomeCategory.Tundra, sprite })), [spriteAtlas]);
+    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 208, y: 160 }).then(sprite => addSprite({ biome: BiomeCategory.ColdParklands, sprite })), [spriteAtlas]);
+    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 208, y: 144 }).then(sprite => addSprite({ biome: BiomeCategory.Tundra, sprite })), [spriteAtlas]);
     React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 224, y: 144 }).then(sprite => addSprite({ biome: BiomeCategory.ConiferousForests, sprite })), [spriteAtlas]);
     React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 240, y: 96 }).then(sprite => addSprite({ biome: BiomeCategory.Ice, sprite })), [spriteAtlas]);
     React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 144, y: 0 }).then(sprite => addSprite({ biome: BiomeCategory.Savanna, sprite })), [spriteAtlas]);
@@ -35,9 +40,11 @@ export function TerrainGrid({ rows, columns, terrain, gridSize, pixelSize, cente
     React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 144, y: 128 }).then(sprite => addSprite({ biome: BiomeCategory.MixedForests, sprite })), [spriteAtlas]);
 
     useCanvas(React.useCallback(context => {
-        terrainSpots.forEach((rowData, row) =>
-            rowData.forEach((terrain, column) => renderTerrainSpot({ x: column, y: row, pixelSize, context, terrain, sprites })));
-    }, [pixelSize, terrainSpots, sprites]));
+        for (const { screenX, screenY, terrainX, terrainY } of coordinates(columns, rows, centerX, centerY, gridSize)) {
+            const terrain = terrainCache.getAt(terrainX, terrainY);
+            renderTerrainSpot({ x: screenX, y: screenY, pixelSize, context, terrain, sprites });
+        }
+    }, [pixelSize, columns, rows, centerX, centerY, gridSize, sprites, terrainCache]));
     return null;
 }
 

@@ -5,12 +5,12 @@ import { TerrainGrid } from "./terrain";
 import { useSubscription } from "../rxjs";
 import { useCommand } from "./keymap";
 
-const pixelSize = 16;
+const pixelSize = 32;
 const gameReducer = (
     { centerX = 0, centerY = 0, zoomExp = 4 },
     action: "left" | "right" | "up" | "down" | "zoomIn" | "zoomOut") => {
-    const zoom = Math.pow(10, zoomExp) * 2;
-    const gridSize = 1 / zoom * pixelSize;
+    const zoom = Math.pow(10, zoomExp);
+    const gridSize = 1 / zoom;
     const moveAmount = 1 * gridSize;
     switch (action) {
         case "left":
@@ -29,13 +29,13 @@ const gameReducer = (
             zoomExp += 1;
             break;
         case "zoomOut":
-            if (zoomExp > 2) {
+            if (zoomExp > 1) {
                 zoomExp -= 1;
             }
             break;
     }
-    const newZoom = Math.pow(10, zoomExp) * 2;
-    const newGridSize = 1 / newZoom * pixelSize;
+    const newZoom = Math.pow(10, zoomExp);
+    const newGridSize = 1 / newZoom;
     centerX = Math.round(centerX / newGridSize) * newGridSize;
     centerY = Math.round(centerY / newGridSize) * newGridSize;
 
@@ -47,8 +47,8 @@ export function GameContainer() {
     const terrainGenerator = React.useMemo(() => new TerrainGenerator(), []);
     const width = 1216;
     const height = 800;
-    const zoom = Math.pow(10, zoomExp) * 2;
-    const gridSize = 1 / zoom * pixelSize;
+    const zoom = Math.pow(10, zoomExp);
+    const gridSize = 1 / zoom;
     useSubscription(useCommand("MOVE_LEFT"), React.useCallback(() => dispatch("left"), []));
     useSubscription(useCommand("MOVE_RIGHT"), React.useCallback(() => dispatch("right"), []));
     useSubscription(useCommand("MOVE_UP"), React.useCallback(() => dispatch("up"), []));
@@ -59,7 +59,7 @@ export function GameContainer() {
         <button onClick={() => dispatch("up")}>Up</button>
         <button onClick={() => dispatch("right")}>Right</button>
         <button onClick={() => dispatch("zoomIn")}>Zoom In</button>
-        <button onClick={() => dispatch("zoomOut")} disabled={zoomExp < 3}>Zoom Out</button>
+        <button onClick={() => dispatch("zoomOut")} disabled={zoomExp < 2}>Zoom Out</button>
         <br />
         <span>{centerX.toFixed(zoomExp)}x{centerY.toFixed(zoomExp)}</span>
         <br />

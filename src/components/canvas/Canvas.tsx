@@ -19,17 +19,19 @@ export function Canvas({ children, ...props }: { children?: React.ReactNode } & 
         remove: (key) => dispatch({ action: "remove", key }),
     }), [dispatch]);
     React.useEffect(() => {
-        if (!ref.current) {
-            return;
-        }
-        const context = ref.current.getContext("2d");
-        if (!context) {
-            return;
-        }
-        context.imageSmoothingEnabled  = false;
-        for (const callback of renderer.renderers.values()) {
-            callback(context);
-        }
+        requestAnimationFrame(() => {
+            if (!ref.current) {
+                return;
+            }
+            const context = ref.current.getContext("2d");
+            if (!context) {
+                return;
+            }
+            context.imageSmoothingEnabled  = false;
+            for (const callback of renderer.renderers.values()) {
+                callback(context);
+            }
+        });
     }, [ref, renderer]);
     return (
         <canvas ref={ref} {...props}>
