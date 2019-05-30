@@ -18,10 +18,13 @@ export function Terrain() {
 }
 
 export function TerrainGrid({ rows, columns, terrain, gridSize, pixelSize }: { gridSize: number, rows: number, columns: number, terrain: TerrainGenerator, pixelSize: number }) {
+    const offsetX = columns / -2;
+    const offsetY = rows / -2;
+    console.log(offsetX, offsetY);
     useCanvas(React.useCallback(context => {
         for (let row = 0; row < rows; row++) {
             for (let column = 0; column < columns; column++) {
-                renderTerrainSpot({ x: column, y: row, pixelSize, context, terrain: terrain.getTerrain(row * gridSize, column * gridSize) })
+                renderTerrainSpot({ x: column, y: row, pixelSize, context, terrain: terrain.getTerrain((column + offsetX) * gridSize , (row + offsetY) * gridSize ) })
             }
         }
     }, [ rows, columns, terrain, gridSize, pixelSize ]))
@@ -49,13 +52,13 @@ function toRgbRange(input: number) {
 }
 
 export function renderTerrainSpot({ terrain, x, y, context, pixelSize }: { terrain: TerrainResult, x: number, y: number, context: CanvasRenderingContext2D, pixelSize: number }) {
-    const backgroundColor = color[terrain.biomeCategory];
-    // const backgroundColor = `rgb(${toRgbRange(2 - terrain.heat * 2)}, ${toRgbRange(terrain.heat)}, 0)`
+    // const backgroundColor = color[terrain.biomeCategory];
+    // const backgroundColor = `rgb(${toRgbRange(terrain.heat * 2 - 1)}, ${toRgbRange(1 - terrain.heat)}, 0)`
     // const backgroundColor = `rgb(${toRgbRange(1 - terrain.humidity)}, 200, 0)`
-    // const backgroundColor = `rgb(${toRgbRange(terrain.altitude)}, ${toRgbRange(terrain.altitude)}, ${toRgbRange(terrain.altitude)})`
+    const backgroundColor = `rgb(${toRgbRange(terrain.altitude)}, ${toRgbRange(terrain.altitude)}, ${toRgbRange(terrain.altitude)})`
 
-    const withWater = terrain.altitude < 0.4 ? "#000088" : terrain.altitude < 0.5 ? "blue" : backgroundColor;
+    const withWater = terrain.altitude < 0.35 ? "#000088" : terrain.altitude < 0.45 ? "blue" : backgroundColor;
 
-    context.fillStyle = withWater;
+    context.fillStyle = backgroundColor;
     context.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
 }
