@@ -46,7 +46,6 @@ export function GameContainer() {
     const height = 800;
     const zoom = Math.pow(10, zoomExp) * 2;
     const gridSize = 1 / zoom * pixelSize;
-    const moveAmount = 10 * gridSize;
     return (<>
         <button onClick={() => dispatch("left")}>Left</button>
         <button onClick={() => dispatch("down")}>Down</button>

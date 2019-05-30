@@ -20,19 +20,19 @@ export function TerrainGrid({ rows, columns, terrain, gridSize, pixelSize, cente
     const [ sprites, addSprite ] = React.useReducer((sprites: Partial<BiomeSprites>, { biome, sprite }: { biome: BiomeCategory, sprite: Sprite }) => {
         return { ...sprites, [biome]: sprite };
     }, {});
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 144, y: 0 }).then(sprite => addSprite({ biome: BiomeCategory.HotDeserts, sprite })), []);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 0, y: 128 }).then(sprite => addSprite({ biome: BiomeCategory.CoolDeserts, sprite })), []);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 48, y: 128 }).then(sprite => addSprite({ biome: BiomeCategory.Steppes, sprite })), []);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 48, y: 128 }).then(sprite => addSprite({ biome: BiomeCategory.Chaparral, sprite })), []);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 208, y: 144 }).then(sprite => addSprite({ biome: BiomeCategory.ColdParklands, sprite })), []);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 208, y: 160 }).then(sprite => addSprite({ biome: BiomeCategory.Tundra, sprite })), []);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 224, y: 144 }).then(sprite => addSprite({ biome: BiomeCategory.ConiferousForests, sprite })), []);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 240, y: 96 }).then(sprite => addSprite({ biome: BiomeCategory.Ice, sprite })), []);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 144, y: 0 }).then(sprite => addSprite({ biome: BiomeCategory.Savanna, sprite })), []);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 0, y: 192 }).then(sprite => addSprite({ biome: BiomeCategory.TropicalSeasonalForests, sprite })), []);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 0, y: 192 }).then(sprite => addSprite({ biome: BiomeCategory.TropicalRainForests, sprite })), []);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 0, y: 192 }).then(sprite => addSprite({ biome: BiomeCategory.DeciduousForests, sprite })), []);
-    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 144, y: 128 }).then(sprite => addSprite({ biome: BiomeCategory.MixedForests, sprite })), []);
+    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 144, y: 0 }).then(sprite => addSprite({ biome: BiomeCategory.HotDeserts, sprite })), [spriteAtlas]);
+    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 0, y: 128 }).then(sprite => addSprite({ biome: BiomeCategory.CoolDeserts, sprite })), [spriteAtlas]);
+    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 48, y: 128 }).then(sprite => addSprite({ biome: BiomeCategory.Steppes, sprite })), [spriteAtlas]);
+    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 48, y: 128 }).then(sprite => addSprite({ biome: BiomeCategory.Chaparral, sprite })), [spriteAtlas]);
+    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 208, y: 144 }).then(sprite => addSprite({ biome: BiomeCategory.ColdParklands, sprite })), [spriteAtlas]);
+    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 208, y: 160 }).then(sprite => addSprite({ biome: BiomeCategory.Tundra, sprite })), [spriteAtlas]);
+    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 224, y: 144 }).then(sprite => addSprite({ biome: BiomeCategory.ConiferousForests, sprite })), [spriteAtlas]);
+    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 240, y: 96 }).then(sprite => addSprite({ biome: BiomeCategory.Ice, sprite })), [spriteAtlas]);
+    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 144, y: 0 }).then(sprite => addSprite({ biome: BiomeCategory.Savanna, sprite })), [spriteAtlas]);
+    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 0, y: 192 }).then(sprite => addSprite({ biome: BiomeCategory.TropicalSeasonalForests, sprite })), [spriteAtlas]);
+    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 0, y: 192 }).then(sprite => addSprite({ biome: BiomeCategory.TropicalRainForests, sprite })), [spriteAtlas]);
+    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 0, y: 192 }).then(sprite => addSprite({ biome: BiomeCategory.DeciduousForests, sprite })), [spriteAtlas]);
+    React.useMemo(() => spriteAtlas.getSprite(dw4tiles, { x: 144, y: 128 }).then(sprite => addSprite({ biome: BiomeCategory.MixedForests, sprite })), [spriteAtlas]);
 
     useCanvas(React.useCallback(context => {
         terrainSpots.forEach((rowData, row) =>
