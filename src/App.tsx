@@ -1,11 +1,11 @@
 import React from 'react';
 import './App.css';
-import { Terrain } from './components/terrain';
+import { GameContainer } from "./components/GameContainer";
 
 const App: React.FC = () => {
   return (
     <div className="App">
-        <Terrain/>
+        <GameContainer/>
     </div>
   );
 }
