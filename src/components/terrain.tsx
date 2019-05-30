@@ -31,9 +31,6 @@ export function TerrainGrid({ rows, columns, terrain, gridSize, pixelSize, cente
     useCanvas(React.useCallback(context => {
         for (let row = 0; row < rows; row++) {
             for (let column = 0; column < columns; column++) {
-                if (row === 0 && column === 0) {
-                    console.log((column + offsetX) * gridSize , (row + offsetY) * gridSize );
-                }
                 renderTerrainSpot({ x: column, y: row, pixelSize, context, terrain: terrain.getTerrain((column + offsetX) * gridSize , (row + offsetY) * gridSize ) })
             }
         }
