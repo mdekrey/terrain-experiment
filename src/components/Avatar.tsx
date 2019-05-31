@@ -26,6 +26,6 @@ export function Avatar({ pawn, frameDelay }: { pawn: Pawn, frameDelay: number })
             context.fillStyle = backgroundColor;
             context.fillRect(x * pixelSize + screenCenterX, y * pixelSize + screenCenterY, pixelSize, pixelSize);
         }
-    }, [pawn, pixelSize, originalNow, sprites, frameDelay, gridSize]));
+    }, [pawn, pixelSize, originalNow, sprites, frameDelay, gridSize, center, screenCenterX, screenCenterY]));
     return null;
 }

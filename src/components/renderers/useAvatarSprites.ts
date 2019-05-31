@@ -11,14 +11,14 @@ const dw4Columns = {
 }
 
 const avatarSpriteDefinitions: SpriteDefinition<string>[] = [
-    { image: dw4Characters, coords: { y: dw4HeroY, x: dw4Columns.Up[0] }, key: "Up0" },
-    { image: dw4Characters, coords: { y: dw4HeroY, x: dw4Columns.Up[1] }, key: "Up1" },
-    { image: dw4Characters, coords: { y: dw4HeroY, x: dw4Columns.Down[0] }, key: "Down0" },
-    { image: dw4Characters, coords: { y: dw4HeroY, x: dw4Columns.Down[1] }, key: "Down1" },
-    { image: dw4Characters, coords: { y: dw4HeroY, x: dw4Columns.Right[0] }, key: "Right0" },
-    { image: dw4Characters, coords: { y: dw4HeroY, x: dw4Columns.Right[1] }, key: "Right1" },
-    { image: dw4Characters, coords: { y: dw4HeroY, x: dw4Columns.Left[0] }, key: "Left0" },
-    { image: dw4Characters, coords: { y: dw4HeroY, x: dw4Columns.Left[1] }, key: "Left1" },
+    { image: dw4Characters, coords: { y: dw4FemSoldierY, x: dw4Columns.Up[0] }, key: "Up0" },
+    { image: dw4Characters, coords: { y: dw4FemSoldierY, x: dw4Columns.Up[1] }, key: "Up1" },
+    { image: dw4Characters, coords: { y: dw4FemSoldierY, x: dw4Columns.Down[0] }, key: "Down0" },
+    { image: dw4Characters, coords: { y: dw4FemSoldierY, x: dw4Columns.Down[1] }, key: "Down1" },
+    { image: dw4Characters, coords: { y: dw4FemSoldierY, x: dw4Columns.Right[0] }, key: "Right0" },
+    { image: dw4Characters, coords: { y: dw4FemSoldierY, x: dw4Columns.Right[1] }, key: "Right1" },
+    { image: dw4Characters, coords: { y: dw4FemSoldierY, x: dw4Columns.Left[0] }, key: "Left0" },
+    { image: dw4Characters, coords: { y: dw4FemSoldierY, x: dw4Columns.Left[1] }, key: "Left1" },
 ]
 
 export function useAvatarSprites() {

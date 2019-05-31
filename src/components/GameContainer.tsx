@@ -55,6 +55,7 @@ export function GameContainer() {
         const result = new Pawn();
         result.moveTo({ x: gridSize, y: gridSize }, Direction.Up);
         return result;
+        // eslint-disable-next-line
     }, [])
     return (<>
         <button onClick={() => dispatch("left")}>Left</button>
