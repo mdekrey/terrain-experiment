@@ -13,7 +13,7 @@ export function GameContainer() {
     const player = useService("player");
     const width = 1216;
     const height = 800;
-    const zoom = Math.pow(10, zoomExp);
+    const zoom = Math.pow(10, zoomExp) * 4;
     const gridSize = 1 / zoom;
     const dispatch = React.useCallback(
         function (action: "left" | "right" | "up" | "down") {
