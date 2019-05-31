@@ -17,7 +17,10 @@ export function useSpritelookup<TKey extends string | number | symbol>(definitio
     }, {});
     React.useMemo(() => {
         for (const {key,image,coords} of definitions) {
-            spriteAtlas.getSprite(image, coords).then(sprite => addSprite({ key, sprite }));
+            spriteAtlas.getSprite(image, coords).then(sprite => {
+                addSprite({ key, sprite });
+                console.log("loaded ", key, sprite)
+            }, err => console.error(err));
         }
     }, [spriteAtlas, definitions]);
 

@@ -5,6 +5,8 @@ import { TerrainGrid } from "./terrain";
 import { useSubscription } from "../rxjs";
 import { useCommand } from "./keymap";
 import { useService } from "../injector";
+import { Avatar } from "./Avatar";
+import { Direction } from "../game";
 
 const pixelSize = 32;
 export function GameContainer() {
@@ -23,21 +25,26 @@ export function GameContainer() {
             const moveAmount = 1 * gridSize;
 
             let { x: centerX, y: centerY } = player.center();
+            let facing = Direction.Down;
             switch (action) {
                 case "left":
                     centerX -= moveAmount;
+                    facing = Direction.Left;
                     break;
                 case "right":
                     centerX += moveAmount;
+                    facing = Direction.Right;
                     break;
                 case "up":
                     centerY -= moveAmount;
+                    facing = Direction.Up;
                     break;
                 case "down":
                     centerY += moveAmount;
+                    facing = Direction.Down;
                     break;
             }
-            player.setCenter({ x: centerX, y: centerY }, 500);
+            player.moveTo({ x: centerX, y: centerY }, 500, facing);
         }, [player, gridSize])
     useSubscription(useCommand("MOVE_LEFT"), React.useCallback(() => dispatch("left"), [dispatch]));
     useSubscription(useCommand("MOVE_RIGHT"), React.useCallback(() => dispatch("right"), [dispatch]));
@@ -59,6 +66,10 @@ export function GameContainer() {
                             center={getCenter}
                             key={zoomExp.toFixed(0)}/>
             </CanvasLayer>
+            <Avatar pawn={player}
+                            pixelSize={pixelSize}
+                            frameDelay={250}
+                            />
         </Canvas>
     </>);
 
