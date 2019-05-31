@@ -1,9 +1,10 @@
 import React from "react";
-import { TerrainGenerator } from "../terrain-generation/TerrainGenerator";
+import "../game";
 import { Canvas } from "./canvas";
 import { TerrainGrid } from "./terrain";
 import { useSubscription } from "../rxjs";
 import { useCommand } from "./keymap";
+import { useService } from "../injector";
 
 const pixelSize = 32;
 const gameReducer = (
@@ -44,7 +45,7 @@ const gameReducer = (
 export function GameContainer() {
     const [{ centerX, centerY, zoomExp }, dispatch] = React.useReducer(
         gameReducer, { centerX: 0, centerY: 0, zoomExp: 4 });
-    const terrainGenerator = React.useMemo(() => new TerrainGenerator(), []);
+    const terrainGenerator = useService("terrainGenerator");
     const width = 1216;
     const height = 800;
     const zoom = Math.pow(10, zoomExp);

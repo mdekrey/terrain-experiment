@@ -21,18 +21,22 @@ export class TerrainGenerator {
     lacunarity: 3.2,
     seed: 3200
   });
-  private readonly terrainProps = new TerrainSettings();
+  private readonly terrainSettings: TerrainSettings;
+
+  constructor(terrainSettings: TerrainSettings) {
+    this.terrainSettings = terrainSettings;
+  }
 
   public getTerrain(x: number, y: number): TerrainPoint {
     const altitude = toValidRange(this.altitude.getValue(x, y));
     const heat = toValidRange(
       this.heat.getValue(x, y) - Math.max(0, altitude * 2 - 1.7)
     );
-    const humidity = this.terrainProps.humidityCurve(
+    const humidity = this.terrainSettings.humidityCurve(
       toValidRange(this.humidity.getValue(x, y)),
       heat
     );
 
-    return new TerrainPoint(this.terrainProps, x, y, altitude, heat, humidity);
+    return new TerrainPoint(this.terrainSettings, x, y, altitude, heat, humidity);
   }
 }

@@ -1,7 +1,8 @@
 import { TerrainGenerator } from "./TerrainGenerator";
+import { TerrainSettings } from "./TerrainSettings";
 
 it("generates some terrain", () => {
-    const terrain = new TerrainGenerator();
+    const terrain = new TerrainGenerator(new TerrainSettings());
 
     const step = 0.01;
     const microsteps = 5;

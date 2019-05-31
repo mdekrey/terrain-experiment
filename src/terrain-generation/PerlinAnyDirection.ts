@@ -5,7 +5,9 @@ export class PerlinAnyDirection {
   private static clamp = clamp(0, 1);
   private readonly perlin = new Perlin();
   private readonly overlap: number;
-  constructor({ lacunarity = Perlin.DEFAULT_PERLIN_LACUNARITY, seed = Perlin.DEFAULT_PERLIN_SEED, overlap = 1, octaves = Perlin.DEFAULT_PERLIN_OCTAVE_COUNT }) {
+  constructor({ lacunarity = Perlin.DEFAULT_PERLIN_LACUNARITY, seed = Perlin.DEFAULT_PERLIN_SEED, overlap = 1, octaves = Perlin.DEFAULT_PERLIN_OCTAVE_COUNT,
+        frequency = Perlin.DEFAULT_PERLIN_FREQUENCY }) {
+    this.perlin.frequency = frequency;
     this.perlin.lacunarity = lacunarity;
     this.perlin.seed = seed;
     this.perlin.octaves = octaves;
