@@ -1,10 +1,7 @@
 import React from "react";
-import { TerrainGenerator, TerrainResult } from "../terrain-generation/TerrainGenerator";
-import { BiomeCategory } from "../terrain-generation/BiomeCategory";
+import { BiomeCategory, TerrainCache, TerrainGenerator, TerrainPoint, WaterCategory } from "../terrain-generation";
 import { useCanvas, useSpritelookup, SpriteDefinition, SpriteLookup } from "./canvas";
 import dw4tiles from "../images/dw4-world-sprites.png";
-import { WaterCategory } from "../terrain-generation/WaterCategory";
-import { TerrainCache } from "../terrain-generation/TerrainCache";
 
 function* coordinates(columns: number, rows: number, centerX: number, centerY: number, gridSize: number) {
     const offsetX = Math.floor(columns / -2);
@@ -77,7 +74,7 @@ function toRgbRange(input: number) {
     return Math.min(255, Math.max(0, 255 * (input)));
 }
 
-export function renderTerrainSpot({ terrain, x, y, context, pixelSize, sprites }: { terrain: TerrainResult, x: number, y: number, context: CanvasRenderingContext2D, pixelSize: number, sprites: Partial<SpriteLookup<BiomeCategory>> }) {
+export function renderTerrainSpot({ terrain, x, y, context, pixelSize, sprites }: { terrain: TerrainPoint, x: number, y: number, context: CanvasRenderingContext2D, pixelSize: number, sprites: Partial<SpriteLookup<BiomeCategory>> }) {
     if (terrain.waterCategory === WaterCategory.None && sprites[terrain.biomeCategory]) {
         const p = sprites[terrain.biomeCategory]!.toDrawImageParams();
         context.drawImage(p[0], p[1], p[2], p[3], p[4], x * pixelSize, y * pixelSize, pixelSize, pixelSize);

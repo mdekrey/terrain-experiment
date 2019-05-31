@@ -3,16 +3,16 @@ import { HumidityCategory } from "./HumidityCategory";
 import { BiomeDetails } from "./BiomeDetails";
 import { WaterCategory } from "./WaterCategory";
 import { TerrainSettings } from "./TerrainSettings";
-import { tempsStep } from "./TerrainGenerator";
+
 export class TerrainPoint {
-  public readonly terrainPoint: TerrainSettings;
+  public readonly terrainSettings: TerrainSettings;
   public readonly x: number;
   public readonly y: number;
   public readonly altitude: number;
   public readonly heat: number;
   public readonly humidity: number;
-  constructor(terrainPoint: TerrainSettings, x: number, y: number, altitude: number, heat: number, humidity: number) {
-    this.terrainPoint = terrainPoint;
+  constructor(terrainSettings: TerrainSettings, x: number, y: number, altitude: number, heat: number, humidity: number) {
+    this.terrainSettings = terrainSettings;
     this.x = x;
     this.y = y;
     this.altitude = altitude;
@@ -20,7 +20,7 @@ export class TerrainPoint {
     this.humidity = humidity;
   }
   get temperatureCategory() {
-    return tempsStep.findIndex(v => v > this.heat) as TemperatureCategory;
+    return this.terrainSettings.tempsStep.findIndex(v => v > this.heat) as TemperatureCategory;
   }
   get humidityCategory() {
     return Math.min(BiomeDetails.biomeLabels[this.temperatureCategory].length, Math.floor(8 * this.humidity)) as HumidityCategory;
