@@ -1,25 +1,17 @@
 import React from "react";
 import { CanvasCallback } from "./CanvasCallback";
-import { AddAction } from "./AddAction";
-import { RemoveAction } from "./RemoveAction";
 import { CanvasContext } from "./CanvasContext";
 
 export function Canvas({ children, ...props }: { children?: React.ReactNode } & React.HTMLProps<HTMLCanvasElement>) {
     const ref = React.useRef<HTMLCanvasElement | null>(null);
-    const [renderer, dispatch] = React.useReducer(function ({ renderers }: { renderers: Map<string, CanvasCallback> }, action: AddAction | RemoveAction) {
-        if (action.action === 'add') {
-            renderers.set(action.key, action.callback);
-        } else {
-            renderers.delete(action.key);
-        }
-        return { renderers };
-    }, { renderers: new Map<string, CanvasCallback>() });
+    const renderers = React.useMemo(() => new Map<string, CanvasCallback>(), []);
     const context = React.useMemo((): CanvasContext => ({
-        add: (key, callback) => dispatch({ action: "add", key, callback }),
-        remove: (key) => dispatch({ action: "remove", key }),
-    }), [dispatch]);
+        add: (key, callback) => renderers.set(key, callback),
+        remove: (key) => renderers.delete(key),
+    }), [renderers]);
     React.useEffect(() => {
-        requestAnimationFrame(() => {
+        let request = requestAnimationFrame(renderAll);
+        function renderAll() {
             if (!ref.current) {
                 return;
             }
@@ -27,12 +19,14 @@ export function Canvas({ children, ...props }: { children?: React.ReactNode } & 
             if (!context) {
                 return;
             }
-            context.imageSmoothingEnabled  = false;
-            for (const callback of renderer.renderers.values()) {
+            context.imageSmoothingEnabled = false;
+            for (const callback of renderers.values()) {
                 callback(context);
             }
-        });
-    }, [ref, renderer]);
+            request = requestAnimationFrame(renderAll);
+        };
+        return () => cancelAnimationFrame(request);
+    }, [ref, renderers]);
     return (
         <canvas ref={ref} {...props}>
             <CanvasContext.Provider value={context}>
