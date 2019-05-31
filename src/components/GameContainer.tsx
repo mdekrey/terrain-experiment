@@ -7,74 +7,59 @@ import { useCommand } from "./keymap";
 import { useService } from "../injector";
 
 const pixelSize = 32;
-const gameReducer = (
-    { centerX = 0, centerY = 0, zoomExp = 4 },
-    action: "left" | "right" | "up" | "down" | "zoomIn" | "zoomOut") => {
-    const zoom = Math.pow(10, zoomExp);
-    const gridSize = 1 / zoom;
-    const moveAmount = 1 * gridSize;
-    switch (action) {
-        case "left":
-            centerX -= moveAmount;
-            break;
-        case "right":
-            centerX += moveAmount;
-            break;
-        case "up":
-            centerY -= moveAmount;
-            break;
-        case "down":
-            centerY += moveAmount;
-            break;
-        case "zoomIn":
-            zoomExp += 1;
-            break;
-        case "zoomOut":
-            if (zoomExp > 1) {
-                zoomExp -= 1;
-            }
-            break;
-    }
-    const newZoom = Math.pow(10, zoomExp);
-    const newGridSize = 1 / newZoom;
-    centerX = Math.round(centerX / newGridSize) * newGridSize;
-    centerY = Math.round(centerY / newGridSize) * newGridSize;
-
-    return { centerX, centerY, zoomExp };
-};
 export function GameContainer() {
-    const [{ centerX, centerY, zoomExp }, dispatch] = React.useReducer(
-        gameReducer, { centerX: 0, centerY: 0, zoomExp: 4 });
+    const zoomExp = 2;
     const terrainGenerator = useService("terrainGenerator");
+    const player = useService("player");
     const width = 1216;
     const height = 800;
     const zoom = Math.pow(10, zoomExp);
     const gridSize = 1 / zoom;
-    useSubscription(useCommand("MOVE_LEFT"), React.useCallback(() => dispatch("left"), []));
-    useSubscription(useCommand("MOVE_RIGHT"), React.useCallback(() => dispatch("right"), []));
-    useSubscription(useCommand("MOVE_UP"), React.useCallback(() => dispatch("up"), []));
-    useSubscription(useCommand("MOVE_DOWN"), React.useCallback(() => dispatch("down"), []));
+    const dispatch = React.useCallback(
+        function (action: "left" | "right" | "up" | "down") {
+            if (!player.isDoneMoving()) {
+                return;
+            }
+            const moveAmount = 1 * gridSize;
+
+            let { x: centerX, y: centerY } = player.center();
+            switch (action) {
+                case "left":
+                    centerX -= moveAmount;
+                    break;
+                case "right":
+                    centerX += moveAmount;
+                    break;
+                case "up":
+                    centerY -= moveAmount;
+                    break;
+                case "down":
+                    centerY += moveAmount;
+                    break;
+            }
+            player.setCenter({ x: centerX, y: centerY }, 500);
+        }, [player, gridSize])
+    useSubscription(useCommand("MOVE_LEFT"), React.useCallback(() => dispatch("left"), [dispatch]));
+    useSubscription(useCommand("MOVE_RIGHT"), React.useCallback(() => dispatch("right"), [dispatch]));
+    useSubscription(useCommand("MOVE_UP"), React.useCallback(() => dispatch("up"), [dispatch]));
+    useSubscription(useCommand("MOVE_DOWN"), React.useCallback(() => dispatch("down"), [dispatch]));
+    const getCenter = React.useCallback(() => player.center(), [player]);
     return (<>
         <button onClick={() => dispatch("left")}>Left</button>
         <button onClick={() => dispatch("down")}>Down</button>
         <button onClick={() => dispatch("up")}>Up</button>
         <button onClick={() => dispatch("right")}>Right</button>
-        <button onClick={() => dispatch("zoomIn")}>Zoom In</button>
-        <button onClick={() => dispatch("zoomOut")} disabled={zoomExp < 2}>Zoom Out</button>
-        <br />
-        <span>{centerX.toFixed(zoomExp)}x{centerY.toFixed(zoomExp)}</span>
         <br />
         <Canvas width={width} height={height}>
             <CanvasLayer>
-                <TerrainGrid rows={height / pixelSize}
-                            columns={width / pixelSize}
+                <TerrainGrid x={0} y={0} width={width} height={height}
                             terrain={terrainGenerator}
                             gridSize={gridSize}
                             pixelSize={pixelSize}
-                            centerX={centerX}
-                            centerY={centerY}
+                            center={getCenter}
                             key={zoomExp.toFixed(0)}/>
             </CanvasLayer>
         </Canvas>
     </>);
+
 }

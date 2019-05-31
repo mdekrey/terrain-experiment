@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import { GameContainer } from "./components/GameContainer";
 import { BindHotKeys } from './components/keymap';
+import { ChildInjector, Scope } from './injector';
 
 const keyMap = {
   MOVE_LEFT: "left",
@@ -13,7 +14,9 @@ const keyMap = {
 const App: React.FC = () => {
   return (
       <BindHotKeys keyMap={keyMap} className="App">
-        <GameContainer />
+        <ChildInjector beginScopes={[ Scope.Component ]}>
+          <GameContainer />
+        </ChildInjector>
       </BindHotKeys>
   );
 }
