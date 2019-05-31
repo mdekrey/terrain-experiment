@@ -8,7 +8,7 @@ function* coordinates(columns: number, rows: number, centerX: number, centerY: n
     const offsetY = Math.floor(rows / -2);
 
     for (let x = 0; x < columns; x++) {
-        for (let y = 0; y < columns; y++) {
+        for (let y = 0; y < rows; y++) {
             yield { screenX: x, screenY: y, terrainX: (x + offsetX) * gridSize + centerX, terrainY: (y + offsetY) * gridSize + centerY }
         }
     }

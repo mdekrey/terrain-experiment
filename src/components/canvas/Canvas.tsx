@@ -1,14 +1,10 @@
 import React from "react";
-import { CanvasCallback } from "./CanvasCallback";
 import { CanvasContext } from "./CanvasContext";
+import { useRenderers } from "./useRenderers";
 
 export function Canvas({ children, ...props }: { children?: React.ReactNode } & React.HTMLProps<HTMLCanvasElement>) {
     const ref = React.useRef<HTMLCanvasElement | null>(null);
-    const renderers = React.useMemo(() => new Map<string, CanvasCallback>(), []);
-    const context = React.useMemo((): CanvasContext => ({
-        add: (key, callback) => renderers.set(key, callback),
-        remove: (key) => renderers.delete(key),
-    }), [renderers]);
+    const [renderers, context] = useRenderers();
     React.useEffect(() => {
         let request = requestAnimationFrame(renderAll);
         function renderAll() {

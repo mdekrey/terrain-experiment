@@ -1,6 +1,6 @@
 import React from "react";
 import "../game";
-import { Canvas } from "./canvas";
+import { Canvas, CanvasLayer } from "./canvas";
 import { TerrainGrid } from "./terrain";
 import { useSubscription } from "../rxjs";
 import { useCommand } from "./keymap";
@@ -65,7 +65,16 @@ export function GameContainer() {
         <span>{centerX.toFixed(zoomExp)}x{centerY.toFixed(zoomExp)}</span>
         <br />
         <Canvas width={width} height={height}>
-            <TerrainGrid rows={height / pixelSize} columns={width / pixelSize} terrain={terrainGenerator} gridSize={gridSize} pixelSize={pixelSize} centerX={centerX} centerY={centerY} />
+            <CanvasLayer>
+                <TerrainGrid rows={height / pixelSize}
+                            columns={width / pixelSize}
+                            terrain={terrainGenerator}
+                            gridSize={gridSize}
+                            pixelSize={pixelSize}
+                            centerX={centerX}
+                            centerY={centerY}
+                            key={zoomExp.toFixed(0)}/>
+            </CanvasLayer>
         </Canvas>
     </>);
 }
