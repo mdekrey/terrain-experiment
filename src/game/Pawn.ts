@@ -1,4 +1,5 @@
 import { GameCoordinates, interpolate } from "./GameCoordinates";
+import { Interpolated, makeInterpolated, isInterpolated } from "./Interpolated";
 
 export enum Direction {
     Up,
@@ -9,35 +10,24 @@ export enum Direction {
 
 export class Pawn {
 
-    lastCenter: GameCoordinates = { x: 0, y: 0};
-    targetCenter: GameCoordinates = { x: 0, y: 0};
-    lastTime: number = 0;
-    targetTime: number = 0;
+    private _position: GameCoordinates | Interpolated<GameCoordinates> = { x: 0, y: 0};
 
     facing: Direction = Direction.Down;
 
 
-    moveTo(target: GameCoordinates, delay: number, facing: Direction) {
-        const now = new Date().getTime();
-        this.lastCenter = this.center();
-        this.lastTime = now;
-        this.targetCenter = target;
-        this.targetTime = now + delay;
+    moveTo(target: GameCoordinates, facing: Direction, delay: number = 0) {
+        const now = Date.now();
+        this._position = delay
+            ? makeInterpolated(this.position(), target, now, now + delay, interpolate)
+            : target;
         this.facing = facing;
     }
 
     isDoneMoving() {
-        const now = new Date().getTime();
-        return now > this.targetTime;
+        return isInterpolated(this._position) ? this._position.isComplete : true;
     }
 
-    center(): GameCoordinates {
-        const now = new Date().getTime();
-        if (now > this.targetTime) {
-            return this.targetCenter;
-        }
-
-        const factor = (now - this.lastTime) / (this.targetTime - this.lastTime);
-        return interpolate(factor, this.lastCenter, this.targetCenter);
+    position(): GameCoordinates {
+        return isInterpolated(this._position) ? this._position.value : this._position;
     }
 }

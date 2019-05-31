@@ -4,7 +4,7 @@ import { CanvasCallback } from "./CanvasCallback";
 import { CanvasContext } from "./CanvasContext";
 
 export function useCanvas(callback: CanvasCallback) {
-    const key = uuid();
+    const key = React.useMemo(() => uuid(), []);
     const context = React.useContext(CanvasContext);
     React.useEffect(() => {
         context.add(key, callback);

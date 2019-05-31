@@ -3,6 +3,7 @@ import { TerrainCache, TerrainGenerator } from "../terrain-generation";
 import { useCanvas } from "./canvas";
 import { useTerrainSprites } from "./renderers/useTerrainSprites";
 import { renderTerrainSpot } from "./renderers/renderTerrainSpot";
+import { ViewportContext } from "./Viewport";
 
 function* coordinates(startX: number, startY: number, endX: number, endY: number, gridSize: number) {
     const columns = (endX - startX) / gridSize;
@@ -17,8 +18,9 @@ function* coordinates(startX: number, startY: number, endX: number, endY: number
     }
 }
 
-export function TerrainGrid(props: { gridSize: number, x: number, y: number, width: number, height: number, terrain: TerrainGenerator, pixelSize: number, center: () => { x: number; y: number; } }) {
-    const { x, y, width, height, terrain, gridSize, pixelSize, center } = props;
+export function TerrainGrid(props: { terrain: TerrainGenerator }) {
+    const { terrain } = props;
+    const { x, y, width, height, center , pixelSize, gridSize} = React.useContext(ViewportContext);
     const terrainCache = React.useMemo(() => new TerrainCache(terrain), [terrain]);
     const sprites = useTerrainSprites();
     const gridWidth = width / pixelSize;
