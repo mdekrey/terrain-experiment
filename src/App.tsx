@@ -5,15 +5,19 @@ import { BindHotKeys } from './components/keymap';
 import { ChildInjector, Scope } from './injector';
 
 const keyMap = {
-  MOVE_LEFT: "left",
-  MOVE_RIGHT: "right",
-  MOVE_UP: "up",
-  MOVE_DOWN: "down",
+  ACTIVATE: "enter"
 };
+
+const continuousMap = {
+  MOVE_LEFT: "ArrowLeft",
+  MOVE_RIGHT: "ArrowRight",
+  MOVE_UP: "ArrowUp",
+  MOVE_DOWN: "ArrowDown",
+}
 
 const App: React.FC = () => {
   return (
-      <BindHotKeys keyMap={keyMap} className="App">
+      <BindHotKeys keyMap={keyMap} continuousMap={continuousMap} className="App" attach={window}>
         <ChildInjector beginScopes={[ Scope.Component ]}>
           <GameContainer />
         </ChildInjector>

@@ -1,1 +1,2 @@
-export type KeymapCommand = "MOVE_LEFT" | "MOVE_RIGHT" | "MOVE_UP" | "MOVE_DOWN";
+export type KeymapCommand = "ACTIVATE";
+export type ContinuousCommand = "MOVE_LEFT" | "MOVE_RIGHT" | "MOVE_UP" | "MOVE_DOWN";
