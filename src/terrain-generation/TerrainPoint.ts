@@ -56,7 +56,7 @@ export class TerrainPoint {
       ? AltitudeCategory.ShallowWater
       : this.altitude < 0.7
       ? AltitudeCategory.None
-      : this.altitude < 0.760
+      : this.altitude < 0.76
       ? AltitudeCategory.Hills
       : AltitudeCategory.Mountain;
   }
@@ -66,20 +66,31 @@ export class TerrainPoint {
       return this.biomeCategory;
     }
     const temp = this.temperatureCategory;
-    const isHills = altitudeCategory === AltitudeCategory.Hills;
-    const isMountain = altitudeCategory === AltitudeCategory.Mountain;
-    const isSnowy =
+    if (
+      altitudeCategory === AltitudeCategory.DeepWater ||
+      altitudeCategory === AltitudeCategory.ShallowWater
+    ) {
+      return temp === TemperatureCategory.Polar ? "Ice" : altitudeCategory;
+    }
+    if (this.altitude < this.feature) {
+      return this.biomeCategory;
+    }
+    if (
       temp === TemperatureCategory.Boreal ||
       temp === TemperatureCategory.Subpolar ||
-      temp === TemperatureCategory.Polar;
-    return isSnowy && isHills ? "SnowyHill"
-      : isSnowy && isMountain ? "SnowyMountain"
-      : temp === TemperatureCategory.Polar ? "Ice"
-      : isHills ? "Hills"
-      : isMountain ? "Mountain"
-      : altitudeCategory;
+      temp === TemperatureCategory.Polar
+    ) {
+      return altitudeCategory === AltitudeCategory.Hills
+        ? "SnowyHill"
+        : "SnowyMountain";
+    }
+    return altitudeCategory;
   }
   get hasCave() {
-    return (this.altitudeCategory === AltitudeCategory.Hills || this.altitudeCategory === AltitudeCategory.None) && this.feature > 0.995;
+    return (
+      (this.altitudeCategory === AltitudeCategory.Hills ||
+        this.altitudeCategory === AltitudeCategory.None) &&
+      this.feature > 0.995
+    );
   }
 }
