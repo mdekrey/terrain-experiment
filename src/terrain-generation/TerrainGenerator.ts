@@ -2,6 +2,7 @@ import { TerrainSettings } from "./TerrainSettings";
 import { AnyDirectionGenerator, initializePerlin, initializeRidgedMulti } from "./PerlinAnyDirection";
 import { clamp } from "../utils/clamp";
 import { TerrainPoint } from "./TerrainPoint";
+import { NonCohesiveNoiseGenerator } from "./NonCohesiveNoiseGenerator";
 
 const clamper = clamp(0, 1 - Number.EPSILON);
 const toValidRange = (v: number) => {
@@ -27,13 +28,7 @@ export class TerrainGenerator {
       seed: 3200
     })
   });
-  private readonly feature = new AnyDirectionGenerator({
-    generator: initializePerlin({
-      lacunarity: 3.2,
-      frequency: 0.7,
-      seed: 640
-    })
-  });
+  private readonly feature = new NonCohesiveNoiseGenerator(670);
   private readonly terrainSettings: TerrainSettings;
 
   constructor(terrainSettings: TerrainSettings) {
@@ -49,10 +44,7 @@ export class TerrainGenerator {
       toValidRange(this.humidity.getValue(x, y)),
       heat
     );
-    const feature = this.terrainSettings.humidityCurve(
-      toValidRange(this.feature.getValue(x, y)),
-      heat
-    );
+    const feature = this.feature.getValue(x, y, 0);
 
     return new TerrainPoint(
       this.terrainSettings,

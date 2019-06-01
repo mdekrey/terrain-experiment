@@ -2,24 +2,24 @@ import dw4Tiles from "../../images/dw4-world-sprites.png";
 import { BiomeCategory, AltitudeCategory, VisualTerrainType } from "../../terrain-generation";
 import { SpriteDefinition, useSpritelookup } from "../canvas";
 
-const dw4Ocean =  { image: dw4Tiles, coords: [{ x: 160, y: 224 }] };
-const dw4Pool =  { image: dw4Tiles, coords: [{ x: 0, y: 48 }] };
-const dw4Desert =  { image: dw4Tiles, coords: [{ x: 144, y: 0 }] };
-const dw4Plains =  { image: dw4Tiles, coords: [{ x: 0, y: 128 }] };
-const dw4Bushes =  { image: dw4Tiles, coords: [{ x: 48, y: 128 }] };
-const dw4SnowyBushes =  { image: dw4Tiles, coords: [{ x: 208, y: 160 }] };
-const dw4SnowyPlains =  { image: dw4Tiles, coords: [{ x: 208, y: 144 }] };
-const dw4SnowyTwoTrees =  { image: dw4Tiles, coords: [{ x: 224, y: 144 }] };
+const dw4Ocean = { image: dw4Tiles, coords: [{ x: 160, y: 224 }] };
+const dw4Pool = { image: dw4Tiles, coords: [{ x: 0, y: 48 }] };
+const dw4Desert = { image: dw4Tiles, coords: [{ x: 144, y: 0 }] };
+const dw4Plains = { image: dw4Tiles, coords: [{ x: 0, y: 128 }] };
+const dw4Bushes = { image: dw4Tiles, coords: [{ x: 48, y: 128 }] };
+const dw4SnowyBushes = { image: dw4Tiles, coords: [{ x: 208, y: 160 }] };
+const dw4SnowyPlains = { image: dw4Tiles, coords: [{ x: 208, y: 144 }] };
+const dw4SnowyTwoTrees = { image: dw4Tiles, coords: [{ x: 224, y: 144 }] };
 const dw4Clouds = { image: dw4Tiles, coords: [{ x: 240, y: 96 }] };
 const dw4SingleDeciduousTree = { image: dw4Tiles, coords: [{ x: 0, y: 192 }] };
-const dw4GreenTwoTrees =  { image: dw4Tiles, coords: [{ x: 144, y: 128 }] };
-const dw4GreenSomething =  { image: dw4Tiles, coords: [{ x: 208, y: 32 }] };
-
-const dw4GreenHill =  { image: dw4Tiles, coords: [{ x: 48, y: 192 }] };
-const dw4GreenMountain =  { image: dw4Tiles, coords: [{ x: 96, y: 128 }] };
-const dw4SnowyHill =  { image: dw4Tiles, coords: [{ x: 224, y: 160 }] };
-const dw4SnowyMountain =  { image: dw4Tiles, coords: [{ x: 240, y: 144 }] };
-const dw4Ice =  { image: dw4Tiles, coords: [{ x: 208, y: 176 }] };
+const dw4GreenTwoTrees = { image: dw4Tiles, coords: [{ x: 144, y: 128 }] };
+const dw4GreenSomething = { image: dw4Tiles, coords: [{ x: 208, y: 32 }] };
+const dw4GreenHill = { image: dw4Tiles, coords: [{ x: 48, y: 192 }] };
+const dw4GreenMountain = { image: dw4Tiles, coords: [{ x: 96, y: 128 }] };
+const dw4SnowyHill = { image: dw4Tiles, coords: [{ x: 224, y: 160 }] };
+const dw4SnowyMountain = { image: dw4Tiles, coords: [{ x: 240, y: 144 }] };
+const dw4Ice = { image: dw4Tiles, coords: [{ x: 208, y: 176 }] };
+const dw4Cave = { image: dw4Tiles, coords: [{ x: 448, y: 176 }] };
 
 
 
@@ -44,6 +44,7 @@ const color: Record<VisualTerrainType, string> = {
     "SnowyMountain": "white",
     "Hills": "grey",
     "Mountain": "grey",
+    "Cave": "transparent"
 }
 
 const terrainSpriteDefinitions: Record<VisualTerrainType, SpriteDefinition> = {
@@ -67,6 +68,7 @@ const terrainSpriteDefinitions: Record<VisualTerrainType, SpriteDefinition> = {
     "Hills": { ...dw4GreenHill, fallbackColor: color["Hills"] },
     "Mountain": { ...dw4GreenMountain, fallbackColor: color["Mountain"] },
     "Ice": { ...dw4Ice, fallbackColor: color["Ice"] },
+    "Cave": { ...dw4Cave, fallbackColor: color["Cave"] },
 }
 
 export function useTerrainSprites() {

@@ -79,4 +79,7 @@ export class TerrainPoint {
       : isMountain ? "Mountain"
       : altitudeCategory;
   }
+  get hasCave() {
+    return (this.altitudeCategory === AltitudeCategory.Hills || this.altitudeCategory === AltitudeCategory.None) && this.feature > 0.995;
+  }
 }
