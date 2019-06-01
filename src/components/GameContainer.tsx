@@ -45,7 +45,7 @@ export function GameContainer() {
                     facing = Direction.Down;
                     break;
             }
-            player.moveTo({ x: centerX, y: centerY }, facing, 500);
+            player.moveTo({ x: centerX, y: centerY }, facing, 250);
         }, [player, gridSize])
     useSubscription(useCommand("MOVE_LEFT"), React.useCallback(() => dispatch("left"), [dispatch]));
     useSubscription(useCommand("MOVE_RIGHT"), React.useCallback(() => dispatch("right"), [dispatch]));

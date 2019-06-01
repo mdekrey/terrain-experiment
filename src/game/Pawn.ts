@@ -1,18 +1,14 @@
 import { GameCoordinates, interpolate } from "./GameCoordinates";
 import { Interpolated, makeInterpolated, isInterpolated } from "./Interpolated";
-
-export enum Direction {
-    Up,
-    Down,
-    Right,
-    Left
-}
+import { Direction } from "./Direction";
+import { PawnType } from "./PawnType";
 
 export class Pawn {
 
     private _position: GameCoordinates | Interpolated<GameCoordinates> = { x: 0, y: 0};
 
     facing: Direction = Direction.Down;
+    type: PawnType = PawnType.Hero;
 
 
     moveTo(target: GameCoordinates, facing: Direction, delay: number = 0) {

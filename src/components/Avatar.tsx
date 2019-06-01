@@ -6,7 +6,7 @@ import { ViewportContext } from "./Viewport";
 
 export function Avatar({ pawn, frameDelay }: { pawn: Pawn, frameDelay: number }) {
     const originalNow = React.useMemo(() => Date.now(), []);
-    const sprites = useAvatarSprites();
+    const sprites = useAvatarSprites(pawn.type);
     const { x, y, width, height, center, pixelSize, gridSize } = React.useContext(ViewportContext);
     const screenCenterX = x + (width / 2);
     const screenCenterY = y + (height / 2);
