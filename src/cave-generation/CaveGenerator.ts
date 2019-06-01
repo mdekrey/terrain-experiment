@@ -1,5 +1,5 @@
 import { Perlin } from "libnoise-ts/module/generator";
-import { GameCoordinates } from "../game/GameCoordinates";
+import { GameCoordinates, eightDirections, addCoordinates, fourDirections } from "../game/GameCoordinates";
 
 const deathLimit = 3;
 const birthLimit = 4;
@@ -22,26 +22,21 @@ export class CaveGenerator {
 
         this.result = new Promise<Cave>((resolve, reject) => {
             let map = Array.from(Array(height).keys()).map((_, y) => Array.from(Array(width).keys()).map((_, x) => random(x, y)));
-            const v = map.reduce((prev, next) => [...prev, ...next], []);
             let count = 0;
+            let filled = false;
 
-            function countAliveNeighbours(x: number, y: number){
+            function countAliveNeighbours(position: GameCoordinates){
                 let count = 0;
-                for(let i = -1; i < 2; i++){
-                    for(let j = -1; j < 2; j++){
-                        const nb_x = i+x;
-                        const nb_y = j+y;
-                        if(i == 0 && j == 0){
-                        }
-                        //If it's at the edges, consider it to be REALLY solid
-                        else if(nb_x < 0 || nb_y < 0 ||
-                                nb_x >= map.length ||
-                                nb_y >= map[0].length){
-                            count = count + 2;
-                        }
-                        else if(map[nb_y][nb_x]){
-                            count = count + 1;
-                        }
+                for (const dir of eightDirections) {
+                    const {x: nb_x, y: nb_y} = addCoordinates(dir, position);
+                    //If it's at the edges, consider it to be REALLY solid
+                    if(nb_x < 0 || nb_y < 0 ||
+                            nb_x >= map.length ||
+                            nb_y >= map[0].length){
+                        count = count + 2;
+                    }
+                    else if(map[nb_y][nb_x]){
+                        count = count + 1;
                     }
                 }
                 return count;
@@ -49,7 +44,7 @@ export class CaveGenerator {
 
             function doSimulationStep() {
                 map = map.map((_, y) => _.map((currentCell, x) => {
-                    const nbs = countAliveNeighbours(x, y);
+                    const nbs = countAliveNeighbours({x, y});
                     if (currentCell) {
                         return nbs >= deathLimit;
                     } else {
@@ -60,19 +55,62 @@ export class CaveGenerator {
 
             function findTreasure() {
                 return map.map((_, y) => _.map((currentCell, x): (false | GameCoordinates) => {
-                    const nbs = countAliveNeighbours(x, y);
+                    const nbs = countAliveNeighbours({x, y});
                     return !currentCell && nbs >= treasureLimit ? { x, y } : false;
                 })).reduce((prev, next) => [...prev, ...next], []).filter((v): v is GameCoordinates => Boolean(v));
+            }
+
+            function fillSmallerAreas() {
+                const areas = new Map<Symbol, number>();
+                const currentAreas: Symbol[][] = map.map(_ => []);
+
+                function floodFill(startX: number, startY: number) {
+                    const symbol = Symbol();
+                    let count = 0;
+                    const queue = [{x: startX, y: startY}];
+                    let n: GameCoordinates | undefined;
+                    while (n = queue.pop()) {
+                        for (const dir of fourDirections) {
+                            const {x, y} = addCoordinates(n, dir);
+                            if (!map[y][x] && !currentAreas[y][x]) {
+                                count++;
+                                currentAreas[y][x] = symbol;
+                                queue.push({ x, y });
+                            }
+                        }
+                    }
+                    areas.set(symbol, count);
+                }
+
+                for (let y = 0; y < map.length; y++) {
+                    for (let x = 0; x < map[y].length; x++) {
+                        if (!map[y][x] && !currentAreas[y][x]) {
+                            floodFill(x, y);
+                        }
+                    }
+                }
+                const topSymbol = Array.from(areas.keys()).sort((a, b) => areas.get(b)! - areas.get(a)!)[0];
+
+                for (let y = 0; y < map.length; y++) {
+                    for (let x = 0; x < map[y].length; x++) {
+                        if (currentAreas[y][x] !== topSymbol) {
+                            map[y][x] = true;
+                        }
+                    }
+                }
             }
 
             function step() {
                 if (count++ < normalizationRounds) {
                     doSimulationStep();
-                    setTimeout(step);
+                } else if (!filled) {
+                    fillSmallerAreas();
+                    filled = true;
                 } else {
-
                     resolve({ isSolid: map, treasure: findTreasure() });
+                    return;
                 }
+                setTimeout(step);
             }
 
             setTimeout(step)
@@ -83,7 +121,11 @@ export class CaveGenerator {
         return this.result.then(cave => cave.isSolid);
     }
 
+    get entrance() {
+        return this.result.then(cave => cave.treasure[0]);
+    }
+
     get treasure() {
-        return this.result.then(cave => cave.treasure);
+        return this.result.then(cave => cave.treasure.slice(1));
     }
 }
