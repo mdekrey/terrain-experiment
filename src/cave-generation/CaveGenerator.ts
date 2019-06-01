@@ -5,14 +5,14 @@ const deathLimit = 3;
 const birthLimit = 4;
 const treasureLimit = 5;
 
-interface Cave {
-    isSolid: boolean[][];
-    treasure: GameCoordinates[];
-}
+export interface Cave { isSolid: boolean[][]; treasure: GameCoordinates[]; entrance: GameCoordinates }
 
 export class CaveGenerator {
     private readonly perlin = new Perlin();
-    private readonly result: Promise<Cave>;
+    private readonly result: Promise<{
+        isSolid: boolean[][];
+        treasure: GameCoordinates[];
+    }>;
 
     constructor(seed: number, width: number, height: number, normalizationRounds: number) {
         this.perlin.seed = seed;
@@ -20,7 +20,7 @@ export class CaveGenerator {
 
         const random = (x: number, y: number) => this.perlin.getValue(x, y, 0) < -0.05;
 
-        this.result = new Promise<Cave>((resolve, reject) => {
+        this.result = new Promise((resolve, reject) => {
             let map = Array.from(Array(height).keys()).map((_, y) => Array.from(Array(width).keys()).map((_, x) => random(x, y)));
             let count = 0;
             let filled = false;
@@ -68,8 +68,7 @@ export class CaveGenerator {
                     const symbol = Symbol(`${start.x}x${start.y}`);
                     let count = 0;
                     const queue = [start];
-                    let n: GameCoordinates | undefined;
-                    while (n = queue.pop()) {
+                    for (let n = queue.pop(); n; n = queue.pop()) {
                         for (const dir of fourDirections) {
                             const {x, y} = addCoordinates(n, dir);
                             if (!map[y][x] && !currentAreas[y][x]) {
@@ -106,12 +105,23 @@ export class CaveGenerator {
                 }
             }
 
+            function removeSingleY() {
+                for (let y = 0; y < map.length; y++) {
+                    for (let x = 0; x < map[y].length; x++) {
+                        if (map[y][x] && map[y + 1] && !map[y + 1][x] && map[y - 1] && !map[y - 1][x]) {
+                            map[y][x] = false;
+                        }
+                    }
+                }
+            }
+
             function step() {
                 if (count++ < normalizationRounds) {
                     doSimulationStep();
                 } else if (!filled) {
                     fillSmallerAreas();
                     filled = true;
+                    removeSingleY();
                 } else {
                     resolve({ isSolid: map, treasure: findTreasure() });
                     return;
@@ -123,15 +133,12 @@ export class CaveGenerator {
         });
     }
 
-    get map() {
-        return this.result.then(cave => cave.isSolid);
-    }
+    get cave() {
+        return this.result.then(cave => ({
+            isSolid: cave.isSolid,
+            entrance: cave.treasure[0],
+            treasure: cave.treasure.slice(1)
+        }));
 
-    get entrance() {
-        return this.result.then(cave => cave.treasure[0]);
-    }
-
-    get treasure() {
-        return this.result.then(cave => cave.treasure.slice(1));
     }
 }

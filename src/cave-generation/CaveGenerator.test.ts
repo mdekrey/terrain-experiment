@@ -2,11 +2,12 @@ import { CaveGenerator } from "./CaveGenerator";
 import { coordinatesEqual } from "../game/GameCoordinates";
 
 it("generates some terrain", async () => {
-  const cave = new CaveGenerator(0, 50, 50, 2);
+  const caveGenerator = new CaveGenerator(0, 50, 50, 2);
 
-  const map = await cave.map;
-  const treasure = await cave.treasure;
-  const entrance = await cave.entrance;
+  const cave = await caveGenerator.cave;
+  const map = cave.isSolid;
+  const treasure = cave.treasure;
+  const entrance = cave.entrance;
   const mapDisplay = map
     .map((row, y) =>
       row
