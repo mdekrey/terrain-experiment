@@ -64,10 +64,10 @@ export class CaveGenerator {
                 const areas = new Map<Symbol, number>();
                 const currentAreas: Symbol[][] = map.map(_ => []);
 
-                function floodFill(startX: number, startY: number) {
-                    const symbol = Symbol();
+                function floodFill(start: GameCoordinates) {
+                    const symbol = Symbol(`${start.x}x${start.y}`);
                     let count = 0;
-                    const queue = [{x: startX, y: startY}];
+                    const queue = [start];
                     let n: GameCoordinates | undefined;
                     while (n = queue.pop()) {
                         for (const dir of fourDirections) {
@@ -80,16 +80,22 @@ export class CaveGenerator {
                         }
                     }
                     areas.set(symbol, count);
+                    return { symbol, count };
                 }
 
-                for (let y = 0; y < map.length; y++) {
-                    for (let x = 0; x < map[y].length; x++) {
+                const threshold = width * height / 4;
+                let shortcutSymbol: Symbol | undefined;
+                for (let y = 0; y < map.length && !shortcutSymbol; y++) {
+                    for (let x = 0; x < map[y].length && !shortcutSymbol; x++) {
                         if (!map[y][x] && !currentAreas[y][x]) {
-                            floodFill(x, y);
+                            const { symbol, count } = floodFill({x, y});
+                            if (count > threshold) {
+                                shortcutSymbol = symbol;
+                            }
                         }
                     }
                 }
-                const topSymbol = Array.from(areas.keys()).sort((a, b) => areas.get(b)! - areas.get(a)!)[0];
+                const topSymbol = shortcutSymbol || Array.from(areas.keys()).sort((a, b) => areas.get(b)! - areas.get(a)!)[0];
 
                 for (let y = 0; y < map.length; y++) {
                     for (let x = 0; x < map[y].length; x++) {
