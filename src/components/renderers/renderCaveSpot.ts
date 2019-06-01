@@ -40,7 +40,7 @@ export function renderCaveSpot({ cave, screenX: x, screenY: y, context, pixelSiz
 
     const sprite = sprites[caveSpotType(caveX, caveY)];
     const frame = Math.abs(caveX + caveY) % sprite.frameCount;
-    sprite.render(0, context, x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+    sprite.render(frame, context, x * pixelSize, y * pixelSize, pixelSize, pixelSize);
     if (cave.entrance.x === caveX && cave.entrance.y === caveY) {
         sprites[CaveSpotType.Stairway].render(0, context, x * pixelSize, y * pixelSize, pixelSize, pixelSize);
     }

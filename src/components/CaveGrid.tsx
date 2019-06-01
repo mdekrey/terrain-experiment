@@ -23,9 +23,9 @@ export function CaveGrid(cave: Cave) {
 
     useCanvas(React.useCallback(context => {
         const { x: centerX, y: centerY } = center();
-        const leftX = centerX / gridSize - gridWidth / 2;
+        const leftX = (centerX - cave.offset.x) / gridSize - gridWidth / 2;
         const offsetX = Math.floor(leftX) - leftX;
-        const topY = centerY / gridSize - gridHeight / 2;
+        const topY = (centerY - cave.offset.y) / gridSize - gridHeight / 2;
         const offsetY = Math.floor(topY) - topY;
         const startX = Math.floor(leftX);
         const startY = Math.floor(topY);

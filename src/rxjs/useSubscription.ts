@@ -1,5 +1,5 @@
-import { Observable, Subject, combineLatest } from "rxjs";
-import { switchAll } from "rxjs/operators";
+import { Observable, Subject } from "rxjs";
+import { switchAll, withLatestFrom } from "rxjs/operators";
 import { useEffect, useMemo } from "react";
 
 export const useSubscription = <T>(
@@ -10,10 +10,12 @@ export const useSubscription = <T>(
   const observer$ = useMemo(() => new Subject<(data: T) => void>(), []);
 
   useEffect(() => {
-    const subscription = combineLatest(
-      observable$.pipe(switchAll()),
-      observer$
-    ).subscribe(([value, observer]) => observer(value));
+    const subscription = observable$
+      .pipe(
+        switchAll(),
+        withLatestFrom(observer$)
+      )
+      .subscribe(([value, observer]) => observer(value));
     return () => subscription.unsubscribe();
   }, [observable$, observer$]);
 

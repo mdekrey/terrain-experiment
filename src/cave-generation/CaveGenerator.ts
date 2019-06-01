@@ -11,6 +11,7 @@ const birthLimit = 4;
 const treasureLimit = 5;
 
 export interface Cave {
+  offset: GameCoordinates;
   isSolid: boolean[][];
   treasure: GameCoordinates[];
   entrance: GameCoordinates;
@@ -22,15 +23,18 @@ export class CaveGenerator {
     isSolid: boolean[][];
     treasure: GameCoordinates[];
   }>;
+  private readonly offset: GameCoordinates;
 
   constructor(
     seed: number,
     width: number,
     height: number,
-    normalizationRounds: number
+    normalizationRounds: number,
+    offset: GameCoordinates
   ) {
     this.perlin.seed = seed;
     this.perlin.lacunarity = 3.4;
+    this.offset = offset;
 
     const random = (x: number, y: number) =>
       this.perlin.getValue(x, y, 0) < -0.05;
@@ -175,7 +179,8 @@ export class CaveGenerator {
     return this.result.then(cave => ({
       isSolid: cave.isSolid,
       entrance: cave.treasure[0],
-      treasure: cave.treasure.slice(1)
+      treasure: cave.treasure.slice(1),
+      offset: this.offset
     }));
   }
 }

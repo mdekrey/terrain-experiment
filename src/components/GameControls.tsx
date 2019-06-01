@@ -43,10 +43,5 @@ export function GameControls() {
     useSubscription(useCommand("MOVE_UP"), React.useCallback(() => dispatch("up"), [dispatch]));
     useSubscription(useCommand("MOVE_DOWN"), React.useCallback(() => dispatch("down"), [dispatch]));
 
-    return <>
-        <button onClick={() => dispatch("left")}>Left</button>
-        <button onClick={() => dispatch("down")}>Down</button>
-        <button onClick={() => dispatch("up")}>Up</button>
-        <button onClick={() => dispatch("right")}>Right</button>
-    </>;
+    return null;
 }
