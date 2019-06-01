@@ -40,7 +40,7 @@ export class Game {
         if (this.playerPawn.isDoneMoving()) {
             const position = this.playerPawn.position();
             this.gameMode$.next({ mode: "Loading" });
-            const gen = new CaveGenerator(50000, 50, 50, 2, position);
+            const gen = new CaveGenerator(Math.random() * 100000, 50, 50, 2, position);
             const cave = await gen.cave;
             this.playerPawn.moveTo(addCoordinates(position, { x: cave.entrance.x / this.localZoom, y: cave.entrance.y / this.localZoom }), Direction.Down);
             this.gameMode$.next({ mode: "Cave", cave });
