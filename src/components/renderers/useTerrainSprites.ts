@@ -1,19 +1,23 @@
-import dw4tiles from "../../images/dw4-world-sprites.png";
-import { BiomeCategory } from "../../terrain-generation";
+import dw4Tiles from "../../images/dw4-world-sprites.png";
+import { BiomeCategory, WaterCategory, VisualTerrainType } from "../../terrain-generation";
 import { SpriteDefinition, useSpritelookup } from "../canvas";
 
-const dw4desert =  { image: dw4tiles, coords: [{ x: 144, y: 0 }] };
-const dw4plains =  { image: dw4tiles, coords: [{ x: 0, y: 128 }] };
-const dw4bushes =  { image: dw4tiles, coords: [{ x: 48, y: 128 }] };
-const dw4snowyBushes =  { image: dw4tiles, coords: [{ x: 208, y: 160 }] };
-const dw4snowyPlains =  { image: dw4tiles, coords: [{ x: 208, y: 144 }] };
-const dw4snowyTwoTrees =  { image: dw4tiles, coords: [{ x: 224, y: 144 }] };
-const dw4clouds = { image: dw4tiles, coords: [{ x: 240, y: 96 }] };
-const dw4singleDeciduousTree = { image: dw4tiles, coords: [{ x: 0, y: 192 }] };
-const dw4greenTwoTrees =  { image: dw4tiles, coords: [{ x: 144, y: 128 }] };
-const dw4greenSomething =  { image: dw4tiles, coords: [{ x: 208, y: 32 }] };
+const dw4Ocean =  { image: dw4Tiles, coords: [{ x: 160, y: 224 }] };
+const dw4Pool =  { image: dw4Tiles, coords: [{ x: 0, y: 48 }] };
+const dw4Desert =  { image: dw4Tiles, coords: [{ x: 144, y: 0 }] };
+const dw4Plains =  { image: dw4Tiles, coords: [{ x: 0, y: 128 }] };
+const dw4Bushes =  { image: dw4Tiles, coords: [{ x: 48, y: 128 }] };
+const dw4SnowyBushes =  { image: dw4Tiles, coords: [{ x: 208, y: 160 }] };
+const dw4SnowyPlains =  { image: dw4Tiles, coords: [{ x: 208, y: 144 }] };
+const dw4SnowyTwoTrees =  { image: dw4Tiles, coords: [{ x: 224, y: 144 }] };
+const dw4Clouds = { image: dw4Tiles, coords: [{ x: 240, y: 96 }] };
+const dw4SingleDeciduousTree = { image: dw4Tiles, coords: [{ x: 0, y: 192 }] };
+const dw4GreenTwoTrees =  { image: dw4Tiles, coords: [{ x: 144, y: 128 }] };
+const dw4GreenSomething =  { image: dw4Tiles, coords: [{ x: 208, y: 32 }] };
 
-const color: Record<BiomeCategory, string> = {
+const color: Record<VisualTerrainType, string> = {
+    [WaterCategory.DeepWater]: "#000088",
+    [WaterCategory.ShallowWater]: "blue",
     [BiomeCategory.Ice]: "white",
     [BiomeCategory.Tundra]: "rgb(15,59,59)",
     [BiomeCategory.ColdParklands]: "rgb(144,144,122)",
@@ -29,20 +33,22 @@ const color: Record<BiomeCategory, string> = {
     [BiomeCategory.TropicalRainForests]: "rgb(28, 178, 66)",
 }
 
-const terrainSpriteDefinitions: Record<BiomeCategory, SpriteDefinition> = {
-    [BiomeCategory.HotDeserts]: { ...dw4desert, fallbackColor: color[BiomeCategory.HotDeserts] },
-    [BiomeCategory.CoolDeserts]: { ...dw4plains, fallbackColor: color[BiomeCategory.CoolDeserts] },
-    [BiomeCategory.Steppes]: { ...dw4bushes, fallbackColor: color[BiomeCategory.Steppes] },
-    [BiomeCategory.Chaparral]: { ...dw4bushes, fallbackColor: color[BiomeCategory.Chaparral] },
-    [BiomeCategory.ColdParklands]: { ...dw4snowyBushes, fallbackColor: color[BiomeCategory.ColdParklands] },
-    [BiomeCategory.Tundra]: { ...dw4snowyPlains, fallbackColor: color[BiomeCategory.Tundra] },
-    [BiomeCategory.ConiferousForests]: { ...dw4snowyTwoTrees, fallbackColor: color[BiomeCategory.ConiferousForests] },
-    [BiomeCategory.Ice]: { ...dw4clouds, fallbackColor: color[BiomeCategory.Ice] },
-    [BiomeCategory.Savanna]: { ...dw4plains, fallbackColor: color[BiomeCategory.Savanna] },
-    [BiomeCategory.TropicalSeasonalForests]: { ...dw4greenSomething, fallbackColor: color[BiomeCategory.TropicalSeasonalForests] },
-    [BiomeCategory.TropicalRainForests]: { ...dw4greenSomething, fallbackColor: color[BiomeCategory.TropicalRainForests] },
-    [BiomeCategory.DeciduousForests]: { ...dw4singleDeciduousTree, fallbackColor: color[BiomeCategory.DeciduousForests] },
-    [BiomeCategory.MixedForests]: { ...dw4greenTwoTrees, fallbackColor: color[BiomeCategory.MixedForests] }
+const terrainSpriteDefinitions: Record<VisualTerrainType, SpriteDefinition> = {
+    [WaterCategory.DeepWater]: { ...dw4Ocean, fallbackColor: color[WaterCategory.DeepWater] },
+    [WaterCategory.ShallowWater]: { ...dw4Pool, fallbackColor: color[WaterCategory.ShallowWater] },
+    [BiomeCategory.HotDeserts]: { ...dw4Desert, fallbackColor: color[BiomeCategory.HotDeserts] },
+    [BiomeCategory.CoolDeserts]: { ...dw4Plains, fallbackColor: color[BiomeCategory.CoolDeserts] },
+    [BiomeCategory.Steppes]: { ...dw4Bushes, fallbackColor: color[BiomeCategory.Steppes] },
+    [BiomeCategory.Chaparral]: { ...dw4Bushes, fallbackColor: color[BiomeCategory.Chaparral] },
+    [BiomeCategory.ColdParklands]: { ...dw4SnowyBushes, fallbackColor: color[BiomeCategory.ColdParklands] },
+    [BiomeCategory.Tundra]: { ...dw4SnowyPlains, fallbackColor: color[BiomeCategory.Tundra] },
+    [BiomeCategory.ConiferousForests]: { ...dw4SnowyTwoTrees, fallbackColor: color[BiomeCategory.ConiferousForests] },
+    [BiomeCategory.Ice]: { ...dw4Clouds, fallbackColor: color[BiomeCategory.Ice] },
+    [BiomeCategory.Savanna]: { ...dw4Plains, fallbackColor: color[BiomeCategory.Savanna] },
+    [BiomeCategory.TropicalSeasonalForests]: { ...dw4GreenSomething, fallbackColor: color[BiomeCategory.TropicalSeasonalForests] },
+    [BiomeCategory.TropicalRainForests]: { ...dw4GreenSomething, fallbackColor: color[BiomeCategory.TropicalRainForests] },
+    [BiomeCategory.DeciduousForests]: { ...dw4SingleDeciduousTree, fallbackColor: color[BiomeCategory.DeciduousForests] },
+    [BiomeCategory.MixedForests]: { ...dw4GreenTwoTrees, fallbackColor: color[BiomeCategory.MixedForests] }
 }
 
 export function useTerrainSprites() {

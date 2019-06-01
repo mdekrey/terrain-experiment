@@ -8,9 +8,7 @@ import { ViewportContext } from "./Viewport";
 function* coordinates(startX: number, startY: number, endX: number, endY: number, gridSize: number) {
     const columns = (endX - startX) / gridSize;
     const rows = (endY - startY) / gridSize;
-    // console.log(columns, rows);
 
-    // return;
     for (let x = 0; x < columns; x++) {
         for (let y = 0; y < rows; y++) {
             yield { screenX: x, screenY: y, terrainX: x * gridSize + startX, terrainY: y * gridSize + startY }
@@ -25,7 +23,6 @@ export function TerrainGrid(props: { terrain: TerrainGenerator }) {
     const sprites = useTerrainSprites();
     const gridWidth = width / pixelSize;
     const gridHeight = height / pixelSize;
-    // console.log(gridWidth, gridHeight);
 
     useCanvas(React.useCallback(context => {
         const { x: centerX, y: centerY } = center();
@@ -38,7 +35,6 @@ export function TerrainGrid(props: { terrain: TerrainGenerator }) {
         const endX = Math.ceil(leftX + gridWidth) * gridSize;
         const endY = Math.ceil(topY + gridHeight) * gridSize;
 
-        // console.log(startX, startY, endX, endY);
         for (const { screenX, screenY, terrainX, terrainY } of coordinates(startX, startY, endX, endY, gridSize)) {
             const terrain = terrainCache.getAt(terrainX, terrainY);
             renderTerrainSpot({ x: x + screenX + offsetX, y: y + screenY + offsetY, pixelSize, context, terrain, sprites });

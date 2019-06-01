@@ -38,4 +38,8 @@ export class TerrainPoint {
         ? WaterCategory.ShallowWater
         : WaterCategory.None;
   }
+  get visualCategory() {
+    const waterCategory = this.waterCategory;
+    return waterCategory === WaterCategory.None ? this.biomeCategory : waterCategory;
+  }
 }

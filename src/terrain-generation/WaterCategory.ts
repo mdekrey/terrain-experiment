@@ -1,5 +1,5 @@
 export enum WaterCategory {
-    None,
-  ShallowWater,
-  DeepWater
+    None = "None",
+    ShallowWater = "ShallowWater",
+    DeepWater = "DeepWater"
 }
