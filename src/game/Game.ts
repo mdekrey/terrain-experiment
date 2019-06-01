@@ -5,6 +5,7 @@ import { Cave, CaveGenerator } from "../cave-generation";
 import { BehaviorSubject } from "rxjs";
 import { addCoordinates } from "./GameCoordinates";
 import { Direction } from "./Direction";
+import { PawnType } from "./PawnType";
 
 export interface OverworldGameMode {
     mode: "Overworld";
@@ -27,6 +28,7 @@ export class Game {
     readonly terrainGenerator: TerrainGenerator;
     readonly playerPawn: Pawn;
     readonly gameMode$ = new BehaviorSubject<GameMode>({ mode: "Overworld" })
+    readonly otherPlayers: Pawn[];
 
     readonly overworldZoom = Math.pow(10, zoomExp) * 4;
     readonly localZoom = Math.pow(10, zoomExp + 2) * 4;
@@ -34,6 +36,15 @@ export class Game {
     constructor(settings: TerrainSettings, playerPawn: Pawn) {
         this.terrainGenerator = new TerrainGenerator(settings);
         this.playerPawn = playerPawn;
+
+        const types = Object.values(PawnType);
+        const generatePlayer = () => {
+            const result = new Pawn();
+            result.moveTo({ x: Math.floor((Math.random() - 0.5) * 50) / this.overworldZoom, y: Math.floor((Math.random() - 0.5) * 50) / this.overworldZoom }, Math.floor(Math.random() * 4));
+            result.type = types[Math.floor(Math.random() * types.length)];
+            return result;
+        }
+        this.otherPlayers = [generatePlayer(), generatePlayer(), generatePlayer(), generatePlayer()];
     }
 
     async enterCave() {
