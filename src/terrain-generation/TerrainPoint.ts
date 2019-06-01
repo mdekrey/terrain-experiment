@@ -56,7 +56,7 @@ export class TerrainPoint {
       ? AltitudeCategory.ShallowWater
       : this.altitude < 0.7
       ? AltitudeCategory.None
-      : this.altitude < 0.85
+      : this.altitude < 0.760
       ? AltitudeCategory.Hills
       : AltitudeCategory.Mountain;
   }
