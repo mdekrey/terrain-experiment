@@ -1,5 +1,5 @@
 import { Perlin } from "libnoise-ts/module/generator";
-import { clamp } from "./clamp";
+import { clamp } from "../utils/clamp";
 
 export class PerlinAnyDirection {
   private static clamp = clamp(0, 1);

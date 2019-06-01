@@ -8,6 +8,7 @@ it("generates some terrain", () => {
     const microsteps = 5;
 
     const noise = Array.from(Array(microsteps + 1).keys()).map(i => i / microsteps * step).map(v => terrain.getTerrain(0, v))
-    console.log(noise);
+    // console.log(noise);
 
+    // TODO
 });

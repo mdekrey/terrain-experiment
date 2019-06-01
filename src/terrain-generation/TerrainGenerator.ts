@@ -1,6 +1,6 @@
 import { TerrainSettings } from "./TerrainSettings";
 import { PerlinAnyDirection } from "./PerlinAnyDirection";
-import { clamp } from "./clamp";
+import { clamp } from "../utils/clamp";
 import { TerrainPoint } from "./TerrainPoint";
 
 const clamper = clamp(0, 1 - Number.EPSILON);
