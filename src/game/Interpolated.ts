@@ -1,6 +1,6 @@
 
 export interface Interpolated<T> {
-    readonly value: T;
+    value(): T;
     readonly isComplete: boolean;
 }
 
@@ -22,7 +22,7 @@ class InterpolatedImpl<T> implements Interpolated<T> {
         this.interpolate = interpolate;
     }
 
-    get value() {
+    value() {
         const now = Date.now();
         if (now > this.endTime) {
             return this.endValue;
@@ -40,7 +40,7 @@ export function makeInterpolated<T>(startValue: T): Interpolated<T>;
 export function makeInterpolated<T>(startValue: T, endValue: T, startTime: number, endTime: number, interpolate: (factor: number, start: T, end: T) => T): Interpolated<T>;
 export function makeInterpolated<T>(startValue: T, endValue?: T, startTime?: number, endTime?: number, interpolate?: (factor: number, start: T, end: T) => T): Interpolated<T> {
     if (arguments.length === 1) {
-        return { value: startValue, isComplete: true };
+        return { value: () => startValue, isComplete: true };
     }
     return new InterpolatedImpl(startValue, endValue!, startTime!, endTime!, interpolate!);
 }

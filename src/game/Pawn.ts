@@ -24,6 +24,6 @@ export class Pawn {
     }
 
     position(): GameCoordinates {
-        return isInterpolated(this._position) ? this._position.value : this._position;
+        return isInterpolated(this._position) ? this._position.value() : this._position;
     }
 }

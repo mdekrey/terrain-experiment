@@ -17,8 +17,8 @@ const dw4Stairway =  { image: dw4Tiles, coords: [{ x: 448, y: 48 }] };
 const dw4Treasure =  { image: dw4Tiles, coords: [{ x: 416, y: 144 }] };
 
 const caveSpriteDefinitions: Record<CaveSpotType, SpriteDefinition> = {
-    [CaveSpotType.Ceiling]: { ...dw4CaveCeiling, fallbackColor: "#000000" },
-    [CaveSpotType.Wall]: { ...dw4CaveWall, fallbackColor: "#000000" },
+    [CaveSpotType.Ceiling]: { ...dw4CaveCeiling, fallbackColor: "rgb(244, 174, 92)" },
+    [CaveSpotType.Wall]: { ...dw4CaveWall, fallbackColor: "rgb(228, 110, 28)" },
     [CaveSpotType.Open]: { ...dw4Floor, fallbackColor: "#6E2C00" },
     [CaveSpotType.Stairway]: { ...dw4Stairway, fallbackColor: "#6E2C00" },
     [CaveSpotType.Treasure]: { ...dw4Treasure, fallbackColor: "#6E2C00" },
@@ -40,7 +40,7 @@ export function renderCaveSpot({ cave, screenX: x, screenY: y, context, pixelSiz
 
     const sprite = sprites[caveSpotType(caveX, caveY)];
     const frame = Math.abs(caveX + caveY) % sprite.frameCount;
-    sprite.render(frame, context, x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+    sprite.render(0, context, x * pixelSize, y * pixelSize, pixelSize, pixelSize);
     if (cave.entrance.x === caveX && cave.entrance.y === caveY) {
         sprites[CaveSpotType.Stairway].render(0, context, x * pixelSize, y * pixelSize, pixelSize, pixelSize);
     }

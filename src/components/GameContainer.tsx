@@ -12,13 +12,12 @@ import { GameCoordinates } from "../game/GameCoordinates";
 import { CaveGrid } from "./CaveGrid";
 
 const pixelSize = 32;
+const zoomExp = 2;
 export function GameContainer() {
     const player = useService("player");
 
-    const zoomExp = 2;
     // const terrainGenerator = useService("terrainGenerator");
     // const zoom = Math.pow(10, zoomExp) * 4;
-    // const gridSize = 1 / zoom;
 
     let [cave, setCave] = React.useState<Cave>({ isSolid: [] as boolean[][], treasure: [] as GameCoordinates[], entrance: {x: 0, y: 0}})
     React.useMemo(async () => {
@@ -27,10 +26,12 @@ export function GameContainer() {
         setCave(cave);
     }, []);
     React.useEffect(() => {
-        player.moveTo(cave.entrance, Direction.Down);
+        player.moveTo({ x: cave.entrance.x * gridSize, y: cave.entrance.y * gridSize }, Direction.Down);
     }, [cave, player])
-    const gridSize = 1;
+    const zoom = Math.pow(10, zoomExp + 2) * 4;
 
+
+    const gridSize = 1 / zoom;
     const width = 1200;
     const height = 800;
     const p2 = React.useMemo(() => {
