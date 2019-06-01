@@ -1,4 +1,4 @@
 import { BiomeCategory } from "./BiomeCategory";
-import { WaterCategory } from "./WaterCategory";
+import { AltitudeCategory } from "./WaterCategory";
 
-export type VisualTerrainType = BiomeCategory | WaterCategory.ShallowWater | WaterCategory.DeepWater;
+export type VisualTerrainType = BiomeCategory | AltitudeCategory.ShallowWater | AltitudeCategory.DeepWater | "SnowyMountain" | "Mountain" | "SnowyHill" | "Hills" | "Ice";

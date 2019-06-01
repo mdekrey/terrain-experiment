@@ -1,5 +1,5 @@
 import dw4Tiles from "../../images/dw4-world-sprites.png";
-import { BiomeCategory, WaterCategory, VisualTerrainType } from "../../terrain-generation";
+import { BiomeCategory, AltitudeCategory, VisualTerrainType } from "../../terrain-generation";
 import { SpriteDefinition, useSpritelookup } from "../canvas";
 
 const dw4Ocean =  { image: dw4Tiles, coords: [{ x: 160, y: 224 }] };
@@ -15,10 +15,19 @@ const dw4SingleDeciduousTree = { image: dw4Tiles, coords: [{ x: 0, y: 192 }] };
 const dw4GreenTwoTrees =  { image: dw4Tiles, coords: [{ x: 144, y: 128 }] };
 const dw4GreenSomething =  { image: dw4Tiles, coords: [{ x: 208, y: 32 }] };
 
+const dw4GreenHill =  { image: dw4Tiles, coords: [{ x: 48, y: 192 }] };
+const dw4GreenMountain =  { image: dw4Tiles, coords: [{ x: 96, y: 128 }] };
+const dw4SnowyHill =  { image: dw4Tiles, coords: [{ x: 224, y: 160 }] };
+const dw4SnowyMountain =  { image: dw4Tiles, coords: [{ x: 240, y: 144 }] };
+const dw4Ice =  { image: dw4Tiles, coords: [{ x: 208, y: 176 }] };
+
+
+
 const color: Record<VisualTerrainType, string> = {
-    [WaterCategory.DeepWater]: "#000088",
-    [WaterCategory.ShallowWater]: "blue",
-    [BiomeCategory.Ice]: "white",
+    [AltitudeCategory.DeepWater]: "#000088",
+    [AltitudeCategory.ShallowWater]: "blue",
+    "Ice": "white",
+    [BiomeCategory.Permafrost]: "white",
     [BiomeCategory.Tundra]: "rgb(15,59,59)",
     [BiomeCategory.ColdParklands]: "rgb(144,144,122)",
     [BiomeCategory.ConiferousForests]: "rgb(29, 96, 96)",
@@ -31,11 +40,15 @@ const color: Record<VisualTerrainType, string> = {
     [BiomeCategory.Savanna]: "rgb(144, 255, 77)",
     [BiomeCategory.TropicalSeasonalForests]: "rgb(77, 255, 77)",
     [BiomeCategory.TropicalRainForests]: "rgb(28, 178, 66)",
+    "SnowyHill": "white",
+    "SnowyMountain": "white",
+    "Hills": "grey",
+    "Mountain": "grey",
 }
 
 const terrainSpriteDefinitions: Record<VisualTerrainType, SpriteDefinition> = {
-    [WaterCategory.DeepWater]: { ...dw4Ocean, fallbackColor: color[WaterCategory.DeepWater] },
-    [WaterCategory.ShallowWater]: { ...dw4Pool, fallbackColor: color[WaterCategory.ShallowWater] },
+    [AltitudeCategory.DeepWater]: { ...dw4Ocean, fallbackColor: color[AltitudeCategory.DeepWater] },
+    [AltitudeCategory.ShallowWater]: { ...dw4Pool, fallbackColor: color[AltitudeCategory.ShallowWater] },
     [BiomeCategory.HotDeserts]: { ...dw4Desert, fallbackColor: color[BiomeCategory.HotDeserts] },
     [BiomeCategory.CoolDeserts]: { ...dw4Plains, fallbackColor: color[BiomeCategory.CoolDeserts] },
     [BiomeCategory.Steppes]: { ...dw4Bushes, fallbackColor: color[BiomeCategory.Steppes] },
@@ -43,12 +56,17 @@ const terrainSpriteDefinitions: Record<VisualTerrainType, SpriteDefinition> = {
     [BiomeCategory.ColdParklands]: { ...dw4SnowyBushes, fallbackColor: color[BiomeCategory.ColdParklands] },
     [BiomeCategory.Tundra]: { ...dw4SnowyPlains, fallbackColor: color[BiomeCategory.Tundra] },
     [BiomeCategory.ConiferousForests]: { ...dw4SnowyTwoTrees, fallbackColor: color[BiomeCategory.ConiferousForests] },
-    [BiomeCategory.Ice]: { ...dw4Clouds, fallbackColor: color[BiomeCategory.Ice] },
+    [BiomeCategory.Permafrost]: { ...dw4Clouds, fallbackColor: color[BiomeCategory.Permafrost] },
     [BiomeCategory.Savanna]: { ...dw4Plains, fallbackColor: color[BiomeCategory.Savanna] },
     [BiomeCategory.TropicalSeasonalForests]: { ...dw4GreenSomething, fallbackColor: color[BiomeCategory.TropicalSeasonalForests] },
     [BiomeCategory.TropicalRainForests]: { ...dw4GreenSomething, fallbackColor: color[BiomeCategory.TropicalRainForests] },
     [BiomeCategory.DeciduousForests]: { ...dw4SingleDeciduousTree, fallbackColor: color[BiomeCategory.DeciduousForests] },
-    [BiomeCategory.MixedForests]: { ...dw4GreenTwoTrees, fallbackColor: color[BiomeCategory.MixedForests] }
+    [BiomeCategory.MixedForests]: { ...dw4GreenTwoTrees, fallbackColor: color[BiomeCategory.MixedForests] },
+    "SnowyHill": { ...dw4SnowyHill, fallbackColor: color["SnowyHill"] },
+    "SnowyMountain": { ...dw4SnowyMountain, fallbackColor: color["SnowyMountain"] },
+    "Hills": { ...dw4GreenHill, fallbackColor: color["Hills"] },
+    "Mountain": { ...dw4GreenMountain, fallbackColor: color["Mountain"] },
+    "Ice": { ...dw4Ice, fallbackColor: color["Ice"] },
 }
 
 export function useTerrainSprites() {

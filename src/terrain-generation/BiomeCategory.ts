@@ -1,5 +1,5 @@
 export enum BiomeCategory {
-    Ice = "Ice",
+    Permafrost = "Permafrost",
     Tundra = "Tundra",
     ColdParklands = "ColdParklands",
     ConiferousForests = "ConiferousForests",

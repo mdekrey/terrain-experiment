@@ -58,8 +58,8 @@ export class BiomeDetails {
         ])
     ]);
     static readonly categoryLookup: Readonly<Record<BiomeLabel, BiomeCategory>> = Object.freeze({
-        [BiomeLabel.PolarDesert]: BiomeCategory.Ice,
-        [BiomeLabel.PolarIce]: BiomeCategory.Ice,
+        [BiomeLabel.PolarDesert]: BiomeCategory.Permafrost,
+        [BiomeLabel.PolarIce]: BiomeCategory.Permafrost,
         [BiomeLabel.SubpolarDryTundra]: BiomeCategory.Tundra,
         [BiomeLabel.SubpolarMoistTundra]: BiomeCategory.Tundra,
         [BiomeLabel.SubpolarWetTundra]: BiomeCategory.Tundra,

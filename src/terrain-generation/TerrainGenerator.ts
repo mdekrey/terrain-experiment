@@ -21,6 +21,11 @@ export class TerrainGenerator {
     lacunarity: 3.2,
     seed: 3200
   });
+  private readonly feature = new PerlinAnyDirection({
+    lacunarity: 3.2,
+    frequency: 0.7,
+    seed: 640
+  });
   private readonly terrainSettings: TerrainSettings;
 
   constructor(terrainSettings: TerrainSettings) {
@@ -36,7 +41,11 @@ export class TerrainGenerator {
       toValidRange(this.humidity.getValue(x, y)),
       heat
     );
+    const feature = this.terrainSettings.humidityCurve(
+      toValidRange(this.feature.getValue(x, y)),
+      heat
+    );
 
-    return new TerrainPoint(this.terrainSettings, x, y, altitude, heat, humidity);
+    return new TerrainPoint(this.terrainSettings, x, y, altitude, heat, humidity, feature);
   }
 }
