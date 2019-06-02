@@ -40,6 +40,7 @@ export class Game {
     constructor(settings: TerrainSettings, playerPawn: Pawn) {
         this.terrainGenerator = new TerrainGenerator(settings);
         this.playerPawn = playerPawn;
+        console.log(this);
 
         const types = Object.values(PawnType);
         const generatePlayer = () => {
@@ -54,7 +55,7 @@ export class Game {
     async enterDetail() {
         if (this.playerPawn.isDoneMoving()) {
             const position = this.playerPawn.position();
-            this.playerPawn.moveTo(addCoordinates(position, { x: 0 / this.overworldZoom, y: 0 / this.overworldZoom }), Direction.Down);
+            this.playerPawn.moveTo(position, Direction.Down);
             this.gameMode$.next({ mode: "Detail" });
         }
     }
@@ -63,9 +64,9 @@ export class Game {
         if (this.playerPawn.isDoneMoving()) {
             const position = this.playerPawn.position();
             this.gameMode$.next({ mode: "Loading" });
-            const gen = new CaveGenerator(Math.random() * 100000, 50, 50, 2, position);
+            const gen = new CaveGenerator(Math.random() * 100000, 50, 50, 2, addCoordinates(position, { x: -0.5 / this.overworldZoom, y: -0.5 / this.overworldZoom }));
             const cave = await gen.cave;
-            this.playerPawn.moveTo(addCoordinates(position, { x: cave.entrance.x / this.localZoom, y: cave.entrance.y / this.localZoom }), Direction.Down);
+            this.playerPawn.moveTo(addCoordinates(cave.offset, { x: cave.entrance.x / this.localZoom, y: cave.entrance.y / this.localZoom }), Direction.Down);
             this.gameMode$.next({ mode: "Cave", cave });
         }
     }
@@ -73,7 +74,7 @@ export class Game {
     moveToOverworld() {
         if (this.playerPawn.isDoneMoving()) {
             const position = this.playerPawn.position();
-            const targetPosition = { x: Math.floor(position.x * this.overworldZoom) / this.overworldZoom, y: Math.floor(position.y * this.overworldZoom) / this.overworldZoom }
+            const targetPosition = { x: Math.round(position.x * this.overworldZoom) / this.overworldZoom, y: Math.round(position.y * this.overworldZoom) / this.overworldZoom }
             this.playerPawn.moveTo(targetPosition, Direction.Down);
             this.gameMode$.next({ mode: "Overworld" });
         }

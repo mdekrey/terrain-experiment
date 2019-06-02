@@ -1,3 +1,4 @@
+// https://worldengine.readthedocs.io/en/latest/biomes.html
 export enum BiomeLabel {
     PolarDesert,
     PolarIce,

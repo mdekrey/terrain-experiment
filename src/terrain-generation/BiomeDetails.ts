@@ -1,5 +1,7 @@
 import { BiomeCategory } from "./BiomeCategory";
 import { BiomeLabel } from "./BiomeLabel";
+
+// https://worldengine.readthedocs.io/en/latest/biomes.html
 export class BiomeDetails {
     static readonly biomeLabels: ReadonlyArray<ReadonlyArray<BiomeLabel>> = Object.freeze([
         Object.freeze([
