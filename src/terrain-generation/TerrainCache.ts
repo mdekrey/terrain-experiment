@@ -1,5 +1,6 @@
 import { TerrainGenerator } from "./TerrainGenerator";
 import { TerrainPoint } from "./TerrainPoint";
+import { GameCoordinates } from "../game/GameCoordinates";
 
 export class TerrainCache {
     private readonly terrain: TerrainGenerator;
@@ -23,6 +24,10 @@ export class TerrainCache {
         this.cache.delete(key);
         this.cache.set(key, result);
         return result;
+    }
+
+    getCaveSeedAt(point: GameCoordinates) {
+        return this.terrain.getCaveSeedAt(point);
     }
 
     private cleanCache() {

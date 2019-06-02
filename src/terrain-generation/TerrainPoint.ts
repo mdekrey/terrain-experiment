@@ -73,7 +73,7 @@ export class TerrainPoint {
     ) {
       return temp === TemperatureCategory.Polar ? "Ice" : altitudeCategory;
     }
-    if (this.altitude < this.feature) {
+    if (this.altitude < this.feature - 0.05) {
       return this.biomeCategory;
     }
     if (

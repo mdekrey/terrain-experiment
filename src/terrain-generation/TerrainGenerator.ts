@@ -2,10 +2,14 @@ import { TerrainSettings } from "./TerrainSettings";
 import { AnyDirectionGenerator, initializePerlin, initializeRidgedMulti } from "./PerlinAnyDirection";
 import { clamp } from "../utils/clamp";
 import { TerrainPoint } from "./TerrainPoint";
+import { GameCoordinates } from "../game/GameCoordinates";
 
 const perlinRange = Math.sqrt(3 / 4) * 2;
 const clamper = clamp(0, 1 - Number.EPSILON);
 const toValidRange = (v: number) => {
+  if (Math.abs(v) > perlinRange / 2) {
+    console.log(v, "not in expected perlinRange", perlinRange);
+  }
   return clamper(v / perlinRange + 0.5);
 };
 
@@ -35,6 +39,12 @@ export class TerrainGenerator {
     }),
     overlap: 50000
   });
+  private readonly caveSeeds = new AnyDirectionGenerator({
+    generator: initializeRidgedMulti({
+      lacunarity: 3.2,
+      seed: 900
+    })
+  });
   private readonly terrainSettings: TerrainSettings;
 
   constructor(terrainSettings: TerrainSettings) {
@@ -61,5 +71,9 @@ export class TerrainGenerator {
       humidity,
       feature
     );
+  }
+
+  getCaveSeedAt(point: GameCoordinates) {
+    return this.caveSeeds.getValue(point.x, point.y) * 100000;
   }
 }
