@@ -5,6 +5,8 @@ import { AltitudeCategory } from "./WaterCategory";
 import { TerrainSettings } from "./TerrainSettings";
 import { VisualTerrainType } from "./VisualTerrainType";
 
+let maxFeature = 0.5;
+
 export class TerrainPoint {
   public readonly terrainSettings: TerrainSettings;
   public readonly x: number;
@@ -87,10 +89,14 @@ export class TerrainPoint {
     return altitudeCategory;
   }
   get hasCave() {
+    if (this.feature > maxFeature) {
+      console.log(this.feature);
+      maxFeature = this.feature;
+    }
     return (
       (this.altitudeCategory === AltitudeCategory.Hills ||
         this.altitudeCategory === AltitudeCategory.None) &&
-      this.feature > 0.995
+      this.feature > 0.95
     );
   }
 }
