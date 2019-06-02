@@ -117,13 +117,16 @@ export class TerrainPoint {
         }
         break;
       case BiomeCategory.Tundra:
-        if (this.feature > 0.8) {
-          return BiomeCategory.ConiferousForests;
+        if (this.feature > 0.85) {
+          return BiomeCategory.ColdParklands;
         }
         break;
       case BiomeCategory.ColdParklands:
-        if (this.feature < 0.7) {
+        if (this.feature < 0.5) {
           return BiomeCategory.Tundra;
+        }
+        if (this.feature > 0.85) {
+          return BiomeCategory.ConiferousForests;
         }
         break;
       case BiomeCategory.ConiferousForests:
