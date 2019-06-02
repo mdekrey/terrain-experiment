@@ -39,7 +39,7 @@ export function GameControls() {
             default:
                 return;
         }
-        player.moveTo({ x: centerX, y: centerY }, facing, 10);
+        player.moveTo({ x: centerX, y: centerY }, facing, 250);
     }, [player, gridSize, currentContinuous]));
 
     useSubscription(useCommand("ACTIVATE"), React.useCallback(() => {

@@ -1,6 +1,7 @@
 import React from "react";
 
 export interface Sprite {
+    isFinal: boolean;
     frameCount: number;
     render(frameIndex: number, context: CanvasRenderingContext2D, x: number, y: number, width: number, height: number): void;
 }
@@ -24,6 +25,7 @@ class SpriteAtlas {
             })();
         const imageSource = await img;
         return {
+            isFinal: true,
             frameCount: coords.length,
             render: (index, context, targetX, targetY, targetWidth, targetHeight) => {
                 const { x = defaultCoordinates.x, y = defaultCoordinates.y, width = defaultCoordinates.width, height = defaultCoordinates.height, } = coords[index];

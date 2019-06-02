@@ -33,7 +33,8 @@ export function useSpritelookup<TKey extends string | number | symbol>(
         addSprite({
           key,
           sprite: {
-            frameCount: 0,
+            isFinal: false,
+            frameCount: 1,
             render: (_, context, x, y, width, height) => {
               if (fallbackColor) {
                 context.fillStyle = fallbackColor;
