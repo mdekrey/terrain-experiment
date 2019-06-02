@@ -1,10 +1,10 @@
 import React from "react";
-import { TerrainCache, TerrainGenerator } from "../terrain-generation";
 import { useCanvas } from "./canvas";
 import { useTerrainSprites } from "./renderers/useTerrainSprites";
 import { ViewportContext } from "./Viewport";
 import { TileCache } from "./renderers/TileCache";
 import { getTerrainSpotRenderer } from "./renderers/renderTerrainSpot";
+import { useService } from "../injector";
 
 function* coordinates(startX: number, startY: number, endX: number, endY: number, gridSize: number, step: number) {
     const gridStartX = Math.floor(startX / gridSize / step) * step;
@@ -20,10 +20,10 @@ function* coordinates(startX: number, startY: number, endX: number, endY: number
     }
 }
 
-export function TerrainGrid(props: { terrain: TerrainGenerator, detail: boolean }) {
-    const { terrain, detail } = props;
+export function TerrainGrid(props: { detail: boolean }) {
+    const { detail } = props;
     const { x, y, width, height, center, pixelSize, gridSize } = React.useContext(ViewportContext);
-    const terrainCache = React.useMemo(() => new TerrainCache(terrain), [terrain]);
+    const terrainCache = useService("terrainCache");
     const sprites = useTerrainSprites();
     const tileCache = React.useMemo(() => new TileCache(
         gridSize, pixelSize, () => !Object.values(sprites).some(s => !s.isFinal), x, y, getTerrainSpotRenderer(terrainCache, sprites, detail)),

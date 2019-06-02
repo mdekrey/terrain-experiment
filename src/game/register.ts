@@ -1,13 +1,13 @@
 import { injectorBuilder, Scope } from "../injector";
 import { TerrainSettings } from "../terrain-generation/TerrainSettings";
-import { TerrainGenerator } from "../terrain-generation";
+import { TerrainCache } from "../terrain-generation";
 import { Pawn } from "./Pawn";
 import { Game } from "./Game";
 
 declare module "../injector/InjectedServices" {
   interface InjectedServices {
     terrainSettings: TerrainSettings;
-    terrainGenerator: TerrainGenerator;
+    terrainCache: TerrainCache;
     game: Game;
     player: Pawn;
   }
@@ -22,7 +22,7 @@ injectorBuilder.set(
 
 injectorBuilder.set("game", Scope.Component, resolver => new Game(resolver("terrainSettings"), resolver("player")));
 injectorBuilder.set(
-  "terrainGenerator",
-  Scope.Singleton,
-  resolver => resolver("game").terrainGenerator
+  "terrainCache",
+  Scope.Component,
+  resolver => resolver("game").terrain
 );

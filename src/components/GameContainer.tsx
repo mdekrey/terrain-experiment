@@ -28,10 +28,10 @@ export function GameContainer() {
     }
     switch (gameMode.mode) {
         case "Overworld":
-            gameModeJsx = <TerrainGrid terrain={game.terrainGenerator} detail={false} />;
+            gameModeJsx = <TerrainGrid detail={false} />;
             break;
         case "Detail":
-            gameModeJsx = <TerrainGrid terrain={game.terrainGenerator} detail={true} />;
+            gameModeJsx = <TerrainGrid detail={true} />;
             break;
         case "Cave":
             gameModeJsx = <CaveGrid {...gameMode.cave} />;
