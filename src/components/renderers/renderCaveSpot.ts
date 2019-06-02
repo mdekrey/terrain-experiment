@@ -1,6 +1,7 @@
 import dw4Tiles from "../../images/dw4-world-sprites.png";
 import { SpriteDefinition, useSpritelookup, SpriteLookup } from "../canvas";
 import { Cave } from "../../cave-generation";
+import { TilePieceRenderer } from "./TileCache";
 
 export enum CaveSpotType {
     Ceiling,
@@ -28,7 +29,10 @@ export function useCaveSprites() {
     return useSpritelookup(caveSpriteDefinitions);
 }
 
-export function renderCaveSpot({ cave, screenX: x, screenY: y, context, pixelSize, sprites, caveX, caveY }: { cave: Cave, screenX: number, screenY: number, context: CanvasRenderingContext2D, pixelSize: number, sprites: SpriteLookup<CaveSpotType>, caveX: number, caveY: number }) {
+export function getCaveSpotRenderer(
+    cave: Cave,
+    sprites: SpriteLookup<CaveSpotType>
+  ): TilePieceRenderer {
     function isSolid(x: number, y: number) {
         return (cave.isSolid[y] && cave.isSolid[y][x]) !== false
     }
@@ -37,14 +41,20 @@ export function renderCaveSpot({ cave, screenX: x, screenY: y, context, pixelSiz
             : isSolid(x, y + 1) ? CaveSpotType.Ceiling
             : CaveSpotType.Wall
     }
-
-    const sprite = sprites[caveSpotType(caveX, caveY)];
-    const frame = Math.abs(caveX + caveY) % sprite.frameCount;
-    sprite.render(frame, context, x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-    if (cave.entrance.x === caveX && cave.entrance.y === caveY) {
-        sprites[CaveSpotType.Stairway].render(0, context, x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-    }
-    else if (cave.treasure.find(t => t.x === caveX && t.y === caveY)) {
-        sprites[CaveSpotType.Treasure].render(0, context, x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-    }
-}
+    return function renderTerrainSpot({
+      context,
+      screenCoordinates: { x, y },
+      terrainCoordinates: { x: caveX, y: caveY },
+      pixelSize
+    }) {
+        const sprite = sprites[caveSpotType(caveX, caveY)];
+        const frame = Math.abs(caveX + caveY) % sprite.frameCount;
+        sprite.render(frame, context, x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+        if (cave.entrance.x === caveX && cave.entrance.y === caveY) {
+            sprites[CaveSpotType.Stairway].render(0, context, x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+        }
+        else if (cave.treasure.find(t => t.x === caveX && t.y === caveY)) {
+            sprites[CaveSpotType.Treasure].render(0, context, x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+        }
+    };
+  }

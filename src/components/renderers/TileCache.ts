@@ -67,21 +67,20 @@ export class TileCache {
     if (this.canCache()) {
       let cached = this.cache.get(key);
       if (!cached) {
-        const cached = {
+        cached = {
           useCount: 0,
           canvas: this.createCachableCanvas(terrainX, terrainY)
         };
         this.cache.set(key, cached);
-      } else {
-        context.drawImage(
-          cached.canvas,
-          (viewportX + screenX + offsetX) * pixelSize,
-          (viewportY + screenY + offsetY) * pixelSize,
-          pixelSize * tileStep,
-          pixelSize * tileStep
-        );
-        return;
       }
+      context.drawImage(
+        cached.canvas,
+        (viewportX + screenX + offsetX) * pixelSize,
+        (viewportY + screenY + offsetY) * pixelSize,
+        pixelSize * tileStep,
+        pixelSize * tileStep
+      );
+      return;
     }
     this.renderTile(
       context,

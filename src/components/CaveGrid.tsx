@@ -1,15 +1,21 @@
 import React from "react";
 import { useCanvas } from "./canvas";
 import { ViewportContext } from "./Viewport";
-import { useCaveSprites, renderCaveSpot } from "./renderers/renderCaveSpot";
+import { useCaveSprites, getCaveSpotRenderer } from "./renderers/renderCaveSpot";
 import { Cave } from "../cave-generation";
+import { TileCache } from "./renderers/TileCache";
 
-function* coordinates(startX: number, startY: number, endX: number, endY: number) {
-    const columns = (endX - startX);
-    const rows = (endY - startY);
+function* coordinates(startX: number, startY: number, endX: number, endY: number, step: number) {
+    const gridStartX = Math.floor(startX / step) * step;
+    const gridStartY = Math.floor(startY / step) * step;
+    const gridEndX = Math.ceil(endX / step) * step;
+    const gridEndY = Math.ceil(endY / step) * step;
 
-    for (let x = 0; x < columns; x++) {
-        for (let y = 0; y < rows; y++) {
+    const columns = (gridEndX - gridStartX);
+    const rows = (gridEndY - gridStartY);
+
+    for (let x = 0; x < columns; x+=step) {
+        for (let y = 0; y < rows; y+=step) {
             yield { screenX: x, screenY: y, caveX: x + startX, caveY: y + startY }
         }
     }
@@ -20,21 +26,28 @@ export function CaveGrid(cave: Cave) {
     const sprites = useCaveSprites();
     const gridWidth = width / pixelSize;
     const gridHeight = height / pixelSize;
+    const tileCache = React.useMemo(() => new TileCache(
+        1, pixelSize, () => !Object.values(sprites).some(s => !s.isFinal), 10, x, y, getCaveSpotRenderer(cave, sprites)),
+        [cave, gridSize, pixelSize, sprites, x, y]
+    );
 
     useCanvas(React.useCallback(context => {
         const { x: centerX, y: centerY } = center();
         const leftX = (centerX - cave.offset.x) / gridSize - gridWidth / 2;
-        const offsetX = Math.floor(leftX) - leftX;
         const topY = (centerY - cave.offset.y) / gridSize - gridHeight / 2;
-        const offsetY = Math.floor(topY) - topY;
-        const startX = Math.floor(leftX);
-        const startY = Math.floor(topY);
+        const tileCountStartX = Math.floor(leftX / tileCache.tileStep) * tileCache.tileStep;
+        const tileCountStartY = Math.floor(topY / tileCache.tileStep) * tileCache.tileStep;
+        const startX = tileCountStartX;
+        const startY = tileCountStartY;
+        const offsetX = tileCountStartX - leftX;
+        const offsetY = tileCountStartY - topY;
         const endX = Math.ceil(leftX + gridWidth);
         const endY = Math.ceil(topY + gridHeight);
 
-        for (const { screenX, screenY, caveX, caveY } of coordinates(startX, startY, endX, endY)) {
-            renderCaveSpot({ screenX: x + screenX + offsetX, screenY: y + screenY + offsetY, pixelSize, context, cave, sprites, caveX, caveY });
+        console.log(startX, startY, endX, endY);
+        for (const { screenX, screenY, caveX, caveY } of coordinates(startX, startY, endX, endY, tileCache.tileStep)) {
+            tileCache.render(context, { screenX, screenY, terrainX: caveX, terrainY: caveY, offsetX, offsetY });
         }
-    }, [pixelSize, center, gridSize, sprites, cave, x, y, gridWidth, gridHeight]));
+    }, [center, gridSize, x, y, gridWidth, gridHeight, tileCache]));
     return null;
 }
