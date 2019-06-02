@@ -1,7 +1,6 @@
-import { TerrainCache, VisualTerrainType } from "../../terrain-generation";
-import { SpriteLookup } from "../canvas";
+import { GameCoordinates } from "../../game/GameCoordinates";
 
-interface TileCache {
+interface TileCacheEntry {
   useCount: number;
   canvas: HTMLCanvasElement;
 }
@@ -10,36 +9,39 @@ function keyPart(part: number) {
   return part.toFixed(6).replace(/\.0+$/, "");
 }
 
-export class TerrainTileCache {
-  private readonly terrainCache: TerrainCache;
+export type TilePieceRenderer = (args: {
+  context: CanvasRenderingContext2D;
+  screenCoordinates: GameCoordinates;
+  terrainCoordinates: GameCoordinates;
+  pixelSize: number;
+}) => void;
+
+export class TileCache {
   private readonly gridSize: number;
   private readonly pixelSize: number;
-  private readonly sprites: SpriteLookup<VisualTerrainType>;
+  private readonly canCache: () => boolean;
   public readonly tileStep: number;
   private readonly viewportX: number;
   private readonly viewportY: number;
-  private readonly cache = new Map<string, TileCache>();
+  private readonly cache = new Map<string, TileCacheEntry>();
+  private readonly renderTilePiece: TilePieceRenderer;
 
   constructor(
-    terrainCache: TerrainCache,
     gridSize: number,
     pixelSize: number,
-    sprites: SpriteLookup<VisualTerrainType>,
+    canCache: () => boolean,
     tileStep: number,
     viewportX: number,
-    viewportY: number
+    viewportY: number,
+    renderTilePiece: TilePieceRenderer
   ) {
-    this.terrainCache = terrainCache;
     this.gridSize = gridSize;
     this.pixelSize = pixelSize;
-    this.sprites = sprites;
+    this.canCache = canCache;
     this.tileStep = tileStep;
     this.viewportX = viewportX;
     this.viewportY = viewportY;
-  }
-
-  get canCache() {
-    return !Object.values(this.sprites).some(s => !s.isFinal);
+    this.renderTilePiece = renderTilePiece;
   }
 
   render(
@@ -62,7 +64,7 @@ export class TerrainTileCache {
   ) {
     const key = `${keyPart(terrainX)}x${keyPart(terrainY)}`;
     const { viewportX, viewportY, pixelSize, tileStep } = this;
-    if (this.canCache) {
+    if (this.canCache()) {
       let cached = this.cache.get(key);
       if (!cached) {
         const cached = {
@@ -81,7 +83,7 @@ export class TerrainTileCache {
         return;
       }
     }
-    this.renderTerrain(
+    this.renderTile(
       context,
       terrainX,
       terrainY,
@@ -96,59 +98,31 @@ export class TerrainTileCache {
     canvas.width = canvas.height = pixelSize * tileStep;
     const context = canvas.getContext("2d")!;
     context.imageSmoothingEnabled = false;
-    this.renderTerrain(context, terrainX, terrainY, 0, 0);
+    this.renderTile(context, terrainX, terrainY, 0, 0);
     // document.body.appendChild(canvas);
     return canvas;
   }
 
-  private renderTerrain(
+  private renderTile(
     context: CanvasRenderingContext2D,
     terrainX: number,
     terrainY: number,
     offsetX: number,
     offsetY: number
   ) {
-    const { gridSize, tileStep } = this;
+    const { gridSize, tileStep, pixelSize } = this;
     for (let x = 0; x < tileStep; x++) {
       for (let y = 0; y < tileStep; y++) {
-        this.renderTerrainSpot(context, {
-          x: offsetX + x,
-          y: offsetY + y,
-          terrainX: x * gridSize + terrainX,
-          terrainY: y * gridSize + terrainY
+        this.renderTilePiece({
+          context,
+          screenCoordinates: { x: offsetX + x, y: offsetY + y },
+          terrainCoordinates: {
+            x: x * gridSize + terrainX,
+            y: y * gridSize + terrainY
+          },
+          pixelSize
         });
       }
-    }
-  }
-
-  private renderTerrainSpot(
-    context: CanvasRenderingContext2D,
-    {
-      x,
-      y,
-      terrainX,
-      terrainY
-    }: { x: number; y: number; terrainX: number; terrainY: number }
-  ) {
-    const terrain = this.terrainCache.getAt(terrainX, terrainY);
-    const { pixelSize, sprites } = this;
-    sprites[terrain.visualCategory]!.render(
-      0,
-      context,
-      x * pixelSize,
-      y * pixelSize,
-      pixelSize,
-      pixelSize
-    );
-    if (terrain.hasCave) {
-      sprites["Cave"].render(
-        0,
-        context,
-        x * pixelSize,
-        y * pixelSize,
-        pixelSize,
-        pixelSize
-      );
     }
   }
 }

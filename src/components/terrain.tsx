@@ -3,7 +3,8 @@ import { TerrainCache, TerrainGenerator } from "../terrain-generation";
 import { useCanvas } from "./canvas";
 import { useTerrainSprites } from "./renderers/useTerrainSprites";
 import { ViewportContext } from "./Viewport";
-import { TerrainTileCache } from "./renderers/TerrainTileCache";
+import { TileCache } from "./renderers/TileCache";
+import { getTerrainSpotRenderer } from "./renderers/renderTerrainSpot";
 
 function* coordinates(startX: number, startY: number, endX: number, endY: number, gridSize: number, step: number) {
     const gridStartX = Math.floor(startX / gridSize / step) * step;
@@ -12,8 +13,8 @@ function* coordinates(startX: number, startY: number, endX: number, endY: number
     const gridEndY = Math.ceil(endY / gridSize / step) * step;
     const columns = (gridEndX - gridStartX);
     const rows = (gridEndY - gridStartY);
-    for (let x = 0; x < columns; x+= step) {
-        for (let y = 0; y < rows; y+= step) {
+    for (let x = 0; x < columns; x += step) {
+        for (let y = 0; y < rows; y += step) {
             yield { screenX: x, screenY: y, terrainX: x * gridSize + startX, terrainY: y * gridSize + startY }
         }
     }
@@ -21,10 +22,13 @@ function* coordinates(startX: number, startY: number, endX: number, endY: number
 
 export function TerrainGrid(props: { terrain: TerrainGenerator }) {
     const { terrain } = props;
-    const { x, y, width, height, center , pixelSize, gridSize} = React.useContext(ViewportContext);
+    const { x, y, width, height, center, pixelSize, gridSize } = React.useContext(ViewportContext);
     const terrainCache = React.useMemo(() => new TerrainCache(terrain), [terrain]);
     const sprites = useTerrainSprites();
-    const terrainTileCache = React.useMemo(() => new TerrainTileCache(terrainCache, gridSize, pixelSize, sprites, 10, x, y), [terrainCache, gridSize, pixelSize, sprites, x, y]);
+    const terrainTileCache = React.useMemo(() => new TileCache(
+        gridSize, pixelSize, () => !Object.values(sprites).some(s => !s.isFinal), 10, x, y, getTerrainSpotRenderer(terrainCache, sprites)),
+        [terrainCache, gridSize, pixelSize, sprites, x, y]
+    );
     const gridWidth = width / pixelSize;
     const gridHeight = height / pixelSize;
 
