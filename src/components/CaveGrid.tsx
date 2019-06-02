@@ -27,7 +27,7 @@ export function CaveGrid(cave: Cave) {
     const gridWidth = width / pixelSize;
     const gridHeight = height / pixelSize;
     const tileCache = React.useMemo(() => new TileCache(
-        1, pixelSize, () => !Object.values(sprites).some(s => !s.isFinal), 10, x, y, getCaveSpotRenderer(cave, sprites)),
+        1, pixelSize, () => !Object.values(sprites).some(s => !s.isFinal), x, y, getCaveSpotRenderer(cave, sprites)),
         [cave, pixelSize, sprites, x, y]
     );
 
@@ -47,6 +47,7 @@ export function CaveGrid(cave: Cave) {
         for (const { screenX, screenY, caveX, caveY } of coordinates(startX, startY, endX, endY, tileCache.tileStep)) {
             tileCache.render(context, { screenX, screenY, terrainX: caveX, terrainY: caveY, offsetX, offsetY });
         }
+        tileCache.incrementUseCountAndCull();
     }, [center, gridSize, gridWidth, gridHeight, tileCache, cave]));
     return null;
 }

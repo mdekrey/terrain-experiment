@@ -30,18 +30,32 @@ export class TileCache {
     gridSize: number,
     pixelSize: number,
     canCache: () => boolean,
-    tileStep: number,
     viewportX: number,
     viewportY: number,
-    renderTilePiece: TilePieceRenderer
+    renderTilePiece: TilePieceRenderer,
+    tileStep: number = 5
   ) {
     this.gridSize = gridSize;
     this.pixelSize = pixelSize;
     this.canCache = canCache;
-    this.tileStep = tileStep;
     this.viewportX = viewportX;
     this.viewportY = viewportY;
     this.renderTilePiece = renderTilePiece;
+    this.tileStep = tileStep;
+  }
+
+  incrementUseCountAndCull(maxDelay = 60 * 10) {
+    const toRemove: string[] = [];
+    for (let key of this.cache.keys()) {
+      const entry = this.cache.get(key)!;
+      entry.useCount++;
+      if (entry.useCount >= maxDelay) {
+        toRemove.push(key);
+      }
+    }
+    for (let key of toRemove) {
+      this.cache.delete(key);
+    }
   }
 
   render(
@@ -73,6 +87,7 @@ export class TileCache {
         };
         this.cache.set(key, cached);
       }
+      cached.useCount = 0;
       context.drawImage(
         cached.canvas,
         (viewportX + screenX + offsetX) * pixelSize,

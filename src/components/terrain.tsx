@@ -25,8 +25,8 @@ export function TerrainGrid(props: { terrain: TerrainGenerator, detail: boolean 
     const { x, y, width, height, center, pixelSize, gridSize } = React.useContext(ViewportContext);
     const terrainCache = React.useMemo(() => new TerrainCache(terrain), [terrain]);
     const sprites = useTerrainSprites();
-    const terrainTileCache = React.useMemo(() => new TileCache(
-        gridSize, pixelSize, () => !Object.values(sprites).some(s => !s.isFinal), 10, x, y, getTerrainSpotRenderer(terrainCache, sprites, detail)),
+    const tileCache = React.useMemo(() => new TileCache(
+        gridSize, pixelSize, () => !Object.values(sprites).some(s => !s.isFinal), x, y, getTerrainSpotRenderer(terrainCache, sprites, detail)),
         [terrainCache, gridSize, pixelSize, sprites, x, y, detail]
     );
     const gridWidth = width / pixelSize;
@@ -36,8 +36,8 @@ export function TerrainGrid(props: { terrain: TerrainGenerator, detail: boolean 
         const { x: centerX, y: centerY } = center();
         const leftX = x + centerX / gridSize - gridWidth / 2;
         const topY = y + centerY / gridSize - gridHeight / 2;
-        const tileCountStartX = Math.floor(leftX / terrainTileCache.tileStep) * terrainTileCache.tileStep;
-        const tileCountStartY = Math.floor(topY / terrainTileCache.tileStep) * terrainTileCache.tileStep;
+        const tileCountStartX = Math.floor(leftX / tileCache.tileStep) * tileCache.tileStep;
+        const tileCountStartY = Math.floor(topY / tileCache.tileStep) * tileCache.tileStep;
         const startX = tileCountStartX * gridSize;
         const startY = tileCountStartY * gridSize;
         const offsetX = tileCountStartX - leftX;
@@ -45,9 +45,10 @@ export function TerrainGrid(props: { terrain: TerrainGenerator, detail: boolean 
         const endX = Math.ceil(leftX + gridWidth) * gridSize;
         const endY = Math.ceil(topY + gridHeight) * gridSize;
 
-        for (const { screenX, screenY, terrainX, terrainY } of coordinates(startX, startY, endX, endY, gridSize, terrainTileCache.tileStep)) {
-            terrainTileCache.render(context, { screenX, screenY, terrainX, terrainY, offsetX, offsetY });
+        for (const { screenX, screenY, terrainX, terrainY } of coordinates(startX, startY, endX, endY, gridSize, tileCache.tileStep)) {
+            tileCache.render(context, { screenX, screenY, terrainX, terrainY, offsetX, offsetY });
         }
-    }, [center, gridSize, x, y, gridWidth, gridHeight, terrainTileCache]));
+        tileCache.incrementUseCountAndCull();
+    }, [center, gridSize, x, y, gridWidth, gridHeight, tileCache]));
     return null;
 }
