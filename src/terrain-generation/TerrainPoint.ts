@@ -5,8 +5,6 @@ import { AltitudeCategory } from "./WaterCategory";
 import { TerrainSettings } from "./TerrainSettings";
 import { VisualTerrainType } from "./VisualTerrainType";
 
-let maxFeature = 0.5;
-
 export class TerrainPoint {
   public readonly terrainSettings: TerrainSettings;
   public readonly x: number;
@@ -88,11 +86,30 @@ export class TerrainPoint {
     }
     return altitudeCategory;
   }
-  get hasCave() {
-    if (this.feature > maxFeature) {
-      console.log(this.feature);
-      maxFeature = this.feature;
+  get detailVisualCategory(): VisualTerrainType {
+    const altitudeCategory = this.altitudeCategory;
+    const temp = this.temperatureCategory;
+    if (
+      altitudeCategory === AltitudeCategory.DeepWater ||
+      altitudeCategory === AltitudeCategory.ShallowWater
+    ) {
+      return temp === TemperatureCategory.Polar ? "Ice" : altitudeCategory;
     }
+    if (
+      altitudeCategory !== AltitudeCategory.None &&
+      this.altitude >= this.feature * 3 &&
+      (temp === TemperatureCategory.Boreal ||
+      temp === TemperatureCategory.Subpolar ||
+      temp === TemperatureCategory.Polar)
+    ) {
+      return altitudeCategory === AltitudeCategory.Hills || this.altitude < this.feature * 20
+        ? "SnowyHill"
+        : "SnowyMountain";
+    }
+    // TODO - more variety
+    return this.biomeCategory;
+  }
+  get hasCave() {
     return (
       (this.altitudeCategory === AltitudeCategory.Hills ||
         this.altitudeCategory === AltitudeCategory.None) &&

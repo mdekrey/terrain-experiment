@@ -4,7 +4,8 @@ import { TilePieceRenderer } from "./TileCache";
 
 export function getTerrainSpotRenderer(
   terrainCache: TerrainCache,
-  sprites: SpriteLookup<VisualTerrainType>
+  sprites: SpriteLookup<VisualTerrainType>,
+  detail: boolean
 ): TilePieceRenderer {
   return function renderTerrainSpot({
     context,
@@ -13,7 +14,7 @@ export function getTerrainSpotRenderer(
     pixelSize
   }) {
     const terrain = terrainCache.getAt(terrainX, terrainY);
-    sprites[terrain.visualCategory]!.render(
+    sprites[detail ? terrain.detailVisualCategory : terrain.visualCategory]!.render(
       0,
       context,
       x * pixelSize,
@@ -21,7 +22,7 @@ export function getTerrainSpotRenderer(
       pixelSize,
       pixelSize
     );
-    if (terrain.hasCave) {
+    if (!detail && terrain.hasCave) {
       sprites["Cave"].render(
         0,
         context,

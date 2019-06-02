@@ -22,22 +22,30 @@ export function GameContainer() {
     const gridSize = 1 / zoom;
     const width = 1200;
     const height = 800;
+    let gameModeJsx: JSX.Element;
     if (gameMode.mode === "Loading") {
         return <>Loading</>;
     }
+    switch (gameMode.mode) {
+        case "Overworld":
+            gameModeJsx = <TerrainGrid terrain={game.terrainGenerator} detail={false} />;
+            break;
+        case "Detail":
+            gameModeJsx = <TerrainGrid terrain={game.terrainGenerator} detail={true} />;
+            break;
+        case "Cave":
+            gameModeJsx = <CaveGrid {...gameMode.cave} />;
+            break;
+        default:
+            return <>Unknown state</>;
+    }
     return (<>
-        {gameMode.mode === "Overworld"
-            ? <button onClick={() => game.enterCave()}>Enter Cave</button>
-            : <button onClick={() => game.leaveCave()}>Leave Cave</button>}
-        <br />
         <Canvas width={width} height={height}>
             <Viewport center={player} x={0} y={0} width={width} height={height}
                 pixelSize={pixelSize} gridSize={gridSize}>
                 <GameControls />
                 <CanvasLayer>
-                    {gameMode.mode === "Overworld"
-                        ? <TerrainGrid terrain={game.terrainGenerator} />
-                        : <CaveGrid {...gameMode.cave} />}
+                    {gameModeJsx}
                 </CanvasLayer>
                 <CanvasLayer>
                     {/* TODO - need an "avatars" display for this */}
@@ -53,5 +61,4 @@ export function GameContainer() {
             </Viewport>
         </Canvas>
     </>);
-
 }

@@ -39,16 +39,17 @@ export function GameControls() {
             default:
                 return;
         }
-        player.moveTo({ x: centerX, y: centerY }, facing, 250);
+        player.moveTo({ x: centerX, y: centerY }, facing, 100);
     }, [player, gridSize, currentContinuous]));
 
     useSubscription(useCommand("ACTIVATE"), React.useCallback(() => {
         switch (game.gameMode$.value.mode) {
             case "Overworld":
-                game.enterCave();
+                game.enterDetail();
                 break;
+            case "Detail":
             case "Cave":
-                game.leaveCave();
+                game.moveToOverworld();
                 break;
         }
     }, [game]));

@@ -20,14 +20,14 @@ function* coordinates(startX: number, startY: number, endX: number, endY: number
     }
 }
 
-export function TerrainGrid(props: { terrain: TerrainGenerator }) {
-    const { terrain } = props;
+export function TerrainGrid(props: { terrain: TerrainGenerator, detail: boolean }) {
+    const { terrain, detail } = props;
     const { x, y, width, height, center, pixelSize, gridSize } = React.useContext(ViewportContext);
     const terrainCache = React.useMemo(() => new TerrainCache(terrain), [terrain]);
     const sprites = useTerrainSprites();
     const terrainTileCache = React.useMemo(() => new TileCache(
-        gridSize, pixelSize, () => !Object.values(sprites).some(s => !s.isFinal), 10, x, y, getTerrainSpotRenderer(terrainCache, sprites)),
-        [terrainCache, gridSize, pixelSize, sprites, x, y]
+        gridSize, pixelSize, () => !Object.values(sprites).some(s => !s.isFinal), 10, x, y, getTerrainSpotRenderer(terrainCache, sprites, detail)),
+        [terrainCache, gridSize, pixelSize, sprites, x, y, detail]
     );
     const gridWidth = width / pixelSize;
     const gridHeight = height / pixelSize;

@@ -50,7 +50,7 @@ export class TerrainGenerator {
       toValidRange(this.humidity.getValue(x, y)),
       heat
     );
-    const feature = toValidRange(this.feature.getValue(x * 2000, y * 2000));
+    const feature = toValidRange(this.feature.getValue(x * 6000, y * 6000));
 
     return new TerrainPoint(
       this.terrainSettings,

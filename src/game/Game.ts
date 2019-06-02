@@ -11,6 +11,10 @@ export interface OverworldGameMode {
     mode: "Overworld";
 }
 
+export interface DetailGameMode {
+    mode: "Detail";
+}
+
 export interface CaveGameMode {
     mode: "Cave";
     cave: Cave;
@@ -20,7 +24,7 @@ export interface LoadingGameMode {
     mode: "Loading";
 }
 
-export type GameMode = OverworldGameMode | CaveGameMode | LoadingGameMode;
+export type GameMode = OverworldGameMode | CaveGameMode | LoadingGameMode | DetailGameMode;
 
 const zoomExp = 2;
 
@@ -47,6 +51,14 @@ export class Game {
         this.otherPlayers = [generatePlayer(), generatePlayer(), generatePlayer(), generatePlayer()];
     }
 
+    async enterDetail() {
+        if (this.playerPawn.isDoneMoving()) {
+            const position = this.playerPawn.position();
+            this.playerPawn.moveTo(addCoordinates(position, { x: 0 / this.overworldZoom, y: 0 / this.overworldZoom }), Direction.Down);
+            this.gameMode$.next({ mode: "Detail" });
+        }
+    }
+
     async enterCave() {
         if (this.playerPawn.isDoneMoving()) {
             const position = this.playerPawn.position();
@@ -58,7 +70,7 @@ export class Game {
         }
     }
 
-    leaveCave() {
+    moveToOverworld() {
         if (this.playerPawn.isDoneMoving()) {
             const position = this.playerPawn.position();
             const targetPosition = { x: Math.floor(position.x * this.overworldZoom) / this.overworldZoom, y: Math.floor(position.y * this.overworldZoom) / this.overworldZoom }
