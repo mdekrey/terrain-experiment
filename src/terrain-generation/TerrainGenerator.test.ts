@@ -4,11 +4,9 @@ import { TerrainSettings } from "./TerrainSettings";
 it("generates some terrain", () => {
     const terrain = new TerrainGenerator(new TerrainSettings());
 
-    const step = 0.01;
-    const microsteps = 5;
+    const step = 0.1;
+    const microsteps = 30;
 
-    const noise = Array.from(Array(microsteps + 1).keys()).map(i => i / microsteps * step).map(v => terrain.getTerrain(0, v))
-    // console.log(noise);
-
-    // TODO
+    const noise = Array.from(Array(microsteps).keys()).map(i => i / microsteps * step).map(v => terrain.getTerrain(0, v).visualCategory)
+    expect(noise).toMatchSnapshot();
 });

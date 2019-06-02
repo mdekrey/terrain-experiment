@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generates some terrain 1`] = `
+Array [
+  "SnowyHill",
+  "ColdParklands",
+  "SnowyHill",
+  "Hills",
+  "Steppes",
+  "Hills",
+  "Steppes",
+  "Hills",
+  "Steppes",
+  "ConiferousForests",
+  "ConiferousForests",
+  "ConiferousForests",
+  "ConiferousForests",
+  "ConiferousForests",
+  "ConiferousForests",
+  "ConiferousForests",
+  "ConiferousForests",
+  "ConiferousForests",
+  "ConiferousForests",
+  "ColdParklands",
+  "ColdParklands",
+  "ColdParklands",
+  "ColdParklands",
+  "ColdParklands",
+  "ColdParklands",
+  "ColdParklands",
+  "ColdParklands",
+  "ColdParklands",
+  "ColdParklands",
+  "ColdParklands",
+]
+`;
