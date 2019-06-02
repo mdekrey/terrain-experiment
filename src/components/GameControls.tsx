@@ -19,7 +19,7 @@ export function GameControls() {
         const moveAmount = 1 * gridSize;
         let { x: centerX, y: centerY } = player.position();
         let facing = Direction.Down;
-        switch (Array.from(currentContinuous.values()).filter(k => k.startsWith("MOVE_"))[0]) {
+        switch (Array.from(currentContinuous.values()).filter(k => k.startsWith("MOVE_")).reverse()[0]) {
             case "MOVE_LEFT":
                 centerX -= moveAmount;
                 facing = Direction.Left;
