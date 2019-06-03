@@ -91,8 +91,10 @@ export class Game {
                 }
             }
             const targetPosition = { x: Math.round(position.x * this.overworldZoom) / this.overworldZoom, y: Math.round(position.y * this.overworldZoom) / this.overworldZoom }
-            this.playerPawn.moveTo(targetPosition, Direction.Down);
-            this.gameMode$.next({ mode: "Overworld" });
+            if (this.isOpenSpace(targetPosition)) {
+                this.playerPawn.moveTo(targetPosition, Direction.Down);
+                this.gameMode$.next({ mode: "Overworld" });
+            }
         }
     }
 

@@ -71,7 +71,7 @@ export class TerrainPoint {
       altitudeCategory === AltitudeCategory.DeepWater ||
       altitudeCategory === AltitudeCategory.ShallowWater
     ) {
-      return temp === TemperatureCategory.Polar ? "Ice" : altitudeCategory;
+      return temp === TemperatureCategory.Polar && this.feature > this.heat / this.terrainSettings.tempsStep[1] ? "Ice" : altitudeCategory;
     }
     if (this.altitude < this.feature - 0.05) {
       return this.biomeCategory;
@@ -94,7 +94,7 @@ export class TerrainPoint {
       altitudeCategory === AltitudeCategory.DeepWater ||
       altitudeCategory === AltitudeCategory.ShallowWater
     ) {
-      return temp === TemperatureCategory.Polar ? "Ice" : altitudeCategory;
+      return temp === TemperatureCategory.Polar && this.feature > this.heat / this.terrainSettings.tempsStep[1] ? "Ice" : altitudeCategory;
     }
     if (altitudeCategory !== AltitudeCategory.None && 0.2 > this.feature) {
       if (
