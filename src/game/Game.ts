@@ -41,7 +41,9 @@ export class Game {
         const terrainGenerator = new TerrainGenerator(settings);
         this.terrain = new TerrainCache(terrainGenerator);
         this.playerPawn = playerPawn;
-        console.log(this);
+        if (process.env.NODE_ENV === "development") {
+            (window as any).game = this;
+        }
 
         const types = Object.values(PawnType);
         const generatePlayer = () => {
