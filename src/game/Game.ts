@@ -87,13 +87,16 @@ export class Game {
                 const x = Math.round((position.x - offset.x) * this.localZoom);
                 const y = Math.round((position.y - offset.y) * this.localZoom);
                 if (x !== entrance.x || y !== entrance.y) {
+                    console.log("not at entrance", x, y, entrance);
                     return;
                 }
             }
             const targetPosition = { x: Math.round(position.x * this.overworldZoom) / this.overworldZoom, y: Math.round(position.y * this.overworldZoom) / this.overworldZoom }
-            if (this.isOpenSpace(targetPosition)) {
+            if (this.isOpenSpace(targetPosition, true)) {
                 this.playerPawn.moveTo(targetPosition, Direction.Down);
                 this.gameMode$.next({ mode: "Overworld" });
+            } else {
+                console.log("not in open space", targetPosition)
             }
         }
     }
@@ -109,8 +112,16 @@ export class Game {
         }
     }
 
-    isOpenSpace(worldCoordinate: GameCoordinates) {
+    isOpenSpace(worldCoordinate: GameCoordinates, forceOverworld = false) {
         const gameMode = this.gameMode$.value;
+
+        const overworldCheck = () => {
+            const category = this.terrain.getAt(worldCoordinate.x, worldCoordinate.y).visualCategory;
+            return isPassable(category);
+        };
+        if (forceOverworld) {
+            return overworldCheck();
+        }
         switch (gameMode.mode) {
             case "Cave":
                 const {cave} = gameMode;
@@ -120,8 +131,7 @@ export class Game {
                 return false;
             case "Overworld":
                 {
-                    const category = this.terrain.getAt(worldCoordinate.x, worldCoordinate.y).visualCategory;
-                    return isPassable(category);
+                    return overworldCheck();
                 }
             case "Detail":
                 {
