@@ -1,11 +1,11 @@
-import { TerrainSettings } from "../terrain-generation/TerrainSettings";
-import { TerrainGenerator, TerrainCache, VisualTerrainType, AltitudeCategory } from "../terrain-generation";
+import { TerrainCache, VisualTerrainType } from "../terrain-generation";
 import { Pawn } from "./Pawn";
 import { Cave, CaveGenerator } from "../cave-generation";
 import { BehaviorSubject } from "rxjs";
 import { addCoordinates, GameCoordinates } from "./GameCoordinates";
 import { Direction } from "./Direction";
 import { PawnType } from "./PawnType";
+import { InteropService } from "../dotnet-interop";
 
 export interface OverworldGameMode {
     mode: "Overworld";
@@ -37,9 +37,8 @@ export class Game {
     readonly overworldZoom = Math.pow(10, zoomExp) * 4;
     readonly localZoom = Math.pow(10, zoomExp + 2) * 4;
 
-    constructor(settings: TerrainSettings, playerPawn: Pawn) {
-        const terrainGenerator = new TerrainGenerator(settings);
-        this.terrain = new TerrainCache(terrainGenerator);
+    constructor(interop: InteropService, playerPawn: Pawn) {
+        this.terrain = new TerrainCache(interop);
         this.playerPawn = playerPawn;
         if (process.env.NODE_ENV === "development") {
             (window as any).game = this;
@@ -58,7 +57,7 @@ export class Game {
     async enterDetail() {
         if (this.playerPawn.isDoneMoving()) {
             const position = this.playerPawn.position();
-            if (this.terrain.getAt(position.x, position.y).hasCave) {
+            if (this.terrain.getAt([position])[0].hasCave) {
                 this.enterCave();
             } else {
                 this.gameMode$.next({ mode: "Detail" });
@@ -106,7 +105,7 @@ export class Game {
             return;
         }
         if (this.isOpenSpace(worldCoordinate)) {
-            this.playerPawn.moveTo(worldCoordinate, facing, 250);
+            this.playerPawn.moveTo(worldCoordinate, facing, 100);
         } else {
             this.playerPawn.facing = facing;
         }
@@ -116,7 +115,7 @@ export class Game {
         const gameMode = this.gameMode$.value;
 
         const overworldCheck = () => {
-            const category = this.terrain.getAt(worldCoordinate.x, worldCoordinate.y).visualCategory;
+            const category = this.terrain.getAt([worldCoordinate])[0].visualCategory;
             return isPassable(category);
         };
         if (forceOverworld) {
@@ -135,12 +134,14 @@ export class Game {
                 }
             case "Detail":
                 {
-                    const category = this.terrain.getAt(worldCoordinate.x, worldCoordinate.y).detailVisualCategory;
+                    const category = this.terrain.getAt([worldCoordinate])[0].detailVisualCategory;
                     return isPassable(category);
                 }
         }
         function isPassable(category: VisualTerrainType) {
-            return category !== "SnowyMountain" && category !== "Mountain" && category !== AltitudeCategory.ShallowWater && category !== AltitudeCategory.DeepWater;
+            return true;
+            return category !== VisualTerrainType.SnowyMountain && category !== VisualTerrainType.Mountain &&
+                category !== VisualTerrainType.ShallowWater && category !== VisualTerrainType.DeepWater;
         }
     }
 }

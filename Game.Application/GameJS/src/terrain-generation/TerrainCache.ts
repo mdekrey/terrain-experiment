@@ -1,33 +1,48 @@
-import { TerrainGenerator } from "./TerrainGenerator";
 import { TerrainPoint } from "./TerrainPoint";
 import { GameCoordinates } from "../game/GameCoordinates";
+import { InteropService } from "../dotnet-interop";
+
+type Coord = {x: number, y: number};
+
+function toKey(coord: Coord) {
+    return `${coord.x.toFixed(6).replace(/\.0+$/,'')}x${coord.y.toFixed(6).replace(/\.0+$/,'')}`;
+}
 
 export class TerrainCache {
-    private readonly terrain: TerrainGenerator;
+    private readonly interop: InteropService;
     private readonly cache = new Map<string, TerrainPoint>();
     private readonly maxCount: number;
 
-    constructor(terrain: TerrainGenerator, maxCount: number = 10000) {
-        this.terrain = terrain;
+    constructor(interop: InteropService, maxCount: number = 10000) {
+        this.interop = interop;
         this.maxCount = maxCount;
     }
 
-    getAt(x: number, y: number): TerrainPoint {
-        const key = `${x.toFixed(6).replace(/\.0+$/,'')}x${y.toFixed(6).replace(/\.0+$/,'')}`;
-        const result = this.cache.get(key);
-        if (!result) {
-            const result = this.terrain.getTerrain(x, y);
-            this.cache.set(key, result);
+    getAt(coordinates: Coord[]): TerrainPoint[] {
+        const keyed = coordinates.map(coord => {
+            const key = toKey(coord);
+            const cached = this.cache.get(key);
+            return ({ coord, key, cached });
+        }).reduce((prev, next) => {
+            prev[next.key] = next;
+            return prev;
+        }, {} as Record<string, { cached?: TerrainPoint, coord: Coord, key: string}>);
+        const uncached = Object.values(keyed).filter(k => !k.cached).map(k => k.coord);
+        if (uncached.length) {
+            const newSpots = this.interop.getTerrain(uncached);
+            for (const spot of newSpots) {
+                const key = toKey(spot.coordinates);
+                keyed[key].cached = spot;
+                this.cache.set(key, spot);
+            }
             this.cleanCache();
-            return result;
         }
-        this.cache.delete(key);
-        this.cache.set(key, result);
-        return result;
+        return Object.values(keyed).map(c => c.cached!);
     }
 
     getCaveSeedAt(point: GameCoordinates) {
-        return this.terrain.getCaveSeedAt(point);
+        return 0;
+        //return this.terrain.getCaveSeedAt(point);
     }
 
     private cleanCache() {

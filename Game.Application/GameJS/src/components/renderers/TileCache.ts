@@ -17,6 +17,7 @@ export type TilePieceRenderer = (args: {
 }) => void;
 
 export class TileCache {
+  private readonly cacheCallback: (points: GameCoordinates[]) => void;
   private readonly gridSize: number;
   private readonly pixelSize: number;
   private readonly canCache: () => boolean;
@@ -27,6 +28,7 @@ export class TileCache {
   private readonly renderTilePiece: TilePieceRenderer;
 
   constructor(
+    cacheCallback: (points: GameCoordinates[]) => void,
     gridSize: number,
     pixelSize: number,
     canCache: () => boolean,
@@ -35,6 +37,7 @@ export class TileCache {
     renderTilePiece: TilePieceRenderer,
     tileStep: number = 5
   ) {
+    this.cacheCallback = cacheCallback;
     this.gridSize = gridSize;
     this.pixelSize = pixelSize;
     this.canCache = canCache;
@@ -125,6 +128,16 @@ export class TileCache {
     offsetY: number
   ) {
     const { gridSize, tileStep, pixelSize } = this;
+    const allCoords = Array(tileStep * tileStep) as GameCoordinates[];
+    for (let x = 0; x < tileStep; x++) {
+      for (let y = 0; y < tileStep; y++) {
+        allCoords[x + y * tileStep] = {
+          x: x * gridSize + terrainX,
+          y: y * gridSize + terrainY
+        };
+      }
+    }
+    this.cacheCallback(allCoords);
     for (let x = 0; x < tileStep; x++) {
       for (let y = 0; y < tileStep; y++) {
         this.renderTilePiece({

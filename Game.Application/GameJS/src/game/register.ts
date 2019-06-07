@@ -3,6 +3,7 @@ import { TerrainSettings } from "../terrain-generation/TerrainSettings";
 import { TerrainCache } from "../terrain-generation";
 import { Pawn } from "./Pawn";
 import { Game } from "./Game";
+import "../dotnet-interop";
 
 declare module "../injector/InjectedServices" {
   interface InjectedServices {
@@ -20,7 +21,7 @@ injectorBuilder.set(
     () => new Pawn()
 );
 
-injectorBuilder.set("game", Scope.Component, resolver => new Game(resolver("terrainSettings"), resolver("player")));
+injectorBuilder.set("game", Scope.Component, resolver => new Game(resolver("interop"), resolver("player")));
 injectorBuilder.set(
   "terrainCache",
   Scope.Component,

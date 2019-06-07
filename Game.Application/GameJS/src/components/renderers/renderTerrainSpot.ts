@@ -10,11 +10,12 @@ export function getTerrainSpotRenderer(
   return function renderTerrainSpot({
     context,
     screenCoordinates: { x, y },
-    terrainCoordinates: { x: terrainX, y: terrainY },
+    terrainCoordinates,
     pixelSize
   }) {
-    const terrain = terrainCache.getAt(terrainX, terrainY);
-    sprites[detail ? terrain.detailVisualCategory : terrain.visualCategory]!.render(
+    const terrain = terrainCache.getAt([terrainCoordinates])[0];
+    const visual = detail ? terrain.detailVisualCategory : terrain.visualCategory;
+    sprites[visual]!.render(
       0,
       context,
       x * pixelSize,
@@ -23,7 +24,7 @@ export function getTerrainSpotRenderer(
       pixelSize
     );
     if (!detail && terrain.hasCave) {
-      sprites["Cave"].render(
+      sprites[VisualTerrainType.Cave].render(
         0,
         context,
         x * pixelSize,

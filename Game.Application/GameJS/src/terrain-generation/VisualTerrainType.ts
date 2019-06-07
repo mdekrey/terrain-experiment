@@ -1,4 +1,24 @@
-import { BiomeCategory } from "./BiomeCategory";
-import { AltitudeCategory } from "./WaterCategory";
 
-export type VisualTerrainType = BiomeCategory | AltitudeCategory.ShallowWater | AltitudeCategory.DeepWater | "SnowyMountain" | "Mountain" | "SnowyHill" | "Hills" | "Ice" | "Cave";
+export enum VisualTerrainType {
+    Permafrost,
+    Tundra,
+    ColdParklands,
+    ConiferousForests,
+    CoolDeserts,
+    Steppes,
+    MixedForests,
+    HotDeserts,
+    Chaparral,
+    DeciduousForests,
+    Savanna,
+    TropicalSeasonalForests,
+    TropicalRainForests,
+    ShallowWater,
+    DeepWater,
+    SnowyMountain,
+    Mountain,
+    SnowyHill,
+    Hills,
+    Ice,
+    Cave
+}
