@@ -1,23 +1,23 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# DO NOT FORGET
+# Update the .dockerignore when updating this file
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+bin
+obj
+*.user
+launchsettings.json
+/artifacts
 
-# testing
-/coverage
+*.local.*
+.vs
+.vscode
+packages
+*.immutable.cs
+*.log
+*.keystore
+junit.xml
+node_modules
+coverage
 
-# production
-/build
-
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# generic generated format
+*.generated.*
+generated.*
