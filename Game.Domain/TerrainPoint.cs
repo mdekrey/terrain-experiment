@@ -9,37 +9,37 @@ namespace Game.Domain
         private static readonly ImmutableList<float> tempsStep = new[] { -0.748f, -0.53f, -0.188f, 0.122f, 0.268f, 0.752f, float.MaxValue }.ToImmutableList();
         private static readonly ImmutableList<float> altitudeStep = new[] { 0.4f, 0.5f, 0.7f, 0.76f, float.MaxValue }.ToImmutableList();
 
-        public readonly GameCoordinate coordinates;
-        public readonly float humidity;
-        public readonly float heat;
-        public readonly float altitude;
-        public readonly float feature;
-        public readonly TemperatureCategory temperatureCategory;
-        public readonly HumidityCategory humidityCategory;
-        public readonly AltitudeCategory altitudeCategory;
+        public GameCoordinate Coordinates { get; }
+        public float Humidity { get; }
+        public float Heat { get; }
+        public float Altitude { get; }
+        public float Feature { get; }
+        public TemperatureCategory TemperatureCategory { get; }
+        public HumidityCategory HumidityCategory { get; }
+        public AltitudeCategory AltitudeCategory { get; }
 
 
         public TerrainPoint(GameCoordinate coordinates, float humidity, float heat, float altitude, float feature)
         {
-            this.coordinates = coordinates;
-            this.humidity = humidity;
-            this.heat = heat;
-            this.altitude = altitude;
-            this.feature = feature;
+            this.Coordinates = coordinates;
+            this.Humidity = humidity;
+            this.Heat = heat;
+            this.Altitude = altitude;
+            this.Feature = feature;
 
 
-            temperatureCategory = (TemperatureCategory)tempsStep.FindIndex(t => t > heat);
-            humidityCategory = (HumidityCategory)Math.Min(
-                  BiomeDetails.biomeLabels[temperatureCategory].Count - 1,
-                  Math.Floor((int)HumidityCategory.Superhumid * (this.humidity / 2 + 0.5f))
+            TemperatureCategory = (TemperatureCategory)tempsStep.FindIndex(t => t > heat);
+            HumidityCategory = (HumidityCategory)Math.Min(
+                  BiomeDetails.biomeLabels[TemperatureCategory].Count - 1,
+                  Math.Floor((int)HumidityCategory.Superhumid * (this.Humidity / 2 + 0.5f))
                 );
-            altitudeCategory = (AltitudeCategory)altitudeStep.FindIndex(t => t > altitude);
+            AltitudeCategory = (AltitudeCategory)altitudeStep.FindIndex(t => t > altitude);
             //System.Diagnostics.Debug.Assert(temperatureCategory >= TemperatureCategory.Polar && temperatureCategory <= TemperatureCategory.Tropical);
             //System.Diagnostics.Debug.Assert(humidityCategory >= HumidityCategory.Superarid && humidityCategory <= HumidityCategory.Superhumid);
             //System.Diagnostics.Debug.Assert(altitudeCategory >= AltitudeCategory.DeepWater && altitudeCategory <= AltitudeCategory.Mountain);
         }
 
-        public BiomeLabel BiomeLabel => BiomeDetails.biomeLabels[temperatureCategory][humidityCategory];
+        public BiomeLabel BiomeLabel => BiomeDetails.biomeLabels[TemperatureCategory][HumidityCategory];
         public BiomeCategory BiomeCategory => BiomeDetails.CategoryLookup[BiomeLabel];
 
 
@@ -49,9 +49,9 @@ namespace Game.Domain
             {
                 // TODO - make this only work in the world rounded coordinates
                 return
-                  (this.altitudeCategory == AltitudeCategory.Hills ||
-                    this.altitudeCategory == AltitudeCategory.None) &&
-                  this.feature > 0.95
+                  (this.AltitudeCategory == AltitudeCategory.Hills ||
+                    this.AltitudeCategory == AltitudeCategory.None) &&
+                  this.Feature > 0.95
                 ;
             }
         }
@@ -61,32 +61,32 @@ namespace Game.Domain
             get
             {
                 if (
-                     altitudeCategory == AltitudeCategory.DeepWater ||
-                     altitudeCategory == AltitudeCategory.ShallowWater
+                     AltitudeCategory == AltitudeCategory.DeepWater ||
+                     AltitudeCategory == AltitudeCategory.ShallowWater
                    )
                 {
                     if (IsIce())
                     {
                         return VisualTerrainType.Ice;
                     }
-                    return altitudeCategory == AltitudeCategory.DeepWater ? VisualTerrainType.DeepWater : VisualTerrainType.ShallowWater;
+                    return AltitudeCategory == AltitudeCategory.DeepWater ? VisualTerrainType.DeepWater : VisualTerrainType.ShallowWater;
                 }
-                if (altitudeCategory == AltitudeCategory.None || altitude < feature - 0.05)
+                if (AltitudeCategory == AltitudeCategory.None || Altitude < Feature - 0.05)
                 {
                     return BiomeCategory.ToVisual();
                 }
 
                 if (
-                  temperatureCategory == TemperatureCategory.Boreal ||
-                  temperatureCategory == TemperatureCategory.Subpolar ||
-                  temperatureCategory == TemperatureCategory.Polar
+                  TemperatureCategory == TemperatureCategory.Boreal ||
+                  TemperatureCategory == TemperatureCategory.Subpolar ||
+                  TemperatureCategory == TemperatureCategory.Polar
                 )
                 {
-                    return altitudeCategory == AltitudeCategory.Hills
+                    return AltitudeCategory == AltitudeCategory.Hills
                       ? VisualTerrainType.SnowyHill
                       : VisualTerrainType.SnowyMountain;
                 }
-                return altitudeCategory switch
+                return AltitudeCategory switch
                 {
                     AltitudeCategory.Hills => VisualTerrainType.Hills,
                     _ => VisualTerrainType.Mountain
@@ -96,7 +96,7 @@ namespace Game.Domain
 
         private bool IsIce()
         {
-            return temperatureCategory == TemperatureCategory.Polar && feature > (heat + 1) / (tempsStep[0] + 1);
+            return TemperatureCategory == TemperatureCategory.Polar && Feature > (Heat + 1) / (tempsStep[0] + 1);
         }
 
         public VisualTerrainType DetailVisualCategory
@@ -104,79 +104,79 @@ namespace Game.Domain
             get
             {
                 if (
-                  altitudeCategory == AltitudeCategory.DeepWater ||
-                  altitudeCategory == AltitudeCategory.ShallowWater
+                  AltitudeCategory == AltitudeCategory.DeepWater ||
+                  AltitudeCategory == AltitudeCategory.ShallowWater
                 )
                 {
                     if (IsIce())
                     {
                         return VisualTerrainType.Ice;
                     }
-                    return altitudeCategory == AltitudeCategory.DeepWater ? VisualTerrainType.DeepWater : VisualTerrainType.ShallowWater;
+                    return AltitudeCategory == AltitudeCategory.DeepWater ? VisualTerrainType.DeepWater : VisualTerrainType.ShallowWater;
                 }
-                if (altitudeCategory != AltitudeCategory.None && 0.2 > feature)
+                if (AltitudeCategory != AltitudeCategory.None && 0.2 > Feature)
                 {
                     if (
-                      temperatureCategory == TemperatureCategory.Boreal ||
-                      temperatureCategory == TemperatureCategory.Subpolar ||
-                      temperatureCategory == TemperatureCategory.Polar
+                      TemperatureCategory == TemperatureCategory.Boreal ||
+                      TemperatureCategory == TemperatureCategory.Subpolar ||
+                      TemperatureCategory == TemperatureCategory.Polar
                     )
-                        return altitudeCategory == AltitudeCategory.Hills ||
-                          feature > 0.05
+                        return AltitudeCategory == AltitudeCategory.Hills ||
+                          Feature > 0.05
                           ? VisualTerrainType.SnowyHill
                           : VisualTerrainType.SnowyMountain;
                     else
-                        return altitudeCategory == AltitudeCategory.Hills || feature > 0.05 ? VisualTerrainType.Hills : VisualTerrainType.Mountain;
+                        return AltitudeCategory == AltitudeCategory.Hills || Feature > 0.05 ? VisualTerrainType.Hills : VisualTerrainType.Mountain;
                 }
                 var category = BiomeCategory;
                 switch (category)
                 {
                     case BiomeCategory.Permafrost:
-                        if (feature > 0.8)
+                        if (Feature > 0.8)
                         {
                             return VisualTerrainType.Tundra;
                         }
                         break;
                     case BiomeCategory.Tundra:
-                        if (feature > 0.85)
+                        if (Feature > 0.85)
                         {
                             return VisualTerrainType.ColdParklands;
                         }
                         break;
                     case BiomeCategory.ColdParklands:
-                        if (feature < 0.5)
+                        if (Feature < 0.5)
                         {
                             return VisualTerrainType.Tundra;
                         }
-                        if (feature > 0.85)
+                        if (Feature > 0.85)
                         {
                             return VisualTerrainType.ConiferousForests;
                         }
                         break;
                     case BiomeCategory.ConiferousForests:
-                        if (feature > 0.65)
+                        if (Feature > 0.65)
                         {
                             return VisualTerrainType.Tundra;
                         }
                         break;
                     case BiomeCategory.CoolDeserts:
-                        if (feature > 0.85)
+                        if (Feature > 0.85)
                         {
                             return VisualTerrainType.Steppes;
                         }
                         break;
                     case BiomeCategory.Steppes:
-                        if (feature < 0.3)
+                        if (Feature < 0.3)
                         {
                             return VisualTerrainType.CoolDeserts;
                         }
                         break;
                     case BiomeCategory.MixedForests:
-                        if (feature > 0.9)
+                        if (Feature > 0.9)
                         {
                             return VisualTerrainType.CoolDeserts;
                         }
-                        if (feature > 0.5)
+                        if (Feature > 0.5)
                         {
                             return VisualTerrainType.DeciduousForests;
                         }
@@ -185,51 +185,51 @@ namespace Game.Domain
                         // TODO: Hot deserts have no variety in the spritemap
                         break;
                     case BiomeCategory.Chaparral:
-                        if (feature > 0.5 && feature < 0.6)
+                        if (Feature > 0.5 && Feature < 0.6)
                         {
                             return VisualTerrainType.DeciduousForests;
                         }
-                        if (feature > 0.8)
+                        if (Feature > 0.8)
                         {
                             return VisualTerrainType.CoolDeserts;
                         }
                         break;
                     case BiomeCategory.DeciduousForests:
-                        if (feature > 0.5 && feature < 0.55)
+                        if (Feature > 0.5 && Feature < 0.55)
                         {
                             return VisualTerrainType.TropicalRainForests;
                         }
-                        if (feature > 0.9)
+                        if (Feature > 0.9)
                         {
                             return VisualTerrainType.CoolDeserts;
                         }
-                        if (feature > 0.8)
+                        if (Feature > 0.8)
                         {
                             return VisualTerrainType.Chaparral;
                         }
                         break;
                     case BiomeCategory.Savanna:
-                        if (feature > 0.5 && feature < 0.6)
+                        if (Feature > 0.5 && Feature < 0.6)
                         {
                             return VisualTerrainType.HotDeserts;
                         }
-                        if (feature > 0.9)
+                        if (Feature > 0.9)
                         {
                             return VisualTerrainType.DeciduousForests;
                         }
                         break;
                     case BiomeCategory.TropicalSeasonalForests:
-                        if (feature > 0.5 && feature < 0.6)
+                        if (Feature > 0.5 && Feature < 0.6)
                         {
                             return VisualTerrainType.Chaparral;
                         }
-                        if (feature > 0.7)
+                        if (Feature > 0.7)
                         {
                             return VisualTerrainType.DeciduousForests;
                         }
                         break;
                     case BiomeCategory.TropicalRainForests:
-                        if (feature > 0.7)
+                        if (Feature > 0.7)
                         {
                             return VisualTerrainType.DeciduousForests;
                         }
@@ -238,5 +238,6 @@ namespace Game.Domain
                 return category.ToVisual();
             }
         }
+
     }
 }

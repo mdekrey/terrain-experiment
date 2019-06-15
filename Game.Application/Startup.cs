@@ -19,7 +19,7 @@ namespace WoostiDatasetReview
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IWebHostEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -71,26 +71,23 @@ namespace WoostiDatasetReview
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.EnvironmentName == "Development")
             {
                 app.UseDeveloperExceptionPage();
             }
 
             //app.UseHttpsRedirection();
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
-            // dotnet 3.0 preview code
-            //app.UseRouting(routes =>
+            //app.UseMvc(routes =>
             //{
-            //    routes.MapControllers();
+            //    routes.MapRoute(
+            //        name: "default",
+            //        template: "{controller=Home}/{action=Index}/{id?}");
             //});
+            // dotnet 3.0 preview code
+            app.UseRouting();
             //app.UseAuthorization();
 
             app.UseSpaStaticFiles();
@@ -102,7 +99,7 @@ namespace WoostiDatasetReview
             {
                 spa.Options.SourcePath = "dataset-review-js";
 
-                if (env.IsDevelopment())
+                if (env.EnvironmentName == "Development")
                 {
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
                 }

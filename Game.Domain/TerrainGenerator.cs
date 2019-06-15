@@ -41,8 +41,8 @@ namespace Game.Domain
             const float multFactor = 6000;
             const float stepSize = 100;
             // guarantees coords as 0 <= coord < stepSize
-            var onex = ((coordinates.x % stepSize) + stepSize) % stepSize;
-            var oney = ((coordinates.y % stepSize) + stepSize) % stepSize;
+            var onex = ((coordinates.X % stepSize) + stepSize) % stepSize;
+            var oney = ((coordinates.Y % stepSize) + stepSize) % stepSize;
             var altx = onex + stepSize;
             var alty = oney + stepSize;
             var xWeight = onex / stepSize;
@@ -72,7 +72,7 @@ namespace Game.Domain
 
     static class LibNoiseExtensions
     {
-        public static float GetValue(this IModule2D module, GameCoordinate coordinates) => module.GetValue(coordinates.x, coordinates.y);
+        public static float GetValue(this IModule2D module, GameCoordinate coordinates) => module.GetValue(coordinates.X, coordinates.Y);
 
         public static float Clamp(this float target, float min, float max) => Math.Min(Math.Max(target, min), max);
     }
