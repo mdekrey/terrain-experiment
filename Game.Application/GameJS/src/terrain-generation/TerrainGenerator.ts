@@ -1,5 +1,5 @@
 import { TerrainSettings } from "./TerrainSettings";
-import { AnyDirectionGenerator, initializePerlin, initializeRidgedMulti } from "./PerlinAnyDirection";
+import { initializePerlin, initializeRidgedMulti } from "../utils/LibNoiseUtils";
 import { clamp } from "../utils/clamp";
 import { TerrainPoint } from "./TerrainPoint";
 import { GameCoordinates } from "../game/GameCoordinates";
@@ -14,37 +14,26 @@ const toValidRange = (v: number) => {
 };
 
 export class TerrainGenerator {
-  private readonly humidity = new AnyDirectionGenerator({
-    generator: initializePerlin({
+  private readonly humidity = initializePerlin({
       lacunarity: 3.2,
       seed: 0
-    })
-  });
-  private readonly heat = new AnyDirectionGenerator({
-    generator: initializePerlin({
+    });
+  private readonly heat = initializePerlin({
       lacunarity: 3.2,
       seed: 1750
-    })
-  });
-  private readonly altitude = new AnyDirectionGenerator({
-    generator: initializeRidgedMulti({
+    });
+  private readonly altitude = initializeRidgedMulti({
       lacunarity: 3.2,
       seed: 3201
-    })
-  });
-  private readonly feature = new AnyDirectionGenerator({
-    generator: initializeRidgedMulti({
+    });
+  private readonly feature = initializeRidgedMulti({
       lacunarity: 3.2,
       seed: 670
-    }),
-    overlap: 50000
-  });
-  private readonly caveSeeds = new AnyDirectionGenerator({
-    generator: initializeRidgedMulti({
+    });
+  private readonly caveSeeds = initializeRidgedMulti({
       lacunarity: 3.2,
       seed: 900
-    })
-  });
+    });
   private readonly terrainSettings: TerrainSettings;
 
   constructor(terrainSettings: TerrainSettings) {
@@ -52,15 +41,15 @@ export class TerrainGenerator {
   }
 
   public getTerrain(x: number, y: number): TerrainPoint {
-    const altitude = toValidRange(this.altitude.getValue(x, y));
+    const altitude = toValidRange(this.altitude.getValue(x, y, 0));
     const heat = toValidRange(
-      this.heat.getValue(x, y) - Math.max(0, altitude * 2 - 1.7)
+      this.heat.getValue(x, y, 0) - Math.max(0, altitude * 2 - 1.7)
     );
     const humidity = this.terrainSettings.humidityCurve(
-      toValidRange(this.humidity.getValue(x, y)),
+      toValidRange(this.humidity.getValue(x, y, 0)),
       heat
     );
-    const feature = toValidRange(this.feature.getValue(x * 6000, y * 6000));
+    const feature = toValidRange(this.feature.getValue(x * 6000, y * 6000, 0));
 
     return new TerrainPoint(
       this.terrainSettings,
@@ -74,6 +63,6 @@ export class TerrainGenerator {
   }
 
   getCaveSeedAt(point: GameCoordinates) {
-    return this.caveSeeds.getValue(point.x, point.y) * 100000;
+    return this.caveSeeds.getValue(point.x, point.y, 0) * 100000;
   }
 }

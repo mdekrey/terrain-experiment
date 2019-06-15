@@ -10,7 +10,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Game.Application", "Game.Ap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Game.WebAsm", "Game.WebAsm\Game.WebAsm.csproj", "{8523C414-BDD6-419F-B45F-39175A200B76}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game.Domain", "Game.Domain\Game.Domain.csproj", "{1752B463-4791-4FA1-8272-E17E51A707A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Game.Domain", "Game.Domain\Game.Domain.csproj", "{1752B463-4791-4FA1-8272-E17E51A707A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game.Logic.Tests", "Game.Logic.Tests\Game.Logic.Tests.csproj", "{F7676144-75B1-4F31-8CB7-0159D3B54427}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibNoise", "LibNoise\LibNoise.csproj", "{26A8BE1E-5E49-4292-9DA3-646C1EEC231F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,6 +34,14 @@ Global
 		{1752B463-4791-4FA1-8272-E17E51A707A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1752B463-4791-4FA1-8272-E17E51A707A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1752B463-4791-4FA1-8272-E17E51A707A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7676144-75B1-4F31-8CB7-0159D3B54427}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7676144-75B1-4F31-8CB7-0159D3B54427}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7676144-75B1-4F31-8CB7-0159D3B54427}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7676144-75B1-4F31-8CB7-0159D3B54427}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26A8BE1E-5E49-4292-9DA3-646C1EEC231F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26A8BE1E-5E49-4292-9DA3-646C1EEC231F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26A8BE1E-5E49-4292-9DA3-646C1EEC231F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26A8BE1E-5E49-4292-9DA3-646C1EEC231F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

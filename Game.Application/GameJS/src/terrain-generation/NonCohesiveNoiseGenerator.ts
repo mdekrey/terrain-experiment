@@ -1,7 +1,7 @@
-import GeneratorModule from "libnoise-ts/module/generator";
+import { libnoise } from "libnoise";
 import { create } from "random-seed";
 
-export class NonCohesiveNoiseGenerator extends GeneratorModule {
+export class NonCohesiveNoiseGenerator extends libnoise.ModuleBase {
     private readonly seed: number;
     constructor(seed: number) {
         super();

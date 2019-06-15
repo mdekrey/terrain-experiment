@@ -1,10 +1,11 @@
-import { Perlin } from "libnoise-ts/module/generator";
 import {
   GameCoordinates,
   eightDirections,
   addCoordinates,
   fourDirections
 } from "../game/GameCoordinates";
+import { libnoise } from "libnoise";
+import { DEFAULT_PERLIN_FREQUENCY, DEFAULT_PERLIN_OCTAVE_COUNT, DEFAULT_PERLIN_PERSISTENCE } from "../utils/LibNoiseUtils";
 
 const deathLimit = 3;
 const birthLimit = 4;
@@ -18,7 +19,7 @@ export interface Cave {
 }
 
 export class CaveGenerator {
-  private readonly perlin = new Perlin();
+  private readonly perlin: libnoise.generator.Perlin;
   private readonly result: Promise<{
     isSolid: boolean[][];
     treasure: GameCoordinates[];
@@ -32,8 +33,7 @@ export class CaveGenerator {
     normalizationRounds: number,
     offset: GameCoordinates
   ) {
-    this.perlin.seed = seed;
-    this.perlin.lacunarity = 3.4;
+    this.perlin = new libnoise.generator.Perlin(DEFAULT_PERLIN_FREQUENCY, 3.4, DEFAULT_PERLIN_OCTAVE_COUNT, DEFAULT_PERLIN_PERSISTENCE, seed, libnoise.QualityMode.MEDIUM);
     this.offset = offset;
 
     const random = (x: number, y: number) =>
