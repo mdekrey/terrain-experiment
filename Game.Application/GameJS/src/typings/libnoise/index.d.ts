@@ -48,13 +48,13 @@ declare module 'libnoise' {
                 constructor(frequency: number, lacunarity: number, persistence: number, octaves: number, seed: number, quality: QualityMode);
             }
             export class RidgedMultifractal extends ModuleBase {
-                constructor(frequency: number, lacunarity: number, persistence: number, octaves: number, seed: number, quality: QualityMode);
+                constructor(frequency: number, lacunarity: number, octaves: number, seed: number, quality: QualityMode);
             }
             export class Sphere extends ModuleBase {
                 constructor(frequency: number);
             }
             export class Voronoi extends ModuleBase {
-                constructor(frequency: number, displacement: number, seed: number, distance: number);
+                constructor(frequency: number, displacement: number, seed: number, distance: boolean);
             }
         }
         export namespace operator {

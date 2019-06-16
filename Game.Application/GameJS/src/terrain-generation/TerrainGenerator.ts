@@ -17,10 +17,10 @@ export class TerrainGenerator {
       lacunarity: 3.2,
       seed: 3201
     }) });
-  private readonly feature = initializePerlin({
+  private readonly feature = new AnyDirectionModule({ generator: initializeRidgedMulti({
       lacunarity: 3.2,
       seed: 670
-    });
+    }) });
   private readonly caveSeeds = initializePerlin({
       lacunarity: 3.2,
       seed: 900

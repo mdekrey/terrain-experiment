@@ -38,13 +38,12 @@ export function initializeRidgedMulti({
   const result = new libnoise.generator.RidgedMultifractal(
     frequency,
     lacunarity,
-    DEFAULT_PERLIN_PERSISTENCE,
     octaves,
     seed,
-    libnoise.QualityMode.HIGH
+    libnoise.QualityMode.MEDIUM
   );
   return new libnoise.operator.Clamp(0, 1, new libnoise.operator.Multiply(
-    new libnoise.operator.Add(result, new libnoise.generator.Const(1)),
-    new libnoise.generator.Const(1 / 2)
+    new libnoise.operator.Add(result, new libnoise.generator.Const(0.25)),
+    new libnoise.generator.Const(0.75)
   ));
 }
