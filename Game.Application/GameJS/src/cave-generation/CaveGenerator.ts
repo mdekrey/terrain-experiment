@@ -37,7 +37,7 @@ export class CaveGenerator {
     this.offset = offset;
 
     const random = (x: number, y: number) =>
-      this.perlin.getValue(x, y, 0) < -0.05;
+      libnoise.Utils.ValueNoise3D(x, y, 0, seed) < -0.2;
 
     this.result = new Promise((resolve, reject) => {
       let map = Array.from(Array(height).keys()).map((_, y) =>

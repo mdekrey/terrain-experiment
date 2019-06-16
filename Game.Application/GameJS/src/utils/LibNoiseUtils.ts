@@ -12,8 +12,21 @@ export function initializePerlin({
   octaves = DEFAULT_PERLIN_OCTAVE_COUNT,
   frequency = DEFAULT_PERLIN_FREQUENCY
 }) {
-  const result = new libnoise.generator.Perlin(frequency, lacunarity, DEFAULT_PERLIN_PERSISTENCE, octaves, seed, libnoise.QualityMode.MEDIUM);
-  return result;
+  const result = new libnoise.generator.Perlin(
+    frequency,
+    lacunarity,
+    DEFAULT_PERLIN_PERSISTENCE,
+    octaves,
+    seed,
+    libnoise.QualityMode.MEDIUM
+  );
+  return new libnoise.operator.Clamp(0, 1, new libnoise.operator.Add(
+    new libnoise.operator.Multiply(
+      result,
+      new libnoise.generator.Const(1 / (1.77))
+    ),
+    new libnoise.generator.Const(0.5)
+  ));
 }
 
 export function initializeRidgedMulti({
@@ -22,6 +35,16 @@ export function initializeRidgedMulti({
   octaves = DEFAULT_PERLIN_OCTAVE_COUNT,
   frequency = DEFAULT_PERLIN_FREQUENCY
 }) {
-  const result = new libnoise.generator.RidgedMultifractal(frequency, lacunarity, DEFAULT_PERLIN_PERSISTENCE, octaves, seed, libnoise.QualityMode.MEDIUM);
-  return result;
+  const result = new libnoise.generator.RidgedMultifractal(
+    frequency,
+    lacunarity,
+    DEFAULT_PERLIN_PERSISTENCE,
+    octaves,
+    seed,
+    libnoise.QualityMode.HIGH
+  );
+  return new libnoise.operator.Clamp(0, 1, new libnoise.operator.Multiply(
+    new libnoise.operator.Add(result, new libnoise.generator.Const(1)),
+    new libnoise.generator.Const(1 / 2)
+  ));
 }

@@ -62,10 +62,10 @@ declare module 'libnoise' {
                 constructor(input: ModuleBase);
             }
             export class Add extends ModuleBase {
-                constructor(lhs: number, rhs: number);
+                constructor(lhs: ModuleBase, rhs: ModuleBase);
             }
             export class Blend extends ModuleBase {
-                constructor(lhs: number, rhs: number, controller: number);
+                constructor(lhs: ModuleBase, rhs: ModuleBase, controller: ModuleBase);
             }
             export class Cache extends ModuleBase {
                 constructor(input: ModuleBase);
@@ -86,16 +86,16 @@ declare module 'libnoise' {
                 constructor(input: ModuleBase);
             }
             export class Max extends ModuleBase {
-                constructor(lhs: number, rhs: number);
+                constructor(lhs: ModuleBase, rhs: ModuleBase);
             }
             export class Min extends ModuleBase {
-                constructor(lhs: number, rhs: number);
+                constructor(lhs: ModuleBase, rhs: ModuleBase);
             }
             export class Multiply extends ModuleBase {
-                constructor(lhs: number, rhs: number);
+                constructor(lhs: ModuleBase, rhs: ModuleBase);
             }
             export class Power extends ModuleBase {
-                constructor(lhs: number, rhs: number);
+                constructor(lhs: ModuleBase, rhs: ModuleBase);
             }
             export class Rotate extends ModuleBase {
                 constructor(rx: number, ry: number, rz: number, input: ModuleBase);
@@ -107,19 +107,19 @@ declare module 'libnoise' {
                 constructor(scale: number, bias: number, input: ModuleBase);
             }
             export class Select extends ModuleBase {
-                constructor(min: number, max: number, fallOff: number, inputA: number, inputB: number, controller: number);
+                constructor(min: number, max: number, fallOff: number, inputA: ModuleBase, inputB: ModuleBase, controller: ModuleBase);
             }
             export class Subtract extends ModuleBase {
                 constructor(lhs: number, rhs: number);
             }
             export class Terrace extends ModuleBase {
-                constructor(input: ModuleBase, inverted: number);
+                constructor(input: ModuleBase, inverted: boolean);
             }
             export class Translate extends ModuleBase {
                 constructor(x: number, y: number, z: number, input: ModuleBase);
             }
             export class Turbulence extends ModuleBase {
-                constructor(power: number, input: ModuleBase, distortX: number, distortY: number, distortZ: number);
+                constructor(power: number, input: ModuleBase, distortX: generator.Perlin, distortY: generator.Perlin, distortZ: generator.Perlin);
             }
         }
     }
