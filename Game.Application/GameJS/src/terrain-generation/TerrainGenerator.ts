@@ -2,7 +2,8 @@ import { TerrainSettings } from "./TerrainSettings";
 import { initializePerlin, initializeRidgedMulti } from "../utils/LibNoiseUtils";
 import { TerrainPoint } from "./TerrainPoint";
 import { GameCoordinates } from "../game/GameCoordinates";
-import { AnyDirectionModule } from "../utils/AnyDIrectionModule";
+
+const featureOverlap = 6000;
 
 export class TerrainGenerator {
   private readonly humidity = initializePerlin({
@@ -13,14 +14,16 @@ export class TerrainGenerator {
       lacunarity: 3.2,
       seed: 1750
     });
-  private readonly altitude = new AnyDirectionModule({ generator: initializeRidgedMulti({
+  private readonly altitude = initializeRidgedMulti({
       lacunarity: 3.2,
       seed: 3201
-    }) });
-  private readonly feature = new AnyDirectionModule({ generator: initializeRidgedMulti({
+    });
+  private readonly feature = initializeRidgedMulti({
+      frequency: 1,
       lacunarity: 3.2,
-      seed: 670
-    }) });
+      seed: 670,
+      overlap: featureOverlap * 10
+    });
   private readonly caveSeeds = initializePerlin({
       lacunarity: 3.2,
       seed: 900
@@ -38,7 +41,7 @@ export class TerrainGenerator {
       this.humidity.getValue(x, y, 0),
       heat
     );
-    const feature = this.feature.getValue(x * 6000, y * 6000, 0);
+    const feature = this.feature.getValue(x * featureOverlap, y * featureOverlap, 0);
 
     return new TerrainPoint(
       this.terrainSettings,

@@ -1,4 +1,5 @@
 import { libnoise } from "libnoise";
+import { AnyDirectionModule } from "./AnyDIrectionModule";
 
 export const DEFAULT_PERLIN_LACUNARITY = 2;
 export const DEFAULT_PERLIN_SEED = 0;
@@ -33,7 +34,8 @@ export function initializeRidgedMulti({
   lacunarity = DEFAULT_PERLIN_LACUNARITY,
   seed = DEFAULT_PERLIN_SEED,
   octaves = DEFAULT_PERLIN_OCTAVE_COUNT,
-  frequency = DEFAULT_PERLIN_FREQUENCY
+  frequency = DEFAULT_PERLIN_FREQUENCY,
+  overlap = 1
 }) {
   const result = new libnoise.generator.RidgedMultifractal(
     frequency,
@@ -42,8 +44,8 @@ export function initializeRidgedMulti({
     seed,
     libnoise.QualityMode.MEDIUM
   );
-  return new libnoise.operator.Clamp(0, 1, new libnoise.operator.Multiply(
-    new libnoise.operator.Add(result, new libnoise.generator.Const(0.25)),
-    new libnoise.generator.Const(0.75)
-  ));
+  return new AnyDirectionModule({ generator: new libnoise.operator.Clamp(0, 1, new libnoise.operator.Add(new libnoise.operator.Multiply(
+    result,
+    new libnoise.generator.Const(0.8)), new libnoise.generator.Const(0.2)
+  )), overlap });
 }

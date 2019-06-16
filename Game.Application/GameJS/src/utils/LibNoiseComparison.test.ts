@@ -1,5 +1,5 @@
 import { libnoise } from "libnoise";
-import { DEFAULT_PERLIN_LACUNARITY, DEFAULT_PERLIN_PERSISTENCE, DEFAULT_PERLIN_OCTAVE_COUNT, DEFAULT_PERLIN_FREQUENCY, initializeRidgedMulti } from "./LibNoiseUtils";
+import { DEFAULT_PERLIN_LACUNARITY, DEFAULT_PERLIN_PERSISTENCE, DEFAULT_PERLIN_OCTAVE_COUNT, DEFAULT_PERLIN_FREQUENCY, initializeRidgedMulti, initializePerlin } from "./LibNoiseUtils";
 
 it("has the same perlin results as .net", () => {
     const perlin = new libnoise.generator.Perlin(DEFAULT_PERLIN_FREQUENCY, DEFAULT_PERLIN_LACUNARITY, DEFAULT_PERLIN_PERSISTENCE, DEFAULT_PERLIN_OCTAVE_COUNT,
@@ -9,6 +9,16 @@ it("has the same perlin results as .net", () => {
     const microsteps = 30;
 
     const noise = Array.from(Array(microsteps).keys()).map(i => (i - microsteps / 2) / microsteps * step).map(v => perlin.getValue(v, 0, 0))
+    expect(noise).toMatchSnapshot();
+});
+
+it("can normalize perlin results", () => {
+    const ridged = initializePerlin({});
+
+    const step = 0.1;
+    const microsteps = 60;
+
+    const noise = Array.from(Array(microsteps).keys()).map(i => (i - microsteps / 2) * step).map(v => ridged.getValue(v, 0, 0))
     expect(noise).toMatchSnapshot();
 });
 
@@ -29,7 +39,18 @@ it("can normalize ridged multifractal results", () => {
     const step = 0.1;
     const microsteps = 60;
 
-    const noise = Array.from(Array(microsteps).keys()).map(i => (i - microsteps / 2) / microsteps * step).map(v => ridged.getValue(v, 0, 0))
+    const noise = Array.from(Array(microsteps).keys()).map(i => (i - microsteps / 2) * step).map(v => ridged.getValue(v, 0, 0))
+    expect(noise).toMatchSnapshot();
+});
+
+it("changes ridged multifractal over large distances", () => {
+    const ridged = new libnoise.generator.RidgedMultifractal(0.01, 3.2, DEFAULT_PERLIN_OCTAVE_COUNT,
+        0, libnoise.QualityMode.MEDIUM);
+
+    const step = 60;
+    const microsteps = 60;
+
+    const noise = Array.from(Array(microsteps).keys()).map(i => (i - microsteps / 2) * step).map(v => ridged.getValue(v, 0, 0))
     expect(noise).toMatchSnapshot();
 });
 
