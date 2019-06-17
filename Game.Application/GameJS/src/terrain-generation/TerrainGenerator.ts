@@ -22,7 +22,7 @@ export class TerrainGenerator {
       frequency: 1,
       lacunarity: 3.2,
       seed: 670,
-      overlap: featureOverlap * 10
+      scale: featureOverlap
     });
   private readonly caveSeeds = initializePerlin({
       lacunarity: 3.2,
@@ -41,7 +41,7 @@ export class TerrainGenerator {
       this.humidity.getValue(x, y, 0),
       heat
     );
-    const feature = this.feature.getValue(x * featureOverlap, y * featureOverlap, 0);
+    const feature = this.feature.getValue(x, y, 0);
 
     return new TerrainPoint(
       this.terrainSettings,
