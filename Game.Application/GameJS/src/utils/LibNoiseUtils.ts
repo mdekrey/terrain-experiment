@@ -1,4 +1,5 @@
 import { libnoise } from "libnoise";
+import { DataDrivenValue, construct, DataDrivenConstructor } from "./DataDrivenComposition";
 
 export const DEFAULT_PERLIN_LACUNARITY = 2;
 export const DEFAULT_PERLIN_SEED = 0;
@@ -11,57 +12,87 @@ const yOffset = 1/400;
 export function initializePerlin({
   lacunarity = DEFAULT_PERLIN_LACUNARITY,
   seed = DEFAULT_PERLIN_SEED,
-  octaves = DEFAULT_PERLIN_OCTAVE_COUNT,
-  frequency = DEFAULT_PERLIN_FREQUENCY
 }) {
-  const result = new libnoise.generator.Perlin(
-    frequency,
-    lacunarity,
-    DEFAULT_PERLIN_PERSISTENCE,
-    octaves,
-    seed,
-    libnoise.QualityMode.MEDIUM
-  );
-  return new libnoise.operator.Translate(0, yOffset, 0, new libnoise.operator.Clamp(
-    0,
-    1,
-    new libnoise.operator.Add(
-      new libnoise.operator.Multiply(
-        result,
-        new libnoise.generator.Const(1 / 1.77)
-      ),
-      new libnoise.generator.Const(0.5)
-    )
-  ));
+  return dataDrivenNoise(perlinDataDrivenConstructor(seed, lacunarity));
+}
+
+export function perlinDataDrivenConstructor(seed: number, lacunarity: number): DataDrivenConstructor {
+  return {
+    target: "operator.Translate",
+    arguments: [0, yOffset, 0, {
+      target: "operator.Clamp",
+      arguments: [0, 1, {
+        target: "operator.Add",
+        arguments: [{
+          target: "operator.Multiply",
+          arguments: [{
+            target: "generator.Perlin",
+            arguments: [
+              DEFAULT_PERLIN_FREQUENCY,
+              lacunarity,
+              DEFAULT_PERLIN_PERSISTENCE,
+              DEFAULT_PERLIN_OCTAVE_COUNT,
+              seed
+            ]
+          }, {
+            target: "generator.Const",
+            arguments: [1 / 1.77]
+          }]
+        }, {
+          target: "generator.Const",
+          arguments: [0.5]
+        }]
+      }]
+    }]
+  };
 }
 
 export function initializeRidgedMulti({
-  lacunarity = DEFAULT_PERLIN_LACUNARITY,
   seed = DEFAULT_PERLIN_SEED,
-  octaves = DEFAULT_PERLIN_OCTAVE_COUNT,
-  frequency = DEFAULT_PERLIN_FREQUENCY,
-  scale = 1
+  scale = 1,
+  lacunarity = DEFAULT_PERLIN_LACUNARITY
 }) {
-  const result = new libnoise.generator.Perlin(
-    frequency,
-    lacunarity,
-    DEFAULT_PERLIN_PERSISTENCE,
-    octaves,
-    seed,
-    libnoise.QualityMode.MEDIUM
-  );
-  return new libnoise.operator.Translate(0, yOffset, 0, new libnoise.operator.Scale(scale, scale, 1, new libnoise.operator.Clamp(
-    0,
-    1,
-    new NormalRidge(
-      new libnoise.operator.Abs(
-        new libnoise.operator.Multiply(
-          result,
-          new libnoise.generator.Const(1 / 1.6)
-        )
-      )
-    )
-  )));
+  return dataDrivenNoise(ridgedMultiDataDrivenConstructor(scale,  seed, lacunarity));
+}
+
+export function ridgedMultiDataDrivenConstructor(scale: number, seed: number, lacunarity: number): DataDrivenConstructor {
+  return {
+    target: "operator.Translate",
+    arguments: [0, yOffset, 0, {
+      target: "operator.Scale",
+      arguments: [scale, scale, 1, {
+        target: "operator.Clamp",
+        arguments: [0, 1, {
+          target: "NormalRidge",
+          arguments: [{
+            target: "operator.Abs",
+            arguments: [{
+              target: "operator.Multiply",
+              arguments: [{
+                target: "generator.Perlin",
+                arguments: [
+                  DEFAULT_PERLIN_FREQUENCY,
+                  lacunarity,
+                  DEFAULT_PERLIN_PERSISTENCE,
+                  DEFAULT_PERLIN_OCTAVE_COUNT,
+                  seed
+                ]
+              }, {
+                target: "generator.Const",
+                arguments: [1 / 1.6]
+              }]
+            }]
+          }]
+        }]
+      }]
+    }]
+  };
+}
+
+class Perlin extends libnoise.generator.Perlin {
+  constructor(frequency: number, lacunarity: number, persistence: number, octaves: number, seed: number) {
+    super(frequency, lacunarity, persistence, octaves, seed, libnoise.QualityMode.MEDIUM);
+  }
 }
 
 class NormalRidge extends libnoise.ModuleBase {
@@ -74,4 +105,22 @@ class NormalRidge extends libnoise.ModuleBase {
     const val = libnoise.Utils.Clamp(this.base.getValue(x, y, z), 0, 1);
     return 1 - val * (1 - val) * 4;
   }
+}
+
+const dataDrivenConstructors: Record<string, { new(...args: any[]): libnoise.ModuleBase }> = {
+  "NormalRidge": NormalRidge,
+  "generator.Perlin": Perlin,
+  "operator.Abs": libnoise.operator.Abs,
+  "operator.Add": libnoise.operator.Add,
+  "operator.Clamp": libnoise.operator.Clamp,
+  "generator.Const": libnoise.generator.Const,
+  "operator.Multiply": libnoise.operator.Multiply,
+  "operator.Translate": libnoise.operator.Translate,
+  "operator.Scale": libnoise.operator.Scale,
+};
+
+export function dataDrivenNoise(target: DataDrivenConstructor): libnoise.ModuleBase;
+export function dataDrivenNoise(target: number): number;
+export function dataDrivenNoise(target: DataDrivenValue) {
+  return construct(target, dataDrivenConstructors);
 }

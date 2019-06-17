@@ -19,7 +19,6 @@ export class TerrainGenerator {
       seed: 200
     });
   private readonly feature = initializeRidgedMulti({
-      frequency: 1,
       lacunarity: 3.2,
       seed: 670,
       scale: featureOverlap

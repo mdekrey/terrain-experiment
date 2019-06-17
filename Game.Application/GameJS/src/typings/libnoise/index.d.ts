@@ -36,90 +36,120 @@ declare module 'libnoise' {
         export namespace generator {
             export class Billow extends ModuleBase {
                 constructor(frequency: number, lacunarity: number, persistence: number, octaves: number, seed: number, quality: QualityMode);
+                getValue(x, y, z): number;
             }
-            export class Checker extends ModuleBase {}
+            export class Checker extends ModuleBase {
+                getValue(x, y, z): number;
+            }
             export class Const extends ModuleBase {
                 constructor(value: number);
+                getValue(x, y, z): number;
             }
             export class Cylinder extends ModuleBase {
                 constructor(frequency: number);
+                getValue(x, y, z): number;
             }
             export class Perlin extends ModuleBase {
                 constructor(frequency: number, lacunarity: number, persistence: number, octaves: number, seed: number, quality: QualityMode);
+                getValue(x, y, z): number;
             }
             export class RidgedMultifractal extends ModuleBase {
                 constructor(frequency: number, lacunarity: number, octaves: number, seed: number, quality: QualityMode);
+                getValue(x, y, z): number;
             }
             export class Sphere extends ModuleBase {
                 constructor(frequency: number);
+                getValue(x, y, z): number;
             }
             export class Voronoi extends ModuleBase {
                 constructor(frequency: number, displacement: number, seed: number, distance: boolean);
+                getValue(x, y, z): number;
             }
         }
         export namespace operator {
             export class Abs extends ModuleBase {
                 constructor(input: ModuleBase);
+                getValue(x, y, z): number;
             }
             export class Add extends ModuleBase {
                 constructor(lhs: ModuleBase, rhs: ModuleBase);
+                getValue(x, y, z): number;
             }
             export class Blend extends ModuleBase {
                 constructor(lhs: ModuleBase, rhs: ModuleBase, controller: ModuleBase);
+                getValue(x, y, z): number;
             }
             export class Cache extends ModuleBase {
                 constructor(input: ModuleBase);
+                getValue(x, y, z): number;
             }
             export class Clamp extends ModuleBase {
                 constructor(min: number, max: number, input: ModuleBase);
+                getValue(x, y, z): number;
             }
             export class Curve extends ModuleBase {
                 constructor(input: ModuleBase);
+                getValue(x, y, z): number;
             }
             export class Displace extends ModuleBase {
                 constructor(input: ModuleBase, x: number, y: number, z);
+                getValue(x, y, z): number;
             }
             export class Exponent extends ModuleBase {
                 constructor(exponent: number, input: ModuleBase);
+                getValue(x, y, z): number;
             }
             export class Invert extends ModuleBase {
                 constructor(input: ModuleBase);
+                getValue(x, y, z): number;
             }
             export class Max extends ModuleBase {
                 constructor(lhs: ModuleBase, rhs: ModuleBase);
+                getValue(x, y, z): number;
             }
             export class Min extends ModuleBase {
                 constructor(lhs: ModuleBase, rhs: ModuleBase);
+                getValue(x, y, z): number;
             }
             export class Multiply extends ModuleBase {
                 constructor(lhs: ModuleBase, rhs: ModuleBase);
+                getValue(x, y, z): number;
             }
             export class Power extends ModuleBase {
                 constructor(lhs: ModuleBase, rhs: ModuleBase);
+                getValue(x, y, z): number;
             }
             export class Rotate extends ModuleBase {
                 constructor(rx: number, ry: number, rz: number, input: ModuleBase);
+                getValue(x, y, z): number;
             }
             export class Scale extends ModuleBase {
                 constructor(sx: number, sy: number, sz: number, input: ModuleBase);
+                getValue(x, y, z): number;
             }
             export class ScaleBias extends ModuleBase {
                 constructor(scale: number, bias: number, input: ModuleBase);
+                getValue(x, y, z): number;
             }
             export class Select extends ModuleBase {
                 constructor(min: number, max: number, fallOff: number, inputA: ModuleBase, inputB: ModuleBase, controller: ModuleBase);
+                getValue(x, y, z): number;
             }
             export class Subtract extends ModuleBase {
                 constructor(lhs: number, rhs: number);
+                getValue(x, y, z): number;
             }
             export class Terrace extends ModuleBase {
                 constructor(input: ModuleBase, inverted: boolean);
+                getValue(x, y, z): number;
             }
             export class Translate extends ModuleBase {
                 constructor(x: number, y: number, z: number, input: ModuleBase);
+                getValue(x, y, z): number;
             }
             export class Turbulence extends ModuleBase {
                 constructor(power: number, input: ModuleBase, distortX: generator.Perlin, distortY: generator.Perlin, distortZ: generator.Perlin);
+                getValue(x, y, z): number;
             }
         }
     }
