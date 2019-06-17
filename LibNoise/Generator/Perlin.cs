@@ -16,7 +16,7 @@ namespace LibNoise.Generator
         public readonly QualityMode quality;
 
 
-        public Perlin(float frequency = 1f, float lacunarity = 2f, float persistence = 0.5f, int octaves = 6, int seed = 0, QualityMode quality = QualityMode.Medium) : base(0)
+        public Perlin(float frequency = 1f, float lacunarity = 2f, float persistence = 0.5f, int octaves = 6, int seed = 0, QualityMode quality = QualityMode.Medium)
         {
             this.frequency = frequency;
 

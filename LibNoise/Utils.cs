@@ -147,6 +147,10 @@ namespace LibNoise
             0.991353f, 0.112814f, 0.0670273f, 0.0f, 0.0337884f, -0.979891f, -0.196654f, 0.0f
         };
 
+        public static float Clamp(float value, float min, float max)
+        {
+            return Math.Min(max, Math.Max(min, value));
+        }
 
         static public float GradientCoherentNoise3D(float x, float y, float z, long seed, QualityMode quality)
         {
