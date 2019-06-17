@@ -21,13 +21,17 @@ export function initializePerlin({
     seed,
     libnoise.QualityMode.MEDIUM
   );
-  return new libnoise.operator.Clamp(0, 1, new libnoise.operator.Add(
-    new libnoise.operator.Multiply(
-      result,
-      new libnoise.generator.Const(1 / (1.77))
-    ),
-    new libnoise.generator.Const(0.5)
-  ));
+  return new libnoise.operator.Clamp(
+    0,
+    1,
+    new libnoise.operator.Add(
+      new libnoise.operator.Multiply(
+        result,
+        new libnoise.generator.Const(1 / 1.77)
+      ),
+      new libnoise.generator.Const(0.5)
+    )
+  );
 }
 
 export function initializeRidgedMulti({
@@ -37,15 +41,40 @@ export function initializeRidgedMulti({
   frequency = DEFAULT_PERLIN_FREQUENCY,
   overlap = 1
 }) {
-  const result = new libnoise.generator.RidgedMultifractal(
+  const result = new libnoise.generator.Perlin(
     frequency,
     lacunarity,
+    DEFAULT_PERLIN_PERSISTENCE,
     octaves,
     seed,
     libnoise.QualityMode.MEDIUM
   );
-  return new AnyDirectionModule({ generator: new libnoise.operator.Clamp(0, 1, new libnoise.operator.Add(new libnoise.operator.Multiply(
-    result,
-    new libnoise.generator.Const(0.8)), new libnoise.generator.Const(0.2)
-  )), overlap });
+  // return result
+  return new libnoise.operator.Clamp(
+    0,
+    1,
+    // new libnoise.operator.Exponent(
+    //   0.75,
+    new NormalRidge(
+        new libnoise.operator.Abs(
+          new libnoise.operator.Multiply(
+          result,
+          new libnoise.generator.Const(1 / 1.6)
+        )
+        )
+      )
+    // )
+  );
+}
+
+class NormalRidge extends libnoise.ModuleBase {
+  private base: libnoise.ModuleBase
+  constructor(base: libnoise.ModuleBase) {
+    super();
+    this.base = base;
+  }
+  getValue(x: number, y: number, z: number) {
+    const val = libnoise.Utils.Clamp(this.base.getValue(x, y, z), 0, 1);
+    return 1 - (val * (1 - val)) * 4;
+  }
 }

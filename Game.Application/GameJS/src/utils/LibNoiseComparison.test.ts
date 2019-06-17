@@ -37,10 +37,27 @@ it("can normalize ridged multifractal results", () => {
     const ridged = initializeRidgedMulti({});
 
     const step = 0.1;
-    const microsteps = 60;
+    const microsteps = 200;
 
-    const noise = Array.from(Array(microsteps).keys()).map(i => (i - microsteps / 2) * step).map(v => ridged.getValue(v, 0, 0))
-    expect(noise).toMatchSnapshot();
+    const histogram = Array.from(Array(microsteps).keys())
+      .map(i => i * step)
+      .map(x =>
+        Array.from(Array(microsteps).keys())
+          .map(i => i * step)
+          .map(y => ridged.getValue(x, y, 0))
+      )
+      .reduce(
+        (prev, next) => {
+          next.forEach(v => {
+            const idx = Math.floor(v * 10);
+            prev[idx] = (prev[idx] | 0) + 1;
+          });
+          return prev;
+        },
+        []
+      );
+
+    expect(histogram).toMatchSnapshot();
 });
 
 it("changes ridged multifractal over large distances", () => {

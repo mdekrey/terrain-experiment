@@ -51,13 +51,13 @@ export class TerrainPoint {
     return BiomeDetails.categoryLookup[this.biomeLabel];
   }
   get altitudeCategory() {
-    return this.altitude < 0.4
+    return this.altitude < 0.2
       ? AltitudeCategory.DeepWater
-      : this.altitude < 0.5
+      : this.altitude < 0.4
       ? AltitudeCategory.ShallowWater
-      : this.altitude < 0.7
+      : this.altitude < 0.8
       ? AltitudeCategory.None
-      : this.altitude < 0.76
+      : this.altitude < 0.9
       ? AltitudeCategory.Hills
       : AltitudeCategory.Mountain;
   }
@@ -202,7 +202,7 @@ export class TerrainPoint {
     return (
       (this.altitudeCategory === AltitudeCategory.Hills ||
         this.altitudeCategory === AltitudeCategory.None) &&
-      this.feature > 0.95
+      this.feature > 0.995
     );
   }
 }

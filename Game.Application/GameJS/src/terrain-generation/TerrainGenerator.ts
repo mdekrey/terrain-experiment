@@ -3,7 +3,7 @@ import { initializePerlin, initializeRidgedMulti } from "../utils/LibNoiseUtils"
 import { TerrainPoint } from "./TerrainPoint";
 import { GameCoordinates } from "../game/GameCoordinates";
 
-const featureOverlap = 6000;
+const featureOverlap = 1000;
 
 export class TerrainGenerator {
   private readonly humidity = initializePerlin({
@@ -16,7 +16,7 @@ export class TerrainGenerator {
     });
   private readonly altitude = initializeRidgedMulti({
       lacunarity: 3.2,
-      seed: 3201
+      seed: 200
     });
   private readonly feature = initializeRidgedMulti({
       frequency: 1,

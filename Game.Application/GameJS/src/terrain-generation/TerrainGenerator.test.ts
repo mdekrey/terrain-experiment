@@ -24,7 +24,7 @@ it("has consistent altitude", () => {
 it("has consistent features", () => {
     const terrain = new TerrainGenerator(new TerrainSettings());
 
-    const step = 0.1;
+    const step = 0.001;
     const microsteps = 30;
 
     const noise = Array.from(Array(microsteps).keys()).map(i => (i - microsteps / 2)  / microsteps * step).map(v => terrain.getTerrain(0, v).feature)
