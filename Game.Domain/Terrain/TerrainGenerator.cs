@@ -5,7 +5,7 @@ using LibNoise;
 using LibNoise.Filter;
 using LibNoise.Primitive;
 
-namespace Game.Domain
+namespace Game.Domain.Terrain
 {
     public class TerrainGenerator
     {

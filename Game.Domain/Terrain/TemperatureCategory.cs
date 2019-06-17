@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Game.Domain
+namespace Game.Domain.Terrain
 {
     public enum TemperatureCategory
     {

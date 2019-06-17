@@ -2,7 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Game.Domain
+namespace Game.Domain.Terrain
 {
     public readonly struct TerrainPoint
     {
