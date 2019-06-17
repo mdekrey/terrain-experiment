@@ -33,12 +33,11 @@ export class CaveGenerator {
     normalizationRounds: number,
     offset: GameCoordinates
   ) {
-    console.log(seed);
     this.perlin = new libnoise.generator.Perlin(DEFAULT_PERLIN_FREQUENCY, 3.4, DEFAULT_PERLIN_OCTAVE_COUNT, DEFAULT_PERLIN_PERSISTENCE, seed, libnoise.QualityMode.MEDIUM);
     this.offset = offset;
 
     const random = (x: number, y: number) =>
-    libnoise.Utils.ValueNoise3D(x, y, 0, seed) < -0.2;
+      this.perlin.getValue(x / 3, y / 3, 0) < 0;
 
     this.result = new Promise((resolve, reject) => {
       let map = Array.from(Array(height).keys()).map((_, y) =>
