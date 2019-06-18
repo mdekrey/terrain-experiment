@@ -1,5 +1,5 @@
 import { TerrainSettings } from "../terrain-generation/TerrainSettings";
-import { TerrainGenerator, TerrainCache, VisualTerrainType, AltitudeCategory } from "../terrain-generation";
+import { TerrainGenerator, TerrainCache, VisualTerrainType } from "../terrain-generation";
 import { Pawn } from "./Pawn";
 import { Cave, CaveGenerator } from "../cave-generation";
 import { BehaviorSubject } from "rxjs";
@@ -140,7 +140,7 @@ export class Game {
                 }
         }
         function isPassable(category: VisualTerrainType) {
-            return category !== "SnowyMountains" && category !== "Mountains" && category !== AltitudeCategory.ShallowWater && category !== AltitudeCategory.DeepWater;
+            return category !== "SnowyMountains" && category !== "Mountains" && category !== "ShallowWater" && category !== "DeepWater";
         }
     }
 }

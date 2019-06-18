@@ -14,22 +14,25 @@ export function getTerrainSpotRenderer(
     pixelSize
   }) {
     const terrain = terrainCache.getAt(terrainX, terrainY);
-    sprites[detail ? terrain.detailVisualCategory : terrain.visualCategory]!.render(
-      0,
-      context,
-      x * pixelSize,
-      y * pixelSize,
-      pixelSize,
-      pixelSize
-    );
-    if (!detail && terrain.hasCave) {
-      sprites["Cave"].render(
-        0,
-        context,
-        x * pixelSize,
-        y * pixelSize,
-        pixelSize,
-        pixelSize
+    try {
+      sprites[
+        detail ? terrain.detailVisualCategory : terrain.visualCategory
+      ]!.render(0, context, x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+      if (!detail && terrain.hasCave) {
+        sprites["Cave"].render(
+          0,
+          context,
+          x * pixelSize,
+          y * pixelSize,
+          pixelSize,
+          pixelSize
+        );
+      }
+    } catch (ex) {
+      throw Error(
+        `Failed to render terrain spot x=${terrainX}, y=${terrainY}, category=${
+          detail ? terrain.detailVisualCategory : terrain.visualCategory
+        }. ${ex}`
       );
     }
   };

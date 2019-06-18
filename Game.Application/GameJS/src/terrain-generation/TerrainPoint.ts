@@ -56,16 +56,7 @@ export class TerrainPoint {
     return BiomeDetails.categoryLookup[this.biomeLabel];
   }
   get altitudeCategory() {
-    // return indexOrLength<AltitudeCategory>(this.terrainSettings.altitudeStep, this.altitude);
-    return this.altitude < 0.2
-      ? AltitudeCategory.DeepWater
-      : this.altitude < 0.4
-      ? AltitudeCategory.ShallowWater
-      : this.altitude < 0.8
-      ? AltitudeCategory.None
-      : this.altitude < 0.9
-      ? AltitudeCategory.Hills
-      : AltitudeCategory.Mountain;
+    return indexOrLength<AltitudeCategory>(this.terrainSettings.altitudeStep, this.altitude);
   }
   get visualCategory(): VisualTerrainType {
     const altitudeCategory = this.altitudeCategory;
@@ -77,7 +68,7 @@ export class TerrainPoint {
       altitudeCategory === AltitudeCategory.DeepWater ||
       altitudeCategory === AltitudeCategory.ShallowWater
     ) {
-      return temp === TemperatureCategory.Polar && this.feature > this.heat / this.terrainSettings.tempsStep[1] ? "Ice" : altitudeCategory;
+      return temp === TemperatureCategory.Polar && this.feature > this.heat / this.terrainSettings.tempsStep[1] ? "Ice" : AltitudeCategory[altitudeCategory] as VisualTerrainType;
     }
     if (this.altitude < this.feature - 0.05) {
       return BiomeCategory[this.biomeCategory] as VisualTerrainType;
@@ -91,7 +82,7 @@ export class TerrainPoint {
         ? "SnowyHills"
         : "SnowyMountains";
     }
-    return altitudeCategory;
+    return AltitudeCategory[altitudeCategory] as VisualTerrainType;
   }
   get detailVisualCategory(): VisualTerrainType {
     const altitudeCategory = this.altitudeCategory;
@@ -100,7 +91,7 @@ export class TerrainPoint {
       altitudeCategory === AltitudeCategory.DeepWater ||
       altitudeCategory === AltitudeCategory.ShallowWater
     ) {
-      return temp === TemperatureCategory.Polar && this.feature > this.heat / this.terrainSettings.tempsStep[1] ? "Ice" : altitudeCategory;
+      return temp === TemperatureCategory.Polar && this.feature > this.heat / this.terrainSettings.tempsStep[1] ? "Ice" : AltitudeCategory[altitudeCategory] as VisualTerrainType;
     }
     if (altitudeCategory !== AltitudeCategory.None && 0.2 > this.feature) {
       if (
@@ -113,7 +104,7 @@ export class TerrainPoint {
           ? "SnowyHills"
           : "SnowyMountains";
       else
-        return this.feature > 0.05 ? AltitudeCategory.Hills : altitudeCategory;
+        return this.feature > 0.05 ? "Hills" : AltitudeCategory[altitudeCategory] as VisualTerrainType;
     }
     const category = this.biomeCategory;
     switch (category) {
