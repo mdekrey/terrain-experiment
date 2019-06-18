@@ -1,4 +1,22 @@
-import { BiomeCategory } from "./BiomeCategory";
-import { AltitudeCategory } from "./WaterCategory";
-
-export type VisualTerrainType = BiomeCategory | AltitudeCategory.ShallowWater | AltitudeCategory.DeepWater | "SnowyMountain" | "Mountain" | "SnowyHill" | "Hills" | "Ice" | "Cave";
+export type VisualTerrainType =
+  | "Permafrost"
+  | "Tundra"
+  | "ColdParklands"
+  | "ConiferousForests"
+  | "CoolDeserts"
+  | "Steppes"
+  | "MixedForests"
+  | "HotDeserts"
+  | "Chaparral"
+  | "DeciduousForests"
+  | "Savanna"
+  | "TropicalSeasonalForests"
+  | "TropicalRainForests"
+  | "ShallowWater"
+  | "DeepWater"
+  | "SnowyMountains"
+  | "Mountains"
+  | "SnowyHills"
+  | "Hills"
+  | "Ice"
+  | "Cave";

@@ -70,7 +70,7 @@ export class TerrainPoint {
   get visualCategory(): VisualTerrainType {
     const altitudeCategory = this.altitudeCategory;
     if (altitudeCategory === AltitudeCategory.None) {
-      return this.biomeCategory;
+      return BiomeCategory[this.biomeCategory] as VisualTerrainType;
     }
     const temp = this.temperatureCategory;
     if (
@@ -80,7 +80,7 @@ export class TerrainPoint {
       return temp === TemperatureCategory.Polar && this.feature > this.heat / this.terrainSettings.tempsStep[1] ? "Ice" : altitudeCategory;
     }
     if (this.altitude < this.feature - 0.05) {
-      return this.biomeCategory;
+      return BiomeCategory[this.biomeCategory] as VisualTerrainType;
     }
     if (
       temp === TemperatureCategory.Boreal ||
@@ -88,8 +88,8 @@ export class TerrainPoint {
       temp === TemperatureCategory.Polar
     ) {
       return altitudeCategory === AltitudeCategory.Hills
-        ? "SnowyHill"
-        : "SnowyMountain";
+        ? "SnowyHills"
+        : "SnowyMountains";
     }
     return altitudeCategory;
   }
@@ -110,8 +110,8 @@ export class TerrainPoint {
       )
         return altitudeCategory === AltitudeCategory.Hills ||
           this.feature > 0.05
-          ? "SnowyHill"
-          : "SnowyMountain";
+          ? "SnowyHills"
+          : "SnowyMountains";
       else
         return this.feature > 0.05 ? AltitudeCategory.Hills : altitudeCategory;
     }
@@ -119,43 +119,43 @@ export class TerrainPoint {
     switch (category) {
       case BiomeCategory.Permafrost:
         if (this.feature > 0.8) {
-          return BiomeCategory.Tundra;
+          return "Tundra";
         }
         break;
       case BiomeCategory.Tundra:
         if (this.feature > 0.85) {
-          return BiomeCategory.ColdParklands;
+          return "ColdParklands";
         }
         break;
       case BiomeCategory.ColdParklands:
         if (this.feature < 0.5) {
-          return BiomeCategory.Tundra;
+          return "Tundra";
         }
         if (this.feature > 0.85) {
-          return BiomeCategory.ConiferousForests;
+          return "ConiferousForests";
         }
         break;
       case BiomeCategory.ConiferousForests:
         if (this.feature > 0.65) {
-          return BiomeCategory.Tundra;
+          return "Tundra";
         }
         break;
       case BiomeCategory.CoolDeserts:
         if (this.feature > 0.85) {
-          return BiomeCategory.Steppes;
+          return "Steppes";
         }
         break;
       case BiomeCategory.Steppes:
         if (this.feature < 0.3) {
-          return BiomeCategory.CoolDeserts;
+          return "CoolDeserts";
         }
         break;
       case BiomeCategory.MixedForests:
           if (this.feature > 0.9) {
-            return BiomeCategory.CoolDeserts;
+            return "CoolDeserts";
           }
         if (this.feature > 0.5) {
-          return BiomeCategory.DeciduousForests;
+          return "DeciduousForests";
         }
         break;
       case BiomeCategory.HotDeserts:
@@ -163,46 +163,46 @@ export class TerrainPoint {
         break;
       case BiomeCategory.Chaparral:
         if (this.feature > 0.5 && this.feature < 0.6) {
-          return BiomeCategory.DeciduousForests;
+          return "DeciduousForests";
         }
         if (this.feature > 0.8) {
-          return BiomeCategory.CoolDeserts;
+          return "CoolDeserts";
         }
         break;
       case BiomeCategory.DeciduousForests:
         if (this.feature > 0.5 && this.feature < 0.55) {
-          return BiomeCategory.TropicalRainForests;
+          return "TropicalRainForests";
         }
         if (this.feature > 0.9) {
-          return BiomeCategory.CoolDeserts;
+          return "CoolDeserts";
         }
         if (this.feature > 0.8) {
-          return BiomeCategory.Chaparral;
+          return "Chaparral";
         }
         break;
       case BiomeCategory.Savanna:
         if (this.feature > 0.5 && this.feature < 0.6) {
-          return BiomeCategory.HotDeserts;
+          return "HotDeserts";
         }
         if (this.feature > 0.9) {
-          return BiomeCategory.DeciduousForests;
+          return "DeciduousForests";
         }
         break;
       case BiomeCategory.TropicalSeasonalForests:
         if (this.feature > 0.5 && this.feature < 0.6) {
-          return BiomeCategory.Chaparral;
+          return "Chaparral";
         }
         if (this.feature > 0.7) {
-          return BiomeCategory.DeciduousForests;
+          return "DeciduousForests";
         }
         break;
       case BiomeCategory.TropicalRainForests:
         if (this.feature > 0.7) {
-          return BiomeCategory.DeciduousForests;
+          return "DeciduousForests";
         }
         break;
     }
-    return category;
+    return BiomeCategory[category] as VisualTerrainType;
   }
   get hasCave() {
     return (

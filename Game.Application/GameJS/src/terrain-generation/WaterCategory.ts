@@ -1,5 +1,5 @@
 export enum AltitudeCategory {
-    Mountain = "Mountain",
+    Mountain = "Mountains",
     Hills = "Hills",
     None = "None",
     ShallowWater = "ShallowWater",
