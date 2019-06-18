@@ -1,8 +1,8 @@
 import { TerrainGenerator } from "./TerrainGenerator";
-import { TerrainSettings } from "./TerrainSettings";
+import { defaultTerrainSettings } from "./TerrainSettings";
 
 it("generates some terrain", () => {
-    const terrain = new TerrainGenerator(new TerrainSettings());
+    const terrain = new TerrainGenerator(defaultTerrainSettings);
 
     const step = 0.1;
     const microsteps = 30;
@@ -12,7 +12,7 @@ it("generates some terrain", () => {
 });
 
 it("has consistent altitude", () => {
-    const terrain = new TerrainGenerator(new TerrainSettings());
+    const terrain = new TerrainGenerator(defaultTerrainSettings);
 
     const step = 0.1;
     const microsteps = 30;
@@ -22,7 +22,7 @@ it("has consistent altitude", () => {
 });
 
 it("has consistent features", () => {
-    const terrain = new TerrainGenerator(new TerrainSettings());
+    const terrain = new TerrainGenerator(defaultTerrainSettings);
 
     const step = 0.001;
     const microsteps = 30;

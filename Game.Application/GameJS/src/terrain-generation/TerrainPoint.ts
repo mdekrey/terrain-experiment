@@ -6,6 +6,13 @@ import { TerrainSettings } from "./TerrainSettings";
 import { VisualTerrainType } from "./VisualTerrainType";
 import { BiomeCategory } from "./BiomeCategory";
 
+function indexOrLength<T extends number>(steps: number[], value: number): T {
+  const result = steps.findIndex(
+    v => v > value
+  );
+  return (result === -1 ? steps.length : result) as T;
+}
+
 export class TerrainPoint {
   public readonly terrainSettings: TerrainSettings;
   public readonly x: number;
@@ -32,15 +39,13 @@ export class TerrainPoint {
     this.feature = feature;
   }
   get temperatureCategory() {
-    return this.terrainSettings.tempsStep.findIndex(
-      v => v > this.heat
-    ) as TemperatureCategory;
+    return indexOrLength<TemperatureCategory>(this.terrainSettings.tempsStep, this.heat);
   }
   get humidityCategory() {
     return Math.min(
       BiomeDetails.biomeLabels[this.temperatureCategory].length,
-      Math.floor(8 * this.humidity)
-    ) as HumidityCategory;
+      indexOrLength<HumidityCategory>(this.terrainSettings.humidityStep, this.humidity)
+    );
   }
   get biomeLabel() {
     return BiomeDetails.biomeLabels[this.temperatureCategory][
@@ -51,6 +56,7 @@ export class TerrainPoint {
     return BiomeDetails.categoryLookup[this.biomeLabel];
   }
   get altitudeCategory() {
+    // return indexOrLength<AltitudeCategory>(this.terrainSettings.altitudeStep, this.altitude);
     return this.altitude < 0.2
       ? AltitudeCategory.DeepWater
       : this.altitude < 0.4

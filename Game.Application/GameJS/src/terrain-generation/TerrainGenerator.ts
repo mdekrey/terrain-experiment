@@ -1,42 +1,31 @@
-import { TerrainSettings } from "./TerrainSettings";
-import { initializePerlin, initializeRidgedMulti } from "../utils/LibNoiseUtils";
+import { TerrainSettings, humidityCurve, temperaturePenalty } from "./TerrainSettings";
 import { TerrainPoint } from "./TerrainPoint";
 import { GameCoordinates } from "../game/GameCoordinates";
-
-const featureOverlap = 1000;
+import { libnoise } from "libnoise";
+import { dataDrivenNoise } from "../utils/LibNoiseUtils";
 
 export class TerrainGenerator {
-  private readonly humidity = initializePerlin({
-      lacunarity: 3.2,
-      seed: 0
-    });
-  private readonly heat = initializePerlin({
-      lacunarity: 3.2,
-      seed: 1750
-    });
-  private readonly altitude = initializeRidgedMulti({
-      lacunarity: 3.2,
-      seed: 200
-    });
-  private readonly feature = initializeRidgedMulti({
-      lacunarity: 3.2,
-      seed: 670,
-      scale: featureOverlap
-    });
-  private readonly caveSeeds = initializePerlin({
-      lacunarity: 3.2,
-      seed: 900
-    });
+  private readonly humidity: libnoise.ModuleBase;
+  private readonly heat: libnoise.ModuleBase;
+  private readonly altitude: libnoise.ModuleBase;
+  private readonly feature: libnoise.ModuleBase;
+  private readonly caveSeeds: libnoise.ModuleBase;
   private readonly terrainSettings: TerrainSettings;
 
   constructor(terrainSettings: TerrainSettings) {
     this.terrainSettings = terrainSettings;
+    this.humidity = dataDrivenNoise(terrainSettings.humidity);
+    this.heat = dataDrivenNoise(terrainSettings.heat);
+    this.altitude = dataDrivenNoise(terrainSettings.altitude);
+    this.feature = dataDrivenNoise(terrainSettings.feature);
+    this.caveSeeds = dataDrivenNoise(terrainSettings.caveSeeds);
   }
 
   public getTerrain(x: number, y: number): TerrainPoint {
     const altitude = this.altitude.getValue(x, y, 0);
-    const heat = this.heat.getValue(x, y, 0) - Math.max(0, altitude * 2 - 1.7);
-    const humidity = this.terrainSettings.humidityCurve(
+    const heat = this.heat.getValue(x, y, 0) - temperaturePenalty(this.terrainSettings.temperaturePenalty, altitude);
+    const humidity = humidityCurve(
+      this.terrainSettings.humidityCurve,
       this.humidity.getValue(x, y, 0),
       heat
     );
