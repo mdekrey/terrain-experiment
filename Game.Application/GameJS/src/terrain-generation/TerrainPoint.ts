@@ -60,9 +60,6 @@ export class TerrainPoint {
   }
   get visualCategory(): VisualTerrainType {
     const altitudeCategory = this.altitudeCategory;
-    if (altitudeCategory === AltitudeCategory.None) {
-      return BiomeCategory[this.biomeCategory] as VisualTerrainType;
-    }
     const temp = this.temperatureCategory;
     if (
       altitudeCategory === AltitudeCategory.DeepWater ||
@@ -70,7 +67,7 @@ export class TerrainPoint {
     ) {
       return temp === TemperatureCategory.Polar && this.feature > this.heat / this.terrainSettings.tempsStep[1] ? "Ice" : AltitudeCategory[altitudeCategory] as VisualTerrainType;
     }
-    if (this.altitude < this.feature - 0.05) {
+    if (altitudeCategory === AltitudeCategory.None || this.altitude < this.feature - 0.05) {
       return BiomeCategory[this.biomeCategory] as VisualTerrainType;
     }
     if (
