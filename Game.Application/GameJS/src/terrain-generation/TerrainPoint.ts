@@ -5,6 +5,7 @@ import { AltitudeCategory } from "./WaterCategory";
 import { TerrainSettings } from "./TerrainSettings";
 import { VisualTerrainType } from "./VisualTerrainType";
 import { BiomeCategory } from "./BiomeCategory";
+import { VisualizationSpec, DetailVisualizationSpec } from "./VisualizationSpec";
 
 function indexOrLength<T extends number>(steps: number[], value: number): T {
   const result = steps.findIndex(
@@ -59,36 +60,35 @@ export class TerrainPoint {
     return indexOrLength<AltitudeCategory>(this.terrainSettings.altitudeStep, this.altitude);
   }
   get visualCategory(): VisualTerrainType {
-    const altitudeCategory = this.altitudeCategory;
-    const temp = this.temperatureCategory;
-    if (
-      altitudeCategory === AltitudeCategory.DeepWater ||
-      altitudeCategory === AltitudeCategory.ShallowWater
-    ) {
-      return temp === TemperatureCategory.Polar && this.feature > this.heat / this.terrainSettings.tempsStep[1] ? "Ice" : AltitudeCategory[altitudeCategory] as VisualTerrainType;
-    }
-    if (altitudeCategory === AltitudeCategory.None || this.altitude < this.feature - 0.05) {
-      return BiomeCategory[this.biomeCategory] as VisualTerrainType;
-    }
-    if (
-      temp === TemperatureCategory.Boreal ||
-      temp === TemperatureCategory.Subpolar ||
-      temp === TemperatureCategory.Polar
-    ) {
-      return altitudeCategory === AltitudeCategory.Hills
-        ? "SnowyHills"
-        : "SnowyMountains";
-    }
-    return AltitudeCategory[altitudeCategory] as VisualTerrainType;
+    return VisualizationSpec.execute({
+      altitude: this.altitude,
+      heat: this.heat,
+      humidity: this.humidity,
+      feature: this.feature,
+      temperatureCategory: this.temperatureCategory,
+      humidityCategory: this.humidityCategory,
+      biomeCategory: this.biomeCategory,
+      altitudeCategory: this.altitudeCategory,
+    });
   }
   get detailVisualCategory(): VisualTerrainType {
+    return DetailVisualizationSpec.execute({
+      altitude: this.altitude,
+      heat: this.heat,
+      humidity: this.humidity,
+      feature: this.feature,
+      temperatureCategory: this.temperatureCategory,
+      humidityCategory: this.humidityCategory,
+      biomeCategory: this.biomeCategory,
+      altitudeCategory: this.altitudeCategory,
+    });
     const altitudeCategory = this.altitudeCategory;
     const temp = this.temperatureCategory;
     if (
       altitudeCategory === AltitudeCategory.DeepWater ||
       altitudeCategory === AltitudeCategory.ShallowWater
     ) {
-      return temp === TemperatureCategory.Polar && this.feature > this.heat / this.terrainSettings.tempsStep[1] ? "Ice" : AltitudeCategory[altitudeCategory] as VisualTerrainType;
+      return temp === TemperatureCategory.Polar && this.feature * 0.235 > this.heat ? "Ice" : AltitudeCategory[altitudeCategory] as VisualTerrainType;
     }
     if (altitudeCategory !== AltitudeCategory.None && 0.2 > this.feature) {
       if (

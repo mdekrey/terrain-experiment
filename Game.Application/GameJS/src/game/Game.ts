@@ -106,7 +106,7 @@ export class Game {
             return;
         }
         if (this.isOpenSpace(worldCoordinate)) {
-            this.playerPawn.moveTo(worldCoordinate, facing, 250);
+            this.playerPawn.moveTo(worldCoordinate, facing, 100);
         } else {
             this.playerPawn.facing = facing;
         }
@@ -140,7 +140,8 @@ export class Game {
                 }
         }
         function isPassable(category: VisualTerrainType) {
-            return category !== "SnowyMountains" && category !== "Mountains" && category !== "ShallowWater" && category !== "DeepWater";
+            return true;
+            // return category !== "SnowyMountains" && category !== "Mountains" && category !== "ShallowWater" && category !== "DeepWater";
         }
     }
 }
