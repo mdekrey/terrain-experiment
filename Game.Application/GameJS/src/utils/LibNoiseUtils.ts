@@ -1,5 +1,5 @@
 import { libnoise } from "libnoise";
-import { construct, DataDrivenConstructor, DataDrivenInput } from "./DataDrivenComposition";
+import { construct, DataDrivenConstructor, DataDrivenInput, DataDrivenConstructorRecords } from "./DataDrivenComposition";
 
 export const DEFAULT_PERLIN_LACUNARITY = 2;
 export const DEFAULT_PERLIN_SEED = 0;
@@ -107,7 +107,7 @@ class NormalRidge extends libnoise.ModuleBase {
   }
 }
 
-const dataDrivenConstructors: Record<string, { new(...args: any[]): libnoise.ModuleBase }> = {
+const dataDrivenConstructors: DataDrivenConstructorRecords<any, libnoise.ModuleBase> = {
   "NormalRidge": NormalRidge,
   "generator.Perlin": Perlin,
   "operator.Abs": libnoise.operator.Abs,
@@ -119,8 +119,6 @@ const dataDrivenConstructors: Record<string, { new(...args: any[]): libnoise.Mod
   "operator.Scale": libnoise.operator.Scale,
 };
 
-export function dataDrivenNoise(target: DataDrivenConstructor<number, libnoise.ModuleBase>): libnoise.ModuleBase;
-export function dataDrivenNoise(target: number): number;
-export function dataDrivenNoise(target: DataDrivenInput<number, libnoise.ModuleBase>) {
+export function dataDrivenNoise<T extends DataDrivenInput<number, libnoise.ModuleBase>>(target: T) {
   return construct(target, dataDrivenConstructors);
 }

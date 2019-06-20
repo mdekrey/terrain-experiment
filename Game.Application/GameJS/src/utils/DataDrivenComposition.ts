@@ -11,18 +11,19 @@ function isDataDrivenConstructor(maybeCtor: any): maybeCtor is DataDrivenConstru
 
 export type DataDrivenOutput<TInput, TOutput> = TInput extends DataDrivenConstructor<any, any> ? TOutput : Exclude<TInput, DataDrivenConstructor<any, any>>;
 
-export function construct<TInput, TOutput>(
-    target: DataDrivenInput<TInput, TOutput>,
-    constructors: Record<string, { new(...args: DataDrivenOutput<TInput, TOutput>[]): TOutput }>
-): DataDrivenOutput<DataDrivenInput<TInput, TOutput>, TOutput> {
+export type DataDrivenConstructorRecords<TInput, TOutput> = Record<string, { new(...args: DataDrivenOutput<TInput, TOutput>[]): TOutput }>
+export function construct<TInput, TOutput, TActualInput extends DataDrivenInput<TInput, TOutput>>(
+    target: TActualInput,
+    constructors: DataDrivenConstructorRecords<TInput, TOutput>
+): DataDrivenOutput<TActualInput, TOutput> {
     if (isDataDrivenConstructor(target)) {
         const ctor = constructors[target.target];
         try {
-            const args = target.arguments.map(v => construct(v, constructors)) as DataDrivenOutput<TInput, TOutput>[];
-            return new ctor(...args) as any;
+            const args = target.arguments.map(v => construct(v, constructors))
+            return new ctor(...args) as DataDrivenOutput<TActualInput, TOutput>;
         } catch (ex) {
             throw new Error(ex.message + `\n  at ${target.target}`);
         }
     }
-    return target as DataDrivenOutput<TInput, TOutput>;
+    return target as DataDrivenOutput<TActualInput, TOutput>;
 }
