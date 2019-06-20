@@ -1,112 +1,18 @@
 import {
   IfSpecification,
-  ISpecification,
   AndSpecification,
   OrSpecification,
   SwitchSpecification,
   NotSpecification,
-  SwitchPart
+  SwitchPart,
+  Result
 } from "../utils/specifications";
+import {TerrainSituation, IsBiome, IsFeatureGreaterThanAltitude,IsFeatureGreaterThanConstant, IsFeatureGreaterThanHeat, IsTemperature, IsAltitude, } from "./terrain-specifications";
 
 import { TemperatureCategory } from "./TemperatureCategory";
-import { HumidityCategory } from "./HumidityCategory";
 import { BiomeCategory } from "./BiomeCategory";
 import { VisualTerrainType } from "./VisualTerrainType";
 import { AltitudeCategory } from "./WaterCategory";
-
-export interface TerrainSituation {
-  readonly altitude: number;
-  readonly heat: number;
-  readonly humidity: number;
-  readonly feature: number;
-  readonly temperatureCategory: TemperatureCategory;
-  readonly humidityCategory: HumidityCategory;
-  readonly biomeCategory: BiomeCategory;
-  readonly altitudeCategory: AltitudeCategory;
-}
-
-class Result<TOutput> implements ISpecification<any, TOutput> {
-  private readonly result: TOutput;
-  constructor(result: TOutput) {
-    this.result = result;
-  }
-  execute() {
-    return this.result;
-  }
-}
-
-abstract class IsValue<TSituation, T>
-  implements ISpecification<TSituation, boolean> {
-  private readonly expectedValue: T;
-  constructor(expectedValue: T) {
-    this.expectedValue = expectedValue;
-  }
-
-  abstract getActualValue(situation: TSituation): T;
-
-  execute(situation: TSituation): boolean {
-    return this.getActualValue(situation) === this.expectedValue;
-  }
-}
-
-class IsTemperature extends IsValue<TerrainSituation, TemperatureCategory> {
-  getActualValue(situation: TerrainSituation): TemperatureCategory {
-    return situation.temperatureCategory;
-  }
-}
-class IsAltitude extends IsValue<TerrainSituation, AltitudeCategory> {
-  getActualValue(situation: TerrainSituation): AltitudeCategory {
-    return situation.altitudeCategory;
-  }
-}
-class IsBiome extends IsValue<TerrainSituation, BiomeCategory> {
-  getActualValue(situation: TerrainSituation): BiomeCategory {
-    return situation.biomeCategory;
-  }
-}
-
-abstract class IsFeatureGreaterThanValue
-  implements ISpecification<TerrainSituation, boolean> {
-  private readonly slope: number;
-  private readonly offset: number;
-  constructor(slope: number, offset: number) {
-    this.slope = slope;
-    this.offset = offset;
-  }
-
-  abstract getActualValue(situation: TerrainSituation): number;
-
-  execute(situation: TerrainSituation): boolean {
-    return (
-      situation.feature * this.slope + this.offset >
-      this.getActualValue(situation)
-    );
-  }
-}
-
-class IsFeatureGreaterThanHeat extends IsFeatureGreaterThanValue {
-  getActualValue(situation: TerrainSituation) {
-    return situation.heat;
-  }
-}
-
-class IsFeatureGreaterThanAltitude extends IsFeatureGreaterThanValue {
-  getActualValue(situation: TerrainSituation) {
-    return situation.altitude;
-  }
-}
-
-class IsFeatureGreaterThanConstant extends IsFeatureGreaterThanValue {
-  private readonly value: number;
-  constructor(value: number) {
-    super(1, 0);
-    this.value = value;
-  }
-
-  getActualValue() {
-    return this.value;
-  }
-}
 
 const biomeMap: Record<BiomeCategory, VisualTerrainType> = {
   [BiomeCategory.Permafrost]: "Permafrost",
