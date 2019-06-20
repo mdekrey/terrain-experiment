@@ -4,7 +4,6 @@ import { BiomeDetails } from "./BiomeDetails";
 import { AltitudeCategory } from "./WaterCategory";
 import { TerrainSettings } from "./TerrainSettings";
 import { VisualTerrainType } from "./VisualTerrainType";
-import { VisualizationSpec, DetailVisualizationSpec } from "./VisualizationSpec";
 
 function indexOrLength<T extends number>(steps: number[], value: number): T {
   const result = steps.findIndex(
@@ -59,7 +58,7 @@ export class TerrainPoint {
     return indexOrLength<AltitudeCategory>(this.terrainSettings.altitudeStep, this.altitude);
   }
   get visualCategory(): VisualTerrainType {
-    return VisualizationSpec.execute({
+    return (this.terrainSettings.visualizationSpec).execute({
       altitude: this.altitude,
       heat: this.heat,
       humidity: this.humidity,
@@ -71,7 +70,7 @@ export class TerrainPoint {
     });
   }
   get detailVisualCategory(): VisualTerrainType {
-    return DetailVisualizationSpec.execute({
+    return (this.terrainSettings.detailVisualizationSpec).execute({
       altitude: this.altitude,
       heat: this.heat,
       humidity: this.humidity,

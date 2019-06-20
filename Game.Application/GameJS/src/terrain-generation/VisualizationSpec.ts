@@ -1,7 +1,3 @@
-import {
-  dataDrivenTerrainOnly,
-} from "./terrain-specifications";
-
 import { TemperatureCategory } from "./TemperatureCategory";
 import { BiomeCategory } from "./BiomeCategory";
 import { VisualTerrainType } from "./VisualTerrainType";
@@ -190,24 +186,33 @@ const waterOrIceSwitchFragment = [
   ]
 ];
 
-export const VisualizationSpec = dataDrivenTerrainOnly({
+export const VisualizationSpec = {
   target: "Switch",
   arguments: [
     [
       ...waterOrIceSwitchFragment,
       [
-        { target: "Not", arguments: [
-          { target: "Or", arguments: [
-            { target: "IsFeatureGreaterThanAltitude", arguments: [1, -0.05] },
-            { target: "IsAltitude", arguments: [AltitudeCategory.None] }
-          ] }
-        ] },
+        {
+          target: "Not",
+          arguments: [
+            {
+              target: "Or",
+              arguments: [
+                {
+                  target: "IsFeatureGreaterThanAltitude",
+                  arguments: [1, -0.05]
+                },
+                { target: "IsAltitude", arguments: [AltitudeCategory.None] }
+              ]
+            }
+          ]
+        },
         mountains
       ]
     ],
     biomeResult
   ]
-});
+};
 
 const isHill = {
   target: "Or",
@@ -217,25 +222,27 @@ const isHill = {
   ]
 };
 
-export const DetailVisualizationSpec = dataDrivenTerrainOnly({
+export const DetailVisualizationSpec = {
   target: "Switch",
   arguments: [
     [
       ...waterOrIceSwitchFragment,
       [
-        { target: "Not", arguments: [
-          { target: "Or", arguments: [
-            { target: "IsFeatureGreaterThanConstant", arguments: [0.2]},
-            { target: "IsAltitude", arguments: [AltitudeCategory.None]}
-          ]}
-        ]},
-        { target: "If", arguments: [
-          isHill,
-          hillsOnly,
-          mountains
-        ]}
+        {
+          target: "Not",
+          arguments: [
+            {
+              target: "Or",
+              arguments: [
+                { target: "IsFeatureGreaterThanConstant", arguments: [0.2] },
+                { target: "IsAltitude", arguments: [AltitudeCategory.None] }
+              ]
+            }
+          ]
+        },
+        { target: "If", arguments: [isHill, hillsOnly, mountains] }
       ]
     ],
     biomeDetailResult
   ]
-});
+};

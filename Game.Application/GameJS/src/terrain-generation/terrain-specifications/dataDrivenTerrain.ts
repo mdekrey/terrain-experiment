@@ -21,7 +21,7 @@ import { IsFeatureGreaterThanHeat } from "./IsFeatureGreaterThanHeat";
 import { IsTemperature } from "./IsTemperature";
 import { IsAltitude } from "./IsAltitude";
 
-type TerrainSpec<TOutput> = ISpecification<TerrainSituation, TOutput>;
+export type TerrainSpec<TOutput> = ISpecification<TerrainSituation, TOutput>;
 
 
 const booleanConstructors = {

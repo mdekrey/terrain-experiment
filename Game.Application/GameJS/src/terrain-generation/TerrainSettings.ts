@@ -1,6 +1,9 @@
 import { perlinDataDrivenConstructor, ridgedMultiDataDrivenConstructor } from "../utils/LibNoiseUtils";
 import { DataDrivenConstructor } from "../utils/DataDrivenComposition";
 import { libnoise } from "libnoise";
+import { VisualTerrainType } from "./VisualTerrainType";
+import { VisualizationSpec, DetailVisualizationSpec } from "./VisualizationSpec";
+import { dataDrivenTerrainOnly, TerrainSpec } from "./terrain-specifications";
 
 const featureOverlap = 1000;
 
@@ -16,6 +19,8 @@ export interface TerrainSettings {
     altitude: TerrainSpecCreation;
     feature: TerrainSpecCreation;
     caveSeeds: TerrainSpecCreation;
+    visualizationSpec: TerrainSpec<VisualTerrainType>;
+    detailVisualizationSpec: TerrainSpec<VisualTerrainType>;
 }
 
 export const defaultTerrainSettings: TerrainSettings = {
@@ -30,6 +35,9 @@ export const defaultTerrainSettings: TerrainSettings = {
     altitude: ridgedMultiDataDrivenConstructor(1, 200, 3.2),
     feature: ridgedMultiDataDrivenConstructor(featureOverlap, 670, 3.2),
     caveSeeds: perlinDataDrivenConstructor(900, 3.2),
+
+    visualizationSpec: dataDrivenTerrainOnly(VisualizationSpec),
+    detailVisualizationSpec: dataDrivenTerrainOnly(DetailVisualizationSpec),
 
 };
 // console.log(defaultTerrainSettings);
