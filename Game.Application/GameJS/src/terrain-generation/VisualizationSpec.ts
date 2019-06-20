@@ -4,7 +4,8 @@ import {
   AndSpecification,
   OrSpecification,
   SwitchSpecification,
-  NotSpecification
+  NotSpecification,
+  SwitchPart
 } from "../utils/specifications";
 
 import { TemperatureCategory } from "./TemperatureCategory";
@@ -12,7 +13,6 @@ import { HumidityCategory } from "./HumidityCategory";
 import { BiomeCategory } from "./BiomeCategory";
 import { VisualTerrainType } from "./VisualTerrainType";
 import { AltitudeCategory } from "./WaterCategory";
-import { neverEver } from "../utils/neverEver";
 
 export interface TerrainSituation {
   readonly altitude: number;
@@ -25,108 +25,13 @@ export interface TerrainSituation {
   readonly altitudeCategory: AltitudeCategory;
 }
 
-class Result<TOutput> {
+class Result<TOutput> implements ISpecification<any, TOutput> {
   private readonly result: TOutput;
   constructor(result: TOutput) {
     this.result = result;
   }
   execute() {
     return this.result;
-  }
-}
-
-class IsWaterSpecification
-  implements ISpecification<TerrainSituation, boolean> {
-  execute(situation: TerrainSituation): boolean {
-    const { altitudeCategory } = situation;
-    return (
-      altitudeCategory === AltitudeCategory.DeepWater ||
-      altitudeCategory === AltitudeCategory.ShallowWater
-    );
-  }
-}
-
-class WaterResult
-  implements ISpecification<TerrainSituation, VisualTerrainType> {
-  execute(situation: TerrainSituation): VisualTerrainType {
-    const { altitudeCategory } = situation;
-    return altitudeCategory === AltitudeCategory.DeepWater
-      ? "DeepWater"
-      : "ShallowWater";
-  }
-}
-
-class MountainResult
-  implements ISpecification<TerrainSituation, VisualTerrainType> {
-  private readonly isSnowy: boolean;
-  constructor(isSnowy: boolean) {
-    this.isSnowy = isSnowy;
-  }
-  execute(situation: TerrainSituation): VisualTerrainType {
-    const { altitudeCategory } = situation;
-    if (this.isSnowy) {
-      return altitudeCategory === AltitudeCategory.Mountains
-        ? "SnowyMountains"
-        : "SnowyHills";
-    } else {
-      return altitudeCategory === AltitudeCategory.Mountains
-        ? "Mountains"
-        : "Hills";
-    }
-  }
-}
-
-class HillResult
-  implements ISpecification<TerrainSituation, VisualTerrainType> {
-  private readonly isSnowy: boolean;
-  constructor(isSnowy: boolean) {
-    this.isSnowy = isSnowy;
-  }
-  execute(): VisualTerrainType {
-    if (this.isSnowy) {
-      return "SnowyHills";
-    } else {
-      return "Hills";
-    }
-  }
-}
-
-class BiomeResult
-  implements ISpecification<TerrainSituation, VisualTerrainType> {
-  constructor() {}
-
-  execute(situation: TerrainSituation): VisualTerrainType {
-    const { biomeCategory } = situation;
-    switch (biomeCategory) {
-      case BiomeCategory.Permafrost:
-        return "Permafrost";
-      case BiomeCategory.Tundra:
-        return "Tundra";
-      case BiomeCategory.ColdParklands:
-        return "ColdParklands";
-      case BiomeCategory.ConiferousForests:
-        return "ConiferousForests";
-      case BiomeCategory.CoolDeserts:
-        return "CoolDeserts";
-      case BiomeCategory.Steppes:
-        return "Steppes";
-      case BiomeCategory.MixedForests:
-        return "MixedForests";
-      case BiomeCategory.HotDeserts:
-        return "HotDeserts";
-      case BiomeCategory.Chaparral:
-        return "Chaparral";
-      case BiomeCategory.DeciduousForests:
-        return "DeciduousForests";
-      case BiomeCategory.Savanna:
-        return "Savanna";
-      case BiomeCategory.TropicalSeasonalForests:
-        return "TropicalSeasonalForests";
-      case BiomeCategory.TropicalRainForests:
-        return "TropicalRainForests";
-      default:
-        return neverEver(biomeCategory);
-    }
   }
 }
 
@@ -152,6 +57,11 @@ class IsTemperature extends IsValue<TerrainSituation, TemperatureCategory> {
 class IsAltitude extends IsValue<TerrainSituation, AltitudeCategory> {
   getActualValue(situation: TerrainSituation): AltitudeCategory {
     return situation.altitudeCategory;
+  }
+}
+class IsBiome extends IsValue<TerrainSituation, BiomeCategory> {
+  getActualValue(situation: TerrainSituation): BiomeCategory {
+    return situation.biomeCategory;
   }
 }
 
@@ -193,88 +103,114 @@ class IsFeatureGreaterThanConstant extends IsFeatureGreaterThanValue {
     this.value = value;
   }
 
-  getActualValue(situation: TerrainSituation) {
+  getActualValue() {
     return this.value;
   }
 }
 
-class ReturnValue implements ISpecification<any, VisualTerrainType> {
-  private readonly returnValue: VisualTerrainType;
-  constructor(returnValue: VisualTerrainType) {
-    this.returnValue = returnValue;
-  }
-  execute() {
-    return this.returnValue;
-  }
-}
+const biomeMap: Record<BiomeCategory, VisualTerrainType> = {
+  [BiomeCategory.Permafrost]: "Permafrost",
+  [BiomeCategory.Tundra]: "Tundra",
+  [BiomeCategory.ColdParklands]: "ColdParklands",
+  [BiomeCategory.ConiferousForests]: "ConiferousForests",
+  [BiomeCategory.CoolDeserts]: "CoolDeserts",
+  [BiomeCategory.Steppes]: "Steppes",
+  [BiomeCategory.MixedForests]: "MixedForests",
+  [BiomeCategory.HotDeserts]: "HotDeserts",
+  [BiomeCategory.Chaparral]: "Chaparral",
+  [BiomeCategory.DeciduousForests]: "DeciduousForests",
+  [BiomeCategory.Savanna]: "Savanna",
+  [BiomeCategory.TropicalSeasonalForests]: "TropicalSeasonalForests",
+  [BiomeCategory.TropicalRainForests]: "TropicalRainForests",
+};
+
+const biomeResult = new SwitchSpecification(
+  Object.keys(biomeMap)
+    .map(k => Number(k) as BiomeCategory)
+    .map((key): SwitchPart<
+            TerrainSituation,
+            VisualTerrainType
+          > => [
+            new IsBiome(key),
+            new Result(biomeMap[key])
+          ]
+        ),
+  new Result<VisualTerrainType>("CoolDeserts")
+);
 
 const biomeDetailMap: Record<BiomeCategory, [number, VisualTerrainType][]> = {
   [BiomeCategory.Permafrost]: [[0, "Permafrost"], [0.8, "Tundra"]],
   [BiomeCategory.Tundra]: [[0, "Tundra"], [0.85, "ColdParklands"]],
-  [BiomeCategory.ColdParklands]: [[0, "Tundra"], [0.05, "ColdParklands"], [0.85, "ConiferousForests"]],
-  [BiomeCategory.ConiferousForests]: [[0, "ConiferousForests"], [0.65, "Tundra"]],
-  [BiomeCategory.CoolDeserts]: [],
-  // if (this.feature > 0.85) {
-  //   return "Steppes";
-  // }
-  // break;
-  [BiomeCategory.Steppes]: [],
-  // if (this.feature < 0.3) {
-  //   return "CoolDeserts";
-  // }
-  // break;
-  [BiomeCategory.MixedForests]: [],
-  //   if (this.feature > 0.9) {
-  //     return "CoolDeserts";
-  //   }
-  // if (this.feature > 0.5) {
-  //   return "DeciduousForests";
-  // }
-  // break;
-  [BiomeCategory.HotDeserts]: [],
-  //       // TODO: Hot deserts have no variety in the spritemap
-  //       break;
-  [BiomeCategory.Chaparral]: [],
-  //       if (this.feature > 0.5 && this.feature < 0.6) {
-  //         return "DeciduousForests";
-  //       }
-  //       if (this.feature > 0.8) {
-  //   return "CoolDeserts";
-  // }
-  // break;
-  [BiomeCategory.DeciduousForests]: [],
-  // if (this.feature > 0.5 && this.feature < 0.55) {
-  //   return "TropicalRainForests";
-  // }
-  // if (this.feature > 0.9) {
-  //   return "CoolDeserts";
-  // }
-  // if (this.feature > 0.8) {
-  //   return "Chaparral";
-  // }
-  // break;
-  [BiomeCategory.Savanna]: [],
-  // if (this.feature > 0.5 && this.feature < 0.6) {
-  //   return "HotDeserts";
-  // }
-  // if (this.feature > 0.9) {
-  //   return "DeciduousForests";
-  // }
-  // break;
-  [BiomeCategory.TropicalSeasonalForests]: [],
-  // if (this.feature > 0.5 && this.feature < 0.6) {
-  //   return "Chaparral";
-  // }
-  // if (this.feature > 0.7) {
-  //   return "DeciduousForests";
-  // }
-  // break;
-  [BiomeCategory.TropicalRainForests]: []
-  // if (this.feature > 0.7) {
-  //   return "DeciduousForests";
-  // }
-  // break;
+  [BiomeCategory.ColdParklands]: [
+    [0, "Tundra"],
+    [0.05, "ColdParklands"],
+    [0.85, "ConiferousForests"]
+  ],
+  [BiomeCategory.ConiferousForests]: [
+    [0, "ConiferousForests"],
+    [0.65, "Tundra"]
+  ],
+  [BiomeCategory.CoolDeserts]: [[0, "CoolDeserts"], [0.85, "Steppes"]],
+  [BiomeCategory.Steppes]: [[0, "CoolDeserts"], [0.3, "Steppes"]],
+  [BiomeCategory.MixedForests]: [
+    [0, "MixedForests"],
+    [0.5, "DeciduousForests"],
+    [0.9, "CoolDeserts"]
+  ],
+  [BiomeCategory.HotDeserts]: [[0, "HotDeserts"]],
+  [BiomeCategory.Chaparral]: [
+    [0, "Chaparral"],
+    [0.5, "DeciduousForests"],
+    [0.6, "Chaparral"],
+    [0.8, "CoolDeserts"]
+  ],
+  [BiomeCategory.DeciduousForests]: [
+    [0, "DeciduousForests"],
+    [0.5, "TropicalRainForests"],
+    [0.55, "DeciduousForests"],
+    [0.8, "Chaparral"],
+    [0.9, "CoolDeserts"]
+  ],
+  [BiomeCategory.Savanna]: [
+    [0, "Savanna"],
+    [0.5, "HotDeserts"],
+    [0.6, "Savanna"],
+    [0.9, "DeciduousForests"]
+  ],
+  [BiomeCategory.TropicalSeasonalForests]: [
+    [0, "TropicalRainForests"],
+    [0.5, "Chaparral"],
+    [0.6, "TropicalRainForests"],
+    [0.7, "DeciduousForests"]
+  ],
+  [BiomeCategory.TropicalRainForests]: [
+    [0, "TropicalRainForests"],
+    [0.7, "DeciduousForests"]
+  ]
 };
+
+const biomeDetailResult = new SwitchSpecification(
+  Object.keys(biomeDetailMap)
+    .map(k => Number(k) as BiomeCategory)
+    .map(key =>
+      biomeDetailMap[key]
+        .sort((a, b) => b[0] - a[0])
+        .map(
+          ([value, result]): SwitchPart<
+            TerrainSituation,
+            VisualTerrainType
+          > => [
+            new AndSpecification(
+              new IsBiome(key),
+              new IsFeatureGreaterThanConstant(value)
+            ),
+            new Result(result)
+          ]
+        )
+    )
+    .reduce((p, n) => [...p, ...n], []),
+  biomeResult
+);
 
 const isSnowy = new OrSpecification(
   new IsTemperature(TemperatureCategory.Polar),
@@ -282,72 +218,84 @@ const isSnowy = new OrSpecification(
   new IsTemperature(TemperatureCategory.Boreal)
 );
 
-export const VisualizationSpec = new IfSpecification<
+const hillsOnly = new IfSpecification(
+  isSnowy,
+  new Result<VisualTerrainType>("SnowyHills"),
+  new Result<VisualTerrainType>("Hills")
+);
+
+const mountains = new SwitchSpecification(
+  [
+    [
+      new AndSpecification(new IsAltitude(AltitudeCategory.Mountains), isSnowy),
+      new Result<VisualTerrainType>("SnowyMountains")
+    ],
+    [
+      new AndSpecification(new IsAltitude(AltitudeCategory.Hills), isSnowy),
+      new Result<VisualTerrainType>("SnowyHills")
+    ],
+    [
+      new AndSpecification(new IsAltitude(AltitudeCategory.Mountains)),
+      new Result<VisualTerrainType>("Mountains")
+    ]
+  ],
+  new Result<VisualTerrainType>("Hills")
+);
+
+const waterOrIceSwitchFragment: SwitchPart<
   TerrainSituation,
   VisualTerrainType
->(
-  new IsWaterSpecification(),
-  new IfSpecification(
+>[] = [
+  [
     new AndSpecification(
+      new OrSpecification(new IsAltitude(AltitudeCategory.DeepWater), new IsAltitude(AltitudeCategory.ShallowWater)),
       new IsTemperature(TemperatureCategory.Polar),
       new IsFeatureGreaterThanHeat(0.235, 0)
     ),
-    new Result("Ice"),
-    new WaterResult()
-  ),
-  new IfSpecification(
-    new NotSpecification(
-      new OrSpecification(
-        new IsFeatureGreaterThanAltitude(1, -0.05),
-        new IsAltitude(AltitudeCategory.None)
-      )
-    ),
-    new IfSpecification(
-      isSnowy,
-      new MountainResult(true),
-      new MountainResult(false)
-    ),
-    new BiomeResult()
-  )
+    new Result<VisualTerrainType>("Ice")
+  ],
+  [
+    new IsAltitude(AltitudeCategory.DeepWater),
+    new Result<VisualTerrainType>("DeepWater")
+  ],
+  [
+    new IsAltitude(AltitudeCategory.ShallowWater),
+    new Result<VisualTerrainType>("ShallowWater")]
+];
+
+export const VisualizationSpec = new SwitchSpecification(
+  [
+    ...waterOrIceSwitchFragment,
+    [
+      new NotSpecification(
+        new OrSpecification(
+          new IsFeatureGreaterThanAltitude(1, -0.05),
+          new IsAltitude(AltitudeCategory.None)
+        )
+      ),
+      mountains
+    ]
+  ],
+  biomeResult
 );
 
 const isHill = new OrSpecification(
   new IsAltitude(AltitudeCategory.Hills),
-  new IsFeatureGreaterThanConstant(0.05),
-)
+  new IsFeatureGreaterThanConstant(0.05)
+);
 
-export const DetailVisualizationSpec = new IfSpecification<
-  TerrainSituation,
-  VisualTerrainType
->(
-  new IsWaterSpecification(),
-  new IfSpecification(
-    new AndSpecification(
-      new IsTemperature(TemperatureCategory.Polar),
-      new IsFeatureGreaterThanHeat(0.235, 0)
-    ),
-    new Result("Ice"),
-    new WaterResult()
-  ),
-  new SwitchSpecification(
+export const DetailVisualizationSpec = new SwitchSpecification(
+  [
+    ...waterOrIceSwitchFragment,
     [
-      [
-        new NotSpecification(
-          new OrSpecification(
-            new IsFeatureGreaterThanConstant(0.2),
-            new IsAltitude(AltitudeCategory.None)
-          )
-        ),
-        new SwitchSpecification(
-          [
-            [new AndSpecification(isHill, isSnowy), new HillResult(true)],
-            [isHill, new HillResult(false)],
-            [isSnowy, new MountainResult(true)]
-          ],
-          new MountainResult(false)
+      new NotSpecification(
+        new OrSpecification(
+          new IsFeatureGreaterThanConstant(0.2),
+          new IsAltitude(AltitudeCategory.None)
         )
-      ]
-    ],
-    new BiomeResult()
-  )
+      ),
+      new IfSpecification(isHill, hillsOnly, mountains)
+    ]
+  ],
+  biomeDetailResult
 );

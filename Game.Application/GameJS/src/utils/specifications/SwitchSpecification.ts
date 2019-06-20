@@ -1,8 +1,11 @@
 import { ISpecification } from "./ISpecification";
+
+export type SwitchPart<TSituation, TOutput> = [ISpecification<TSituation, boolean>, ISpecification<TSituation, TOutput>];
+
 export class SwitchSpecification<TSituation, TOutput> implements ISpecification<TSituation, TOutput> {
-  private readonly cases: [ISpecification<TSituation, boolean>, ISpecification<TSituation, TOutput>][];
+  private readonly cases: SwitchPart<TSituation, TOutput>[];
   private readonly otherwise: ISpecification<TSituation, TOutput>;
-  constructor(cases: [ISpecification<TSituation, boolean>, ISpecification<TSituation, TOutput>][], otherwise: ISpecification<TSituation, TOutput>) {
+  constructor(cases: SwitchPart<TSituation, TOutput>[], otherwise: ISpecification<TSituation, TOutput>) {
     this.cases = cases;
     this.otherwise = otherwise;
   }
