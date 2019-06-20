@@ -1,13 +1,6 @@
 import {
-  IfSpecification,
-  AndSpecification,
-  OrSpecification,
-  SwitchSpecification,
-  NotSpecification,
-  SwitchPart,
-  Result
-} from "../utils/specifications";
-import {TerrainSituation, IsBiome, IsFeatureGreaterThanAltitude,IsFeatureGreaterThanConstant, IsFeatureGreaterThanHeat, IsTemperature, IsAltitude, } from "./terrain-specifications";
+  dataDrivenTerrainOnly,
+} from "./terrain-specifications";
 
 import { TemperatureCategory } from "./TemperatureCategory";
 import { BiomeCategory } from "./BiomeCategory";
@@ -27,22 +20,21 @@ const biomeMap: Record<BiomeCategory, VisualTerrainType> = {
   [BiomeCategory.DeciduousForests]: "DeciduousForests",
   [BiomeCategory.Savanna]: "Savanna",
   [BiomeCategory.TropicalSeasonalForests]: "TropicalSeasonalForests",
-  [BiomeCategory.TropicalRainForests]: "TropicalRainForests",
+  [BiomeCategory.TropicalRainForests]: "TropicalRainForests"
 };
 
-const biomeResult = new SwitchSpecification(
-  Object.keys(biomeMap)
-    .map(k => Number(k) as BiomeCategory)
-    .map((key): SwitchPart<
-            TerrainSituation,
-            VisualTerrainType
-          > => [
-            new IsBiome(key),
-            new Result(biomeMap[key])
-          ]
-        ),
-  new Result<VisualTerrainType>("CoolDeserts")
-);
+const biomeResult = {
+  target: "Switch",
+  arguments: [
+    Object.keys(biomeMap)
+      .map(k => Number(k) as BiomeCategory)
+      .map(key => [
+        { target: "IsBiome", arguments: [key] },
+        { target: "Result", arguments: [biomeMap[key]] }
+      ]),
+    { target: "Result", arguments: "CoolDeserts" }
+  ]
+};
 
 const biomeDetailMap: Record<BiomeCategory, [number, VisualTerrainType][]> = {
   [BiomeCategory.Permafrost]: [[0, "Permafrost"], [0.8, "Tundra"]],
@@ -95,113 +87,155 @@ const biomeDetailMap: Record<BiomeCategory, [number, VisualTerrainType][]> = {
   ]
 };
 
-const biomeDetailResult = new SwitchSpecification(
-  Object.keys(biomeDetailMap)
-    .map(k => Number(k) as BiomeCategory)
-    .map(key =>
-      biomeDetailMap[key]
-        .sort((a, b) => b[0] - a[0])
-        .map(
-          ([value, result]): SwitchPart<
-            TerrainSituation,
-            VisualTerrainType
-          > => [
-            new AndSpecification(
-              new IsBiome(key),
-              new IsFeatureGreaterThanConstant(value)
-            ),
-            new Result(result)
+const biomeDetailResult = {
+  target: "Switch",
+  arguments: [
+    Object.keys(biomeDetailMap)
+      .map(k => Number(k) as BiomeCategory)
+      .map(key =>
+        biomeDetailMap[key]
+          .sort((a, b) => b[0] - a[0])
+          .map(([value, result]) => [
+            {
+              target: "And",
+              arguments: [
+                { target: "IsBiome", arguments: [key] },
+                { target: "IsFeatureGreaterThanConstant", arguments: [value] }
+              ]
+            },
+            { target: "Result", arguments: [result] }
+          ])
+      )
+      .reduce((p, n) => [...p, ...n], []),
+    biomeResult
+  ]
+};
+
+const isSnowy = {
+  target: "Or",
+  arguments: [
+    { target: "IsTemperature", arguments: [TemperatureCategory.Polar] },
+    { target: "IsTemperature", arguments: [TemperatureCategory.Subpolar] },
+    { target: "IsTemperature", arguments: [TemperatureCategory.Boreal] }
+  ]
+};
+
+const hillsOnly = {
+  target: "If",
+  arguments: [
+    isSnowy,
+    { target: "Result", arguments: ["SnowyHills"] },
+    { target: "Result", arguments: ["Hills"] }
+  ]
+};
+
+const mountains = {
+  target: "Switch",
+  arguments: [
+    [
+      [
+        {
+          target: "And",
+          arguments: [
+            { target: "IsAltitude", arguments: [AltitudeCategory.Mountains] },
+            isSnowy
           ]
-        )
-    )
-    .reduce((p, n) => [...p, ...n], []),
-  biomeResult
-);
-
-const isSnowy = new OrSpecification(
-  new IsTemperature(TemperatureCategory.Polar),
-  new IsTemperature(TemperatureCategory.Subpolar),
-  new IsTemperature(TemperatureCategory.Boreal)
-);
-
-const hillsOnly = new IfSpecification(
-  isSnowy,
-  new Result<VisualTerrainType>("SnowyHills"),
-  new Result<VisualTerrainType>("Hills")
-);
-
-const mountains = new SwitchSpecification(
-  [
-    [
-      new AndSpecification(new IsAltitude(AltitudeCategory.Mountains), isSnowy),
-      new Result<VisualTerrainType>("SnowyMountains")
+        },
+        { target: "Result", arguments: ["SnowyMountains"] }
+      ],
+      [
+        {
+          target: "And",
+          arguments: [
+            { target: "IsAltitude", arguments: [AltitudeCategory.Hills] },
+            isSnowy
+          ]
+        },
+        { target: "Result", arguments: ["SnowyHills"] }
+      ],
+      [
+        { target: "IsAltitude", arguments: [AltitudeCategory.Mountains] },
+        { target: "Result", arguments: ["Mountains"] }
+      ]
     ],
-    [
-      new AndSpecification(new IsAltitude(AltitudeCategory.Hills), isSnowy),
-      new Result<VisualTerrainType>("SnowyHills")
-    ],
-    [
-      new AndSpecification(new IsAltitude(AltitudeCategory.Mountains)),
-      new Result<VisualTerrainType>("Mountains")
-    ]
-  ],
-  new Result<VisualTerrainType>("Hills")
-);
+    { target: "Result", arguments: ["Hills"] }
+  ]
+};
 
-const waterOrIceSwitchFragment: SwitchPart<
-  TerrainSituation,
-  VisualTerrainType
->[] = [
+const waterOrIceSwitchFragment = [
   [
-    new AndSpecification(
-      new OrSpecification(new IsAltitude(AltitudeCategory.DeepWater), new IsAltitude(AltitudeCategory.ShallowWater)),
-      new IsTemperature(TemperatureCategory.Polar),
-      new IsFeatureGreaterThanHeat(0.235, 0)
-    ),
-    new Result<VisualTerrainType>("Ice")
+    {
+      target: "And",
+      arguments: [
+        {
+          target: "Or",
+          arguments: [
+            { target: "IsAltitude", arguments: [AltitudeCategory.DeepWater] },
+            { target: "IsAltitude", arguments: [AltitudeCategory.ShallowWater] }
+          ]
+        },
+        { target: "IsTemperature", arguments: [TemperatureCategory.Polar] },
+        { target: "IsFeatureGreaterThanHeat", arguments: [0.235, 0] }
+      ]
+    },
+    { target: "Result", arguments: ["Ice"] }
   ],
   [
-    new IsAltitude(AltitudeCategory.DeepWater),
-    new Result<VisualTerrainType>("DeepWater")
+    { target: "IsAltitude", arguments: [AltitudeCategory.DeepWater] },
+    { target: "Result", arguments: ["DeepWater"] }
   ],
   [
-    new IsAltitude(AltitudeCategory.ShallowWater),
-    new Result<VisualTerrainType>("ShallowWater")]
+    { target: "IsAltitude", arguments: [AltitudeCategory.ShallowWater] },
+    { target: "Result", arguments: ["ShallowWater"] }
+  ]
 ];
 
-export const VisualizationSpec = new SwitchSpecification(
-  [
-    ...waterOrIceSwitchFragment,
+export const VisualizationSpec = dataDrivenTerrainOnly({
+  target: "Switch",
+  arguments: [
     [
-      new NotSpecification(
-        new OrSpecification(
-          new IsFeatureGreaterThanAltitude(1, -0.05),
-          new IsAltitude(AltitudeCategory.None)
-        )
-      ),
-      mountains
-    ]
-  ],
-  biomeResult
-);
+      ...waterOrIceSwitchFragment,
+      [
+        { target: "Not", arguments: [
+          { target: "Or", arguments: [
+            { target: "IsFeatureGreaterThanAltitude", arguments: [1, -0.05] },
+            { target: "IsAltitude", arguments: [AltitudeCategory.None] }
+          ] }
+        ] },
+        mountains
+      ]
+    ],
+    biomeResult
+  ]
+});
 
-const isHill = new OrSpecification(
-  new IsAltitude(AltitudeCategory.Hills),
-  new IsFeatureGreaterThanConstant(0.05)
-);
+const isHill = {
+  target: "Or",
+  arguments: [
+    { target: "IsAltitude", arguments: [AltitudeCategory.Hills] },
+    { target: "IsFeatureGreaterThanConstant", arguments: [0.05] }
+  ]
+};
 
-export const DetailVisualizationSpec = new SwitchSpecification(
-  [
-    ...waterOrIceSwitchFragment,
+export const DetailVisualizationSpec = dataDrivenTerrainOnly({
+  target: "Switch",
+  arguments: [
     [
-      new NotSpecification(
-        new OrSpecification(
-          new IsFeatureGreaterThanConstant(0.2),
-          new IsAltitude(AltitudeCategory.None)
-        )
-      ),
-      new IfSpecification(isHill, hillsOnly, mountains)
-    ]
-  ],
-  biomeDetailResult
-);
+      ...waterOrIceSwitchFragment,
+      [
+        { target: "Not", arguments: [
+          { target: "Or", arguments: [
+            { target: "IsFeatureGreaterThanConstant", arguments: [0.2]},
+            { target: "IsAltitude", arguments: [AltitudeCategory.None]}
+          ]}
+        ]},
+        { target: "If", arguments: [
+          isHill,
+          hillsOnly,
+          mountains
+        ]}
+      ]
+    ],
+    biomeDetailResult
+  ]
+});

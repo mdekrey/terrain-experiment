@@ -6,6 +6,9 @@ export class SwitchSpecification<TSituation, TOutput> implements ISpecification<
   private readonly cases: SwitchPart<TSituation, TOutput>[];
   private readonly otherwise: ISpecification<TSituation, TOutput>;
   constructor(cases: SwitchPart<TSituation, TOutput>[], otherwise: ISpecification<TSituation, TOutput>) {
+    if (!Array.isArray(cases) || !otherwise) {
+      throw new Error("cases was not an array or otherwise not provided");
+    }
     this.cases = cases;
     this.otherwise = otherwise;
   }

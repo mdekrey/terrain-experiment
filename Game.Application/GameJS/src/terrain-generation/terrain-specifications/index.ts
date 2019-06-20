@@ -6,3 +6,4 @@ export * from "./IsFeatureGreaterThanHeat";
 export * from "./IsFeatureGreaterThanValue";
 export * from "./IsTemperature";
 export * from "./TerrainSituation";
+export * from "./dataDrivenTerrain";

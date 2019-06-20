@@ -1,6 +1,6 @@
 
-export interface DataDrivenConstructor<TInput, TOutput> {
-    target: string;
+export interface DataDrivenConstructor<TInput, TOutput, TType = string> {
+    target: TType;
     arguments: DataDrivenInput<TInput, TOutput>[]
 }
 export type DataDrivenInput<TInput, TOutput> = TInput | DataDrivenConstructor<TInput, TOutput>;
@@ -19,11 +19,19 @@ export function construct<TInput, TOutput, TActualInput extends DataDrivenInput<
     if (isDataDrivenConstructor(target)) {
         const ctor = constructors[target.target];
         try {
-            const args = target.arguments.map(v => construct(v, constructors))
+            const args = construct(target.arguments as any, constructors);
             return new ctor(...args) as DataDrivenOutput<TActualInput, TOutput>;
         } catch (ex) {
             throw new Error(ex.message + `\n  at ${target.target}`);
         }
+    } else if (Array.isArray(target)) {
+        return target.map((v, index) => {
+            try {
+                return construct(v, constructors)
+            } catch (ex) {
+                throw new Error(ex.message + `\n  at [${index}]`);
+            }
+        }) as any as DataDrivenOutput<TActualInput, TOutput>;
     }
     return target as DataDrivenOutput<TActualInput, TOutput>;
 }
