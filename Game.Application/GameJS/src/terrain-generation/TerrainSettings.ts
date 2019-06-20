@@ -1,19 +1,21 @@
 import { perlinDataDrivenConstructor, ridgedMultiDataDrivenConstructor } from "../utils/LibNoiseUtils";
 import { DataDrivenConstructor } from "../utils/DataDrivenComposition";
+import { libnoise } from "libnoise";
 
 const featureOverlap = 1000;
 
+type TerrainSpecCreation = DataDrivenConstructor<number, libnoise.ModuleBase>;
 export interface TerrainSettings {
     tempsStep: number[];
     humidityStep: number[];
     altitudeStep: number[];
     humidityCurve: { slope: number; offset: number; };
     temperaturePenalty: { slope: number; offset: number; };
-    humidity: DataDrivenConstructor;
-    heat: DataDrivenConstructor;
-    altitude: DataDrivenConstructor;
-    feature: DataDrivenConstructor;
-    caveSeeds: DataDrivenConstructor;
+    humidity: TerrainSpecCreation;
+    heat: TerrainSpecCreation;
+    altitude: TerrainSpecCreation;
+    feature: TerrainSpecCreation;
+    caveSeeds: TerrainSpecCreation;
 }
 
 export const defaultTerrainSettings: TerrainSettings = {

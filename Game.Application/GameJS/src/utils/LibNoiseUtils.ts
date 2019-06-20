@@ -1,5 +1,5 @@
 import { libnoise } from "libnoise";
-import { DataDrivenValue, construct, DataDrivenConstructor } from "./DataDrivenComposition";
+import { construct, DataDrivenConstructor, DataDrivenInput } from "./DataDrivenComposition";
 
 export const DEFAULT_PERLIN_LACUNARITY = 2;
 export const DEFAULT_PERLIN_SEED = 0;
@@ -16,7 +16,7 @@ export function initializePerlin({
   return dataDrivenNoise(perlinDataDrivenConstructor(seed, lacunarity));
 }
 
-export function perlinDataDrivenConstructor(seed: number, lacunarity: number): DataDrivenConstructor {
+export function perlinDataDrivenConstructor(seed: number, lacunarity: number): DataDrivenConstructor<number, libnoise.ModuleBase> {
   return {
     target: "operator.Translate",
     arguments: [0, yOffset, 0, {
@@ -55,7 +55,7 @@ export function initializeRidgedMulti({
   return dataDrivenNoise(ridgedMultiDataDrivenConstructor(scale,  seed, lacunarity));
 }
 
-export function ridgedMultiDataDrivenConstructor(scale: number, seed: number, lacunarity: number): DataDrivenConstructor {
+export function ridgedMultiDataDrivenConstructor(scale: number, seed: number, lacunarity: number): DataDrivenConstructor<number, libnoise.ModuleBase> {
   return {
     target: "operator.Translate",
     arguments: [0, yOffset, 0, {
@@ -119,8 +119,8 @@ const dataDrivenConstructors: Record<string, { new(...args: any[]): libnoise.Mod
   "operator.Scale": libnoise.operator.Scale,
 };
 
-export function dataDrivenNoise(target: DataDrivenConstructor): libnoise.ModuleBase;
+export function dataDrivenNoise(target: DataDrivenConstructor<number, libnoise.ModuleBase>): libnoise.ModuleBase;
 export function dataDrivenNoise(target: number): number;
-export function dataDrivenNoise(target: DataDrivenValue) {
+export function dataDrivenNoise(target: DataDrivenInput<number, libnoise.ModuleBase>) {
   return construct(target, dataDrivenConstructors);
 }

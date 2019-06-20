@@ -1,23 +1,28 @@
 
-export interface DataDrivenConstructor {
+export interface DataDrivenConstructor<TInput, TOutput> {
     target: string;
-    arguments: DataDrivenValue[]
+    arguments: DataDrivenInput<TInput, TOutput>[]
+}
+export type DataDrivenInput<TInput, TOutput> = TInput | DataDrivenConstructor<TInput, TOutput>;
+
+function isDataDrivenConstructor(maybeCtor: any): maybeCtor is DataDrivenConstructor<any, any> {
+    return maybeCtor.target;
 }
 
-export type DataDrivenValue = DataDrivenConstructor | number;
+export type DataDrivenOutput<TInput, TOutput> = TInput extends DataDrivenConstructor<any, any> ? TOutput : Exclude<TInput, DataDrivenConstructor<any, any>>;
 
-export function construct<T = any>(target: number, constructors: Record<string, { new(...args: (T | number)[]): T }>): number;
-export function construct<T = any>(target: DataDrivenConstructor, constructors: Record<string, { new(...args: (T | number)[]): T }>): T;
-export function construct<T = any>(target: DataDrivenValue, constructors: Record<string, { new(...args: (T | number)[]): T }>): T | number;
-export function construct<T = any>(target: DataDrivenValue, constructors: Record<string, { new(...args: (T | number)[]): T }>): T | number {
-    if (typeof target === "number") {
-        return target;
-    } else {
+export function construct<TInput, TOutput>(
+    target: DataDrivenInput<TInput, TOutput>,
+    constructors: Record<string, { new(...args: DataDrivenOutput<TInput, TOutput>[]): TOutput }>
+): DataDrivenOutput<DataDrivenInput<TInput, TOutput>, TOutput> {
+    if (isDataDrivenConstructor(target)) {
         const ctor = constructors[target.target];
         try {
-            return new ctor(...target.arguments.map(v => construct(v, constructors)));
+            const args = target.arguments.map(v => construct(v, constructors)) as DataDrivenOutput<TInput, TOutput>[];
+            return new ctor(...args) as any;
         } catch (ex) {
             throw new Error(ex.message + `\n  at ${target.target}`);
         }
     }
+    return target as DataDrivenOutput<TInput, TOutput>;
 }
