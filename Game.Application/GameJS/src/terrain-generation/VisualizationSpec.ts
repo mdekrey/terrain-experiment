@@ -68,8 +68,8 @@ const biomeDetailMap: Record<BiomeCategory, [number, VisualTerrainType][]> = {
   [BiomeCategory.Savanna]: [
     [0, "Savanna"],
     [0.5, "HotDeserts"],
-    [0.6, "Savanna"],
-    [0.9, "DeciduousForests"]
+    [0.625, "DeciduousForests"],
+    [0.65, "Savanna"]
   ],
   [BiomeCategory.TropicalSeasonalForests]: [
     [0, "TropicalRainForests"],
@@ -195,19 +195,20 @@ export const VisualizationSpec = {
         {
           target: "Not",
           arguments: [
-            {
-              target: "Or",
-              arguments: [
-                {
-                  target: "IsFeatureGreaterThanAltitude",
-                  arguments: [1, -0.05]
-                },
-                { target: "IsAltitude", arguments: [AltitudeCategory.None] }
-              ]
-            }
+            { target: "IsAltitude", arguments: [AltitudeCategory.None] }
           ]
         },
-        mountains
+        {
+          target: "If",
+          arguments: [
+            {
+              target: "IsFeatureGreaterThanAltitude",
+              arguments: [1, -0.05]
+            },
+            hillsOnly,
+            mountains
+          ]
+        }
       ]
     ],
     biomeResult
@@ -234,7 +235,7 @@ export const DetailVisualizationSpec = {
             {
               target: "Or",
               arguments: [
-                { target: "IsFeatureGreaterThanConstant", arguments: [0.2] },
+                { target: "IsFeatureGreaterThanConstant", arguments: [0.3] },
                 { target: "IsAltitude", arguments: [AltitudeCategory.None] }
               ]
             }

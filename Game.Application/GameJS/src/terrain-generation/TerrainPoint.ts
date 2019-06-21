@@ -20,6 +20,7 @@ export class TerrainPoint {
   public readonly heat: number;
   public readonly humidity: number;
   public readonly feature: number;
+  public readonly caveIndicator: number;
   constructor(
     terrainSettings: TerrainSettings,
     x: number,
@@ -27,7 +28,8 @@ export class TerrainPoint {
     altitude: number,
     heat: number,
     humidity: number,
-    feature: number
+    feature: number,
+    caveIndicator: number
   ) {
     this.terrainSettings = terrainSettings;
     this.x = x;
@@ -36,6 +38,7 @@ export class TerrainPoint {
     this.heat = heat;
     this.humidity = humidity;
     this.feature = feature;
+    this.caveIndicator = caveIndicator;
   }
   get temperatureCategory() {
     return indexOrLength<TemperatureCategory>(this.terrainSettings.tempsStep, this.heat);
@@ -85,7 +88,7 @@ export class TerrainPoint {
     return (
       (this.altitudeCategory === AltitudeCategory.Hills ||
         this.altitudeCategory === AltitudeCategory.None) &&
-      this.feature > 0.995
+      this.caveIndicator >= 3e6 && this.caveIndicator <= 6e6
     );
   }
 }

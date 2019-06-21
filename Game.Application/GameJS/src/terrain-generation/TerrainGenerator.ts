@@ -9,6 +9,7 @@ export class TerrainGenerator {
   private readonly heat: libnoise.ModuleBase;
   private readonly altitude: libnoise.ModuleBase;
   private readonly feature: libnoise.ModuleBase;
+  private readonly caveIndicator: libnoise.ModuleBase;
   private readonly caveSeeds: libnoise.ModuleBase;
   private readonly terrainSettings: TerrainSettings;
 
@@ -18,6 +19,7 @@ export class TerrainGenerator {
     this.heat = dataDrivenNoise(terrainSettings.heat);
     this.altitude = dataDrivenNoise(terrainSettings.altitude);
     this.feature = dataDrivenNoise(terrainSettings.feature);
+    this.caveIndicator = dataDrivenNoise(terrainSettings.caveIndicator);
     this.caveSeeds = dataDrivenNoise(terrainSettings.caveSeeds);
   }
 
@@ -30,6 +32,7 @@ export class TerrainGenerator {
       heat
     );
     const feature = this.feature.getValue(x, y, 0);
+    const caveIndicator = this.caveIndicator.getValue(x, y, 0);
 
     return new TerrainPoint(
       this.terrainSettings,
@@ -38,7 +41,8 @@ export class TerrainGenerator {
       altitude,
       heat,
       humidity,
-      feature
+      feature,
+      caveIndicator
     );
   }
 

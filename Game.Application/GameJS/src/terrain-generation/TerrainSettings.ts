@@ -1,11 +1,11 @@
-import { perlinDataDrivenConstructor, ridgedMultiDataDrivenConstructor } from "../utils/LibNoiseUtils";
+import { perlinDataDrivenConstructor, ridgedMultiDataDrivenConstructor, nonCohesiveDataDrivenConstructor } from "../utils/LibNoiseUtils";
 import { DataDrivenConstructor } from "../utils/DataDrivenComposition";
 import { libnoise } from "libnoise";
 import { VisualTerrainType } from "./VisualTerrainType";
 import { VisualizationSpec, DetailVisualizationSpec } from "./VisualizationSpec";
 import { dataDrivenTerrainOnly, TerrainSpec } from "./terrain-specifications";
 
-const featureOverlap = 1000;
+const featureOverlap = 6000;
 
 type TerrainSpecCreation = DataDrivenConstructor<number, libnoise.ModuleBase>;
 export interface TerrainSettings {
@@ -18,6 +18,7 @@ export interface TerrainSettings {
     heat: TerrainSpecCreation;
     altitude: TerrainSpecCreation;
     feature: TerrainSpecCreation;
+    caveIndicator: TerrainSpecCreation;
     caveSeeds: TerrainSpecCreation;
     visualizationSpec: TerrainSpec<VisualTerrainType>;
     detailVisualizationSpec: TerrainSpec<VisualTerrainType>;
@@ -32,8 +33,9 @@ export const defaultTerrainSettings: TerrainSettings = {
     temperaturePenalty: { slope: 2, offset: -1.7 },
     humidity: perlinDataDrivenConstructor(0, 3.2),
     heat: perlinDataDrivenConstructor(1750, 3.2),
-    altitude: ridgedMultiDataDrivenConstructor(1, 200, 3.2),
-    feature: ridgedMultiDataDrivenConstructor(featureOverlap, 670, 3.2),
+    altitude: ridgedMultiDataDrivenConstructor(3, 500, 2, 1 / 1.95, 0.75),
+    feature: ridgedMultiDataDrivenConstructor(featureOverlap, 670, 3.45, 1 / 1, 0.5),
+    caveIndicator: nonCohesiveDataDrivenConstructor(1000),
     caveSeeds: perlinDataDrivenConstructor(900, 3.2),
 
     visualizationSpec: dataDrivenTerrainOnly(VisualizationSpec),

@@ -23,7 +23,7 @@ it("can normalize perlin results", () => {
 });
 
 it("can normalize ridged multifractal results", () => {
-    const ridged = initializeRidgedMulti({});
+    const ridged = initializeRidgedMulti({ lacunarity: 2, slope: 1 / 1.95, offset: 0.75 });
 
     const step = 0.1;
     const microsteps = 200;
@@ -38,7 +38,7 @@ it("can normalize ridged multifractal results", () => {
       .reduce(
         (prev, next) => {
           next.forEach(v => {
-            const idx = Math.floor(v * 10);
+            const idx = Math.floor(v * 20);
             prev[idx] = (prev[idx] | 0) + 1;
           });
           return prev;

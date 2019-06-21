@@ -140,8 +140,7 @@ export class Game {
                 }
         }
         function isPassable(category: VisualTerrainType) {
-            return true;
-            // return category !== "SnowyMountains" && category !== "Mountains" && category !== "ShallowWater" && category !== "DeepWater";
+            return category !== "SnowyMountains" && category !== "Mountains" && category !== "ShallowWater" && category !== "DeepWater";
         }
     }
 }
