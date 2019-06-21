@@ -6,9 +6,7 @@ import { TerrainSettings } from "./TerrainSettings";
 import { VisualTerrainType } from "./VisualTerrainType";
 
 function indexOrLength<T extends number>(steps: number[], value: number): T {
-  const result = steps.findIndex(
-    v => v > value
-  );
+  const result = steps.findIndex(v => v > value);
   return (result === -1 ? steps.length : result) as T;
 }
 
@@ -41,12 +39,18 @@ export class TerrainPoint {
     this.caveIndicator = caveIndicator;
   }
   get temperatureCategory() {
-    return indexOrLength<TemperatureCategory>(this.terrainSettings.tempsStep, this.heat);
+    return indexOrLength<TemperatureCategory>(
+      this.terrainSettings.tempsStep,
+      this.heat
+    );
   }
   get humidityCategory() {
     return Math.min(
       BiomeDetails.biomeLabels[this.temperatureCategory].length,
-      indexOrLength<HumidityCategory>(this.terrainSettings.humidityStep, this.humidity)
+      indexOrLength<HumidityCategory>(
+        this.terrainSettings.humidityStep,
+        this.humidity
+      )
     );
   }
   get biomeLabel() {
@@ -58,10 +62,13 @@ export class TerrainPoint {
     return BiomeDetails.categoryLookup[this.biomeLabel];
   }
   get altitudeCategory() {
-    return indexOrLength<AltitudeCategory>(this.terrainSettings.altitudeStep, this.altitude);
+    return indexOrLength<AltitudeCategory>(
+      this.terrainSettings.altitudeStep,
+      this.altitude
+    );
   }
   get visualCategory(): VisualTerrainType {
-    return (this.terrainSettings.visualizationSpec).execute({
+    return this.terrainSettings.visualizationSpec.execute({
       altitude: this.altitude,
       heat: this.heat,
       humidity: this.humidity,
@@ -69,11 +76,11 @@ export class TerrainPoint {
       temperatureCategory: this.temperatureCategory,
       humidityCategory: this.humidityCategory,
       biomeCategory: this.biomeCategory,
-      altitudeCategory: this.altitudeCategory,
+      altitudeCategory: this.altitudeCategory
     });
   }
   get detailVisualCategory(): VisualTerrainType {
-    return (this.terrainSettings.detailVisualizationSpec).execute({
+    return this.terrainSettings.detailVisualizationSpec.execute({
       altitude: this.altitude,
       heat: this.heat,
       humidity: this.humidity,
@@ -81,14 +88,15 @@ export class TerrainPoint {
       temperatureCategory: this.temperatureCategory,
       humidityCategory: this.humidityCategory,
       biomeCategory: this.biomeCategory,
-      altitudeCategory: this.altitudeCategory,
+      altitudeCategory: this.altitudeCategory
     });
   }
   get hasCave() {
     return (
       (this.altitudeCategory === AltitudeCategory.Hills ||
         this.altitudeCategory === AltitudeCategory.None) &&
-      this.caveIndicator >= 3e6 && this.caveIndicator <= 6e6
+      this.caveIndicator >= 3e6 &&
+      this.caveIndicator <= 6e6
     );
   }
 }

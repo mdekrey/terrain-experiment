@@ -1,5 +1,5 @@
 import { perlinDataDrivenConstructor, ridgedMultiDataDrivenConstructor, nonCohesiveDataDrivenConstructor } from "../utils/LibNoiseUtils";
-import { DataDrivenConstructor } from "../utils/DataDrivenComposition";
+import { DataDrivenConstructor, DataDrivenInput } from "../utils/DataDrivenComposition";
 import { libnoise } from "libnoise";
 import { VisualTerrainType } from "./VisualTerrainType";
 import { VisualizationSpec, DetailVisualizationSpec } from "./VisualizationSpec";
@@ -8,6 +8,23 @@ import { dataDrivenTerrainOnly, TerrainSpec } from "./terrain-specifications";
 const featureOverlap = 6000;
 
 type TerrainSpecCreation = DataDrivenConstructor<number, libnoise.ModuleBase>;
+
+export interface TerrainSettingsDto {
+    tempsStep: number[];
+    humidityStep: number[];
+    altitudeStep: number[];
+    humidityCurve: { slope: number; offset: number; };
+    temperaturePenalty: { slope: number; offset: number; };
+    humidity: TerrainSpecCreation;
+    heat: TerrainSpecCreation;
+    altitude: TerrainSpecCreation;
+    feature: TerrainSpecCreation;
+    caveIndicator: TerrainSpecCreation;
+    caveSeeds: TerrainSpecCreation;
+    visualizationSpec: DataDrivenInput<any, TerrainSpec<boolean | VisualTerrainType>>;
+    detailVisualizationSpec: DataDrivenInput<any, TerrainSpec<boolean | VisualTerrainType>>;
+}
+
 export interface TerrainSettings {
     tempsStep: number[];
     humidityStep: number[];
@@ -24,8 +41,7 @@ export interface TerrainSettings {
     detailVisualizationSpec: TerrainSpec<VisualTerrainType>;
 }
 
-export const defaultTerrainSettings: TerrainSettings = {
-
+const terrainSettings: TerrainSettingsDto = {
     altitudeStep: [0.2, 0.4, 0.8, 0.9],
     tempsStep: [0.126, 0.235, 0.406, 0.561, 0.634, 0.876],
     humidityStep: [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875],
@@ -38,11 +54,20 @@ export const defaultTerrainSettings: TerrainSettings = {
     caveIndicator: nonCohesiveDataDrivenConstructor(1000),
     caveSeeds: perlinDataDrivenConstructor(900, 3.2),
 
-    visualizationSpec: dataDrivenTerrainOnly(VisualizationSpec),
-    detailVisualizationSpec: dataDrivenTerrainOnly(DetailVisualizationSpec),
+    visualizationSpec: VisualizationSpec,
+    detailVisualizationSpec: DetailVisualizationSpec,
+}
+// console.log(terrainSettings);
 
-};
-// console.log(defaultTerrainSettings);
+export function terrainSettingsFromDto({ visualizationSpec, detailVisualizationSpec, ...rest }: TerrainSettingsDto) {
+    return {
+        ...rest,
+        visualizationSpec: dataDrivenTerrainOnly(visualizationSpec),
+        detailVisualizationSpec: dataDrivenTerrainOnly(detailVisualizationSpec),
+    }
+}
+
+export const defaultTerrainSettings: TerrainSettings = terrainSettingsFromDto(terrainSettings);
 
 
 export function humidityCurve(humidityCurve: TerrainSettings["humidityCurve"], originalHumidity: number, heat: number) {

@@ -8,7 +8,7 @@ export const DEFAULT_PERLIN_OCTAVE_COUNT = 8;
 export const DEFAULT_PERLIN_FREQUENCY = 1;
 export const DEFAULT_PERLIN_PERSISTENCE = 0.5;
 
-const yOffset = 12 / 400;
+const yOffset = 9 / 400;
 
 export function initializePerlin({
   lacunarity = DEFAULT_PERLIN_LACUNARITY,

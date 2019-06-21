@@ -2,6 +2,8 @@ import { TemperatureCategory } from "./TemperatureCategory";
 import { BiomeCategory } from "./BiomeCategory";
 import { VisualTerrainType } from "./VisualTerrainType";
 import { AltitudeCategory } from "./WaterCategory";
+import { DataDrivenInput } from "../utils/DataDrivenComposition";
+import { TerrainSpec } from "./terrain-specifications";
 
 const biomeMap: Record<BiomeCategory, VisualTerrainType> = {
   [BiomeCategory.Permafrost]: "Permafrost",
@@ -186,7 +188,7 @@ const waterOrIceSwitchFragment = [
   ]
 ];
 
-export const VisualizationSpec = {
+export const VisualizationSpec: DataDrivenInput<any, TerrainSpec<boolean | VisualTerrainType>> = {
   target: "Switch",
   arguments: [
     [
@@ -223,7 +225,7 @@ const isHill = {
   ]
 };
 
-export const DetailVisualizationSpec = {
+export const DetailVisualizationSpec: DataDrivenInput<any, TerrainSpec<boolean | VisualTerrainType>> = {
   target: "Switch",
   arguments: [
     [
