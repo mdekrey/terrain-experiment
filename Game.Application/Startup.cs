@@ -19,22 +19,22 @@ namespace WoostiDatasetReview
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
-        {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddJsonFile($"appsettings.local.json", optional: true)
-                .AddEnvironmentVariables();
-            Configuration = builder.Build();
-        }
+        //public Startup(IHostingEnvironment env)
+        //{
+        //    var builder = new ConfigurationBuilder()
+        //        .SetBasePath(env.ContentRootPath)
+        //        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        //        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+        //        .AddJsonFile($"appsettings.local.json", optional: true)
+        //        .AddEnvironmentVariables();
+        //    Configuration = builder.Build();
+        //}
 
         // dotnet 3.0 preview code
-        //public Startup(IConfiguration configuration)
-        //{
-        //    Configuration = configuration;
-        //}
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
 
         public IConfiguration Configuration { get; }
 
@@ -71,27 +71,18 @@ namespace WoostiDatasetReview
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.EnvironmentName == "Development")
             {
                 app.UseDeveloperExceptionPage();
             }
 
             //app.UseHttpsRedirection();
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
             // dotnet 3.0 preview code
-            //app.UseRouting(routes =>
-            //{
-            //    routes.MapControllers();
-            //});
-            //app.UseAuthorization();
+            app.UseRouting();
+            app.UseAuthorization();
 
             app.UseSpaStaticFiles();
 
@@ -102,7 +93,7 @@ namespace WoostiDatasetReview
             {
                 spa.Options.SourcePath = "dataset-review-js";
 
-                if (env.IsDevelopment())
+                if (env.EnvironmentName == "Development")
                 {
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
                 }

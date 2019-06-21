@@ -15,31 +15,18 @@ namespace WoostiDatasetReview
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
-        private static IConfigurationRoot Configuration =>
-            new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("hosting.json", optional: true)
-                .Build();
-
-        public static IWebHost CreateHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-#if DEBUG
-                .UseConfiguration(Configuration)
-#endif
-                .UseStartup<Startup>()
-                .Build();
-        // dotnet 3.0 preview code
-        //Host.CreateDefaultBuilder(args)
-        //        .ConfigureAppConfiguration((builderContext, config) =>
-        //        {
-        //            config.AddJsonFile("appsettings.local.json", optional: true);
-        //        })
-        //        .ConfigureWebHostDefaults(webBuilder =>
-        //        {
-        //            webBuilder.UseStartup<Startup>();
-        //        });
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((builderContext, config) =>
+                {
+                    config.AddJsonFile("appsettings.local.json", optional: true);
+                })
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }
