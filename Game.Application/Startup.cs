@@ -19,18 +19,6 @@ namespace WoostiDatasetReview
 {
     public class Startup
     {
-        //public Startup(IHostingEnvironment env)
-        //{
-        //    var builder = new ConfigurationBuilder()
-        //        .SetBasePath(env.ContentRootPath)
-        //        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-        //        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-        //        .AddJsonFile($"appsettings.local.json", optional: true)
-        //        .AddEnvironmentVariables();
-        //    Configuration = builder.Build();
-        //}
-
-        // dotnet 3.0 preview code
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -80,9 +68,14 @@ namespace WoostiDatasetReview
 
             //app.UseHttpsRedirection();
 
-            // dotnet 3.0 preview code
             app.UseRouting();
             app.UseAuthorization();
+
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
 
             app.UseSpaStaticFiles();
 
