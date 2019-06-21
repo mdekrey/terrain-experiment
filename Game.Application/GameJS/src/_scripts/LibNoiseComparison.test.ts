@@ -1,5 +1,6 @@
 import { libnoise } from "libnoise";
-import { DEFAULT_PERLIN_LACUNARITY, DEFAULT_PERLIN_PERSISTENCE, DEFAULT_PERLIN_OCTAVE_COUNT, DEFAULT_PERLIN_FREQUENCY, initializeRidgedMulti, initializePerlin } from "./LibNoiseUtils";
+import { DEFAULT_PERLIN_LACUNARITY, DEFAULT_PERLIN_PERSISTENCE, DEFAULT_PERLIN_OCTAVE_COUNT, DEFAULT_PERLIN_FREQUENCY } from "../utils/LibNoiseUtils";
+import { initializeRidgedMulti, initializePerlin } from "./perlinDataDrivenConstructor";
 
 it("has the same perlin results as .net", () => {
     const perlin = new libnoise.generator.Perlin(DEFAULT_PERLIN_FREQUENCY, DEFAULT_PERLIN_LACUNARITY, DEFAULT_PERLIN_PERSISTENCE, DEFAULT_PERLIN_OCTAVE_COUNT,

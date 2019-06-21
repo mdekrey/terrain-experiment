@@ -15,6 +15,7 @@
     "react-scripts": "3.0.1",
     "symlink-dir": "^3.1.0",
     "terrainwebasm": "file:../../Game.WebAsm/bin/Debug/netstandard2.0/dist",
+    "ts-node": "^8.3.0",
     "typescript": "3.4.5",
     "uuid": "3.3.2"
   },
@@ -24,7 +25,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "preinstall": "dotnet build ../../Game.WebAsm",
-    "postinstall": "symlink-dir node_modules/terrainwebasm/_framework ./public/_framework"
+    "postinstall": "symlink-dir node_modules/terrainwebasm/_framework ./public/_framework && npm run gen",
+    "gen": "ts-node -P ./tsconfig.node.json ./src/_scripts/terrainSettingsDtoGenerator > ./src/terrainSettingsDto.local.json"
   },
   "eslintConfig": {
     "extends": "react-app"
