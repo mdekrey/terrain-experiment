@@ -1,5 +1,4 @@
 import React from "react";
-import "../game";
 import { Canvas, CanvasLayer } from "./canvas";
 import { TerrainGrid } from "./terrain";
 import { useService } from "../injector";
@@ -8,7 +7,8 @@ import { Viewport } from "./Viewport";
 import { GameControls } from "./GameControls";
 import { CaveGrid } from "./CaveGrid";
 import { useObservable } from "../rxjs";
-import { GameMode } from "../game/Game";
+import { GameMode } from "../game";
+import { useWindowSize } from "./useWindowSize";
 
 const pixelSize = 32;
 export function GameContainer() {
@@ -20,8 +20,8 @@ export function GameContainer() {
         : game.localZoom;
 
     const gridSize = 1 / zoom;
-    const width = 1200;
-    const height = 800;
+    const { width, height } = useWindowSize({ width: 1200, height: 800 });
+
     let gameModeJsx: JSX.Element;
     if (gameMode.mode === "Loading") {
         return <>Loading</>;
