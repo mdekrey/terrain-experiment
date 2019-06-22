@@ -1,10 +1,9 @@
 import React from 'react';
 import './App.css';
-import { GameContainer } from "./components/GameContainer";
+import { GameEngine } from "./components/GameEngine";
 import { BindHotKeys } from './components/keymap';
-import { ChildInjector, Scope } from './injector';
-import { terrainSettingsFromDto } from './terrain-generation/TerrainSettings';
 
+// TODO - these should be driven by user settings
 const keyMap = {
   ACTIVATE: "enter"
 };
@@ -17,12 +16,9 @@ const continuousMap = {
 }
 
 const App: React.FC = () => {
-  const terrainSettings = terrainSettingsFromDto(require("./terrainSettingsDto.local.json"));
   return (
       <BindHotKeys keyMap={keyMap} continuousMap={continuousMap} className="App" attach={window}>
-        <ChildInjector beginScopes={[ Scope.Component ]} overrideServices={{ terrainSettings }}>
-          <GameContainer />
-        </ChildInjector>
+        <GameEngine />
       </BindHotKeys>
   );
 }
