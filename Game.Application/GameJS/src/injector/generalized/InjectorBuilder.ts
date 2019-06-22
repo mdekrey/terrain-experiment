@@ -22,7 +22,7 @@ export class InjectorBuilder<TServices extends {}, TScope extends string> {
   set<TService extends keyof TServices>(
     service: TService,
     scope: TScope | null,
-    resolver: Resolver<TServices, TServices[TService]>
+    resolver?: Resolver<TServices, TServices[TService]>
   ) {
     this.serviceResolvers[service] = resolver;
     this.scopeByService[service] = scope;

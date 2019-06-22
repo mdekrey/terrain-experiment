@@ -1,5 +1,5 @@
 import { injectorBuilder, Scope } from "../injector";
-import { TerrainSettings, defaultTerrainSettings } from "../terrain-generation/TerrainSettings";
+import { TerrainSettings } from "../terrain-generation/TerrainSettings";
 import { TerrainCache } from "../terrain-generation";
 import { Pawn } from "./Pawn";
 import { Game } from "./Game";
@@ -13,7 +13,7 @@ declare module "../injector/InjectedServices" {
   }
 }
 
-injectorBuilder.set("terrainSettings", Scope.Singleton, () => defaultTerrainSettings);
+injectorBuilder.set("terrainSettings", Scope.Singleton);
 injectorBuilder.set(
     "player",
     Scope.Component,

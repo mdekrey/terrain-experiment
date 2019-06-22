@@ -61,16 +61,11 @@ export class Injector<TServices extends {}, TScope extends string> {
       }
     }
 
-    const targetScope = this.scopeByService[service];
+    const targetScope = this.getScopeForService(service);
     const targetScopeLevel = this.getScopeLevel(targetScope);
     if (targetScopeLevel !== null && targetScopeLevel > minScopeLevel) {
       throw new Error(
         `Target scope '${targetScope}' is more specific than allowed '${minScope}' for service '${service}'.`
-      );
-    }
-    if (targetScope !== null && !this.scopedResolutions[targetScope!]) {
-      throw new Error(
-        `Target scope '${targetScope}' has not been started for service '${service}'.`
       );
     }
     const nextScope =
@@ -78,21 +73,42 @@ export class Injector<TServices extends {}, TScope extends string> {
         ? targetScope!
         : minScope;
     try {
-      const result = this.serviceResolvers[service](newService =>
+      const resolver = this.serviceResolvers[service];
+      if (!resolver) {
+        throw new Error(`No resolver for Service '${service}' and no default provided!`);
+      }
+      const result = resolver(newService =>
         this.resolve(newService, nextScope)
       );
-      if (targetScope !== null) {
-        const scopedResolutions: Partial<TServices> = this.scopedResolutions[
-          targetScope!
-        ]!;
-        scopedResolutions[service] = result;
-      }
+      this.storeServiceInScope(targetScope, service, result);
       return result;
     } catch (err) {
       throw new Error(
-        `When resolving Service '${service}' in Scope '${targetScope}'...\n  ${err}`
+        `${err.message}\n  ... when resolving Service '${service}' in Scope '${targetScope}'`
       );
     }
+  }
+
+  setService<TService extends keyof TServices>(
+    service: TService, value: TServices[TService]
+  ) {
+    const scope = this.getScopeForService(service);
+    this.storeServiceInScope(scope, service, value);
+  }
+
+  private storeServiceInScope<TService extends keyof TServices>(targetScope: Record<keyof TServices, TScope | null>[TService], service: TService, result: TServices[TService]) {
+    if (targetScope !== null) {
+      const scopedResolutions: Partial<TServices> = this.scopedResolutions[targetScope!]!;
+      scopedResolutions[service] = result;
+    }
+  }
+
+  private getScopeForService<TService extends keyof TServices>(service: TService) {
+    const targetScope = this.scopeByService[service];
+    if (targetScope !== null && !this.scopedResolutions[targetScope!]) {
+      throw new Error(`Target scope '${targetScope}' has not been started for service '${service}'.`);
+    }
+    return targetScope;
   }
 
   private getScopeLevel(scope: TScope | null): number | null {

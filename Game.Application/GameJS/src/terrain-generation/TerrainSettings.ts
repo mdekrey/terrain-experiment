@@ -40,8 +40,6 @@ export interface TerrainSettings {
   detailVisualizationSpec: TerrainSpec<VisualTerrainType>;
 }
 
-const terrainSettings: TerrainSettingsDto = require("../terrainSettingsDto.local.json");
-
 export function terrainSettingsFromDto({
   visualizationSpec,
   detailVisualizationSpec,
@@ -53,10 +51,6 @@ export function terrainSettingsFromDto({
     detailVisualizationSpec: dataDrivenTerrainOnly(detailVisualizationSpec)
   };
 }
-
-export const defaultTerrainSettings: TerrainSettings = terrainSettingsFromDto(
-  terrainSettings
-);
 
 export function humidityCurve(
   humidityCurve: TerrainSettings["humidityCurve"],

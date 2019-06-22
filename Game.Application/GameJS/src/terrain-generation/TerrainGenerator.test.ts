@@ -1,5 +1,7 @@
 import { TerrainGenerator } from "./TerrainGenerator";
-import { defaultTerrainSettings } from "./TerrainSettings";
+import { terrainSettingsFromDto } from "./TerrainSettings";
+
+const defaultTerrainSettings = terrainSettingsFromDto(require("../terrainSettingsDto.local.json"));
 
 it("generates some terrain", () => {
     const terrain = new TerrainGenerator(defaultTerrainSettings);

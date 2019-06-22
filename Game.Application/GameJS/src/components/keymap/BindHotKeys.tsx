@@ -56,7 +56,7 @@ export function BindHotKeys<T extends KeymapCommand, TContinuous extends Continu
   }, [continuousMap, continuousSet])
 
   return (
-    <HotKeys handlers={handlers} keyMap={keyMap} {...props}>
+    <HotKeys handlers={handlers} keyMap={keyMap} {...props} focused={true}>
       {children}
     </HotKeys>
   );
