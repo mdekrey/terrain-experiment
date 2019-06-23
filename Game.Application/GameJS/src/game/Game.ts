@@ -125,8 +125,9 @@ export class Game {
         switch (gameMode.mode) {
             case "Cave":
                 const {cave} = gameMode;
-                console.log(Math.round((worldCoordinate.y - cave.offset.y) * this.localZoom), Math.round((worldCoordinate.x - cave.offset.x) * this.localZoom))
-                return !cave.isSolid[Math.round((worldCoordinate.y - cave.offset.y) * this.localZoom)][Math.round((worldCoordinate.x - cave.offset.x) * this.localZoom)];
+                const caveY = Math.round((worldCoordinate.y - cave.offset.y) * this.localZoom);
+                const caveX = Math.round((worldCoordinate.x - cave.offset.x) * this.localZoom);
+                return !cave.isSolid[caveY][caveX];
             case "Loading":
                 return false;
             case "Overworld":
