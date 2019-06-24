@@ -250,5 +250,13 @@ namespace LibNoise
             return (6.0f * a5) - (15.0f * a4) + (10.0f * a3);
         }
 
+
+        internal static float ValueNoise3DInt(float x, float y, float z, int seed)
+        {
+            var n = (int)(GeneratorNoiseX * x + GeneratorNoiseY * y + GeneratorNoiseZ * z + GeneratorSeed * seed) & 0x7fffffff;
+            n = (n >> 13) ^ n;
+            return (n * (n * n * 60493 + 19990303) + 1376312589) & 0x7fffffff;
+        }
+
     }
 }
