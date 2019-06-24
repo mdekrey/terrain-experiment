@@ -17,6 +17,7 @@
     "terrainwebasm": "file:../../Game.WebAsm/bin/Debug/netstandard2.0/dist",
     "ts-node": "^8.3.0",
     "typescript": "3.4.5",
+    "unionize": "^3.0.1",
     "uuid": "3.3.2"
   },
   "scripts": {
