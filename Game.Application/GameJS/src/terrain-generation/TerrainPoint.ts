@@ -92,7 +92,9 @@ export class TerrainPoint {
     });
   }
   get hasCave() {
+    const possibleCave = Math.round(this.x * 400) * 100 === Math.round(this.x * 40000) && Math.round(this.y * 400) * 100 === Math.round(this.y * 40000);
     return (
+      possibleCave &&
       (this.altitudeCategory === AltitudeCategory.Hills ||
         this.altitudeCategory === AltitudeCategory.None) &&
       this.caveIndicator >= 3e6 &&

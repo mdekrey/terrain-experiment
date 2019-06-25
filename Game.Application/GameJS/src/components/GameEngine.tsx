@@ -1,5 +1,5 @@
 import React from "react";
-import { ajax, AjaxResponse } from "rxjs/ajax"
+import { ajax } from "rxjs/ajax"
 
 import { GameContainer } from "./GameContainer";
 import { ChildInjector, Scope } from '../injector';

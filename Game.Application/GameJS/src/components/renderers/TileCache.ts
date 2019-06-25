@@ -1,4 +1,5 @@
 import { GameCoordinates } from "../../game/GameCoordinates";
+import { TerrainCache } from "../../terrain-generation";
 
 interface TileCacheEntry {
   useCount: number;
@@ -17,6 +18,7 @@ export type TilePieceRenderer = (args: {
 }) => void;
 
 export class TileCache {
+  private readonly terrainCache: TerrainCache | null;
   private readonly gridSize: number;
   private readonly pixelSize: number;
   private readonly canCache: () => boolean;
@@ -27,6 +29,7 @@ export class TileCache {
   private readonly renderTilePiece: TilePieceRenderer;
 
   constructor(
+    terrainCache: TerrainCache | null,
     gridSize: number,
     pixelSize: number,
     canCache: () => boolean,
@@ -35,6 +38,7 @@ export class TileCache {
     renderTilePiece: TilePieceRenderer,
     tileStep: number = 5
   ) {
+    this.terrainCache = terrainCache;
     this.gridSize = gridSize;
     this.pixelSize = pixelSize;
     this.canCache = canCache;
@@ -96,14 +100,14 @@ export class TileCache {
         pixelSize * tileStep
       );
       return;
-    }
+    }/*
     this.renderTile(
       context,
       terrainX,
       terrainY,
       viewportX + screenX + offsetX,
       viewportY + screenY + offsetY
-    );
+    );*/
   }
 
   private createCachableCanvas(terrainX: number, terrainY: number) {
@@ -125,6 +129,9 @@ export class TileCache {
     offsetY: number
   ) {
     const { gridSize, tileStep, pixelSize } = this;
+    if (this.terrainCache) {
+      this.terrainCache.getBlock(terrainX, terrainY, gridSize, tileStep);
+    }
     for (let x = 0; x < tileStep; x++) {
       for (let y = 0; y < tileStep; y++) {
         this.renderTilePiece({

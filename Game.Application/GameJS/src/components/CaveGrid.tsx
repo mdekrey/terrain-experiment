@@ -26,7 +26,7 @@ export function CaveGrid(cave: Cave) {
     const sprites = useCaveSprites();
     const gridWidth = width / pixelSize;
     const gridHeight = height / pixelSize;
-    const tileCache = React.useMemo(() => new TileCache(
+    const tileCache = React.useMemo(() => new TileCache(null,
         1, pixelSize, () => !Object.values(sprites).some(s => !s.isFinal), x, y, getCaveSpotRenderer(cave, sprites)),
         [cave, pixelSize, sprites, x, y]
     );

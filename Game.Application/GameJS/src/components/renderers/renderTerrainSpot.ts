@@ -19,8 +19,7 @@ export function getTerrainSpotRenderer(
         detail ? terrain.detailVisualCategory : terrain.visualCategory
       ]!.render(0, context, x * pixelSize, y * pixelSize, pixelSize, pixelSize);
       // drawSolidColor(context, terrain.feature, 0.5, x, y, pixelSize);
-      const isPossibleCaveSite = Math.round(terrain.x * 400) * 100 === Math.round(terrain.x * 40000) && Math.round(terrain.y * 400) * 100 === Math.round(terrain.y * 40000);
-      if (isPossibleCaveSite && terrain.hasCave) {
+      if (terrain.hasCave) {
         sprites["Cave"].render(
           0,
           context,
