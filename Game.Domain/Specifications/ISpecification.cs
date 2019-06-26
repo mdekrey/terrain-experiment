@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Game.Domain.Specifications
 {
-    public interface ISpecification<TSituation, TOutput>
+    public interface ISpecification<in TSituation, out TOutput>
     {
         TOutput Execute(TSituation situation);
     }

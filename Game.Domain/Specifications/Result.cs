@@ -1,6 +1,6 @@
 ﻿namespace Game.Domain.Specifications
 {
-    public abstract class Result<TSituation, TValue> : ISpecification<TSituation, TValue>
+    public class Result<TValue> : ISpecification<object, TValue>
     {
         private readonly TValue value;
 
@@ -9,7 +9,7 @@
             this.value = value;
         }
 
-        public TValue Execute(TSituation situation)
+        public TValue Execute(object situation)
         {
             return value;
         }

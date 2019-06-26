@@ -19,7 +19,7 @@ namespace Game.WebAsm
 
     public static class TerrainContainer
     {
-        public static readonly TerrainGenerator generator = new TerrainGenerator();
+        public static readonly TerrainSettings settings = new TerrainSettingsGenerator().Generate();
 
         [JSInvokable]
         public static VisualTerrainType[] GetTerrain(Coord[] coordinates)
@@ -27,13 +27,14 @@ namespace Game.WebAsm
             return coordinates.Select(c => c.ToCoordinate()).Select(t => VisualTerrainType.CoolDeserts).ToArray();
         }
         [JSInvokable]
-        public static VisualTerrainType[][] GetTerrainBlock(float startX, float startY, float stepSize, int stepCount)
+        public static VisualTerrainType[][] GetTerrainBlock(float startX, float startY, float stepSize, int stepCount, bool isDetail)
         {
             return Enumerable.Range(0, stepCount)
-                            .Select(y => y * stepSize + startY)
+                            .Select(iy => iy * stepSize + startY)
                             .Select(y => Enumerable.Range(0, stepCount)
-                                                    .Select(x => x * stepSize + startX)
-                                                    .Select(x => VisualTerrainType.CoolDeserts)
+                                                    .Select(ix => ix * stepSize + startX)
+                                                    .Select(x => settings.GenerateSituation(x, y))
+                                                    .Select(point => isDetail ? settings.DetailVisualizationSpec.Execute(point) : settings.VisualizationSpec.Execute(point))
                                                     .ToArray()
                                 )
                             .ToArray();

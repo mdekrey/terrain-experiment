@@ -24,7 +24,7 @@ export class TerrainCache {
     }
 
     getBlock(terrainX: number, terrainY: number, gridSize: number, tileStep: number) {
-        /*const result = */(window as any).DotNet.invokeMethod("Game.WebAsm", "GetTerrainBlock", terrainX, terrainY, gridSize, tileStep);
+        /*const result = */(window as any).DotNet.invokeMethod("Game.WebAsm", "GetTerrainBlock", terrainX, terrainY, gridSize, tileStep, false);
         // const resultRecord: Record<string, any> = {};
         const steps = Array.from(Array(tileStep).keys());
         // for (let x = 0; x < tileStep; x++) {
