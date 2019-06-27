@@ -1,4 +1,5 @@
-﻿using Game.Domain.Terrain;
+﻿using Game.Domain.Caves;
+using Game.Domain.Terrain;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -15,10 +16,15 @@ namespace Game.Application.Maps
         private static readonly float localZoom = 4e-4f;
         private static readonly TerrainSettings settings = new TerrainSettingsGenerator().Generate();
 
+        public class GameCoordinate
+        {
+            public int X { get; set; }
+            public int Y { get; set; }
+        }
+
         public class GetTerrainSettingsRequest
         {
-            public int X { get; set; } = 0;
-            public int Y { get; set; } = 0;
+            public GameCoordinate Coordinates { get; set; }
             public int Width { get; set; } = 100;
             public int Height { get; set; } = 100;
             public bool IsDetail { get; set; } = false;
@@ -28,8 +34,8 @@ namespace Game.Application.Maps
         public VisualTerrainType[][][] GetTerrainSettings([FromBody] GetTerrainSettingsRequest body)
         {
             var stepSize = body.IsDetail ? localZoom : overworldZoom;
-            var startX = body.X * stepSize;
-            var startY = body.Y * stepSize;
+            var startX = body.Coordinates.X * stepSize;
+            var startY = body.Coordinates.Y * stepSize;
             return Enumerable.Range(0, body.Height)
                             .Select(iy => iy * stepSize + startY)
                             .Select(y => Enumerable.Range(0, body.Width)
@@ -41,5 +47,30 @@ namespace Game.Application.Maps
                             .ToArray();
         }
 
+        public class CaveResponse
+        {
+            public bool[][] Map { get; set; }
+            public GameCoordinate[] Treasure { get; set; }
+            public GameCoordinate Entrance { get; set; }
+        }
+
+        public class CaveRequest
+        {
+            public GameCoordinate Coordinates { get; set; }
+        }
+
+        [HttpPost("cave")]
+        public async Task<CaveResponse> GetCave([FromBody] CaveRequest body)
+        {
+            var startX = body.Coordinates.X * overworldZoom;
+            var startY = body.Coordinates.Y * overworldZoom;
+            var result = await new CaveGenerator(100, 100, 2, (int)(settings.CaveSeeds.GetValue(startX, startY, 0) * 100000)).Generate();
+            return new CaveResponse
+            {
+                Map = result.Map,
+                Treasure = result.Treasure.Select(c => new GameCoordinate { X = c.x, Y = c.y }).ToArray(),
+                Entrance = new GameCoordinate { X = result.Entrance.x, Y = result.Entrance.y },
+            };
+        }
     }
 }

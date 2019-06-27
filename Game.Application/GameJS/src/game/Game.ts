@@ -71,7 +71,7 @@ export class Game {
             const position = this.playerPawn.position();
             this.gameMode$.next({ mode: "Loading" });
 
-            const gen = new CaveGenerator(this.terrain.getCaveSeedAt(position), 100, 100, 2, addCoordinates(position, { x: -0.5 / this.overworldZoom, y: -0.5 / this.overworldZoom }));
+            const gen = new CaveGenerator({ x: position.x * this.overworldZoom, y: position.y * this.overworldZoom }, addCoordinates(position, { x: -0.5 / this.overworldZoom, y: -0.5 / this.overworldZoom }));
             const cave = await gen.cave;
             this.playerPawn.moveTo(addCoordinates(cave.offset, { x: cave.entrance.x / this.localZoom, y: cave.entrance.y / this.localZoom }), Direction.Down);
             this.gameMode$.next({ mode: "Cave", cave });
