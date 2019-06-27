@@ -1,10 +1,10 @@
 import { TerrainGenerator } from "./TerrainGenerator";
-import { TerrainPoint } from "./TerrainPoint";
 import { GameCoordinates } from "../game/GameCoordinates";
+import { VisualTerrainType, VisualTerrainTypeFromDotNet } from "./VisualTerrainType";
 
 export class TerrainCache {
     private readonly terrain: TerrainGenerator;
-    private readonly cache = new Map<string, TerrainPoint>();
+    private readonly cache = new Map<string, VisualTerrainType[]>();
     private readonly maxCount: number;
 
     constructor(terrain: TerrainGenerator, maxCount: number = 10000) {
@@ -12,46 +12,36 @@ export class TerrainCache {
         this.maxCount = maxCount;
     }
 
-    getAll(coordinates: GameCoordinates[]) {
-        const keys = coordinates.filter(({ x, y }) =>
-            !Boolean(this.cache.get(this.toKey(x, y)))
-        ).map(({ x, y }) => ({ X: x, Y: y }));
-        if (keys.length) {
-            const result = (window as any).DotNet.invokeMethod("Game.WebAsm", "GetTerrain", keys);
-            console.log(result);
-        }
-        return coordinates.map(({ x, y }) => this.getAt(x, y, true));
-    }
-
-    getBlock(terrainX: number, terrainY: number, gridSize: number, tileStep: number) {
-        /*const result = */(window as any).DotNet.invokeMethod("Game.WebAsm", "GetTerrainBlock", terrainX, terrainY, gridSize, tileStep, false);
-        // const resultRecord: Record<string, any> = {};
-        const steps = Array.from(Array(tileStep).keys());
-        // for (let x = 0; x < tileStep; x++) {
-        //     for (let y = 0; y < tileStep; y++) {
-        //         const key = this.toKey(gridSize * x + terrainX, gridSize * y + terrainY);
-        //         resultRecord[key] = result[y][x];
-        //     }
-        // }
-        // console.log(resultRecord);
-        return steps.map(y => steps.map(x => this.getAt(gridSize * x + terrainX, gridSize * y + terrainY, true)));
-    }
-
-    getAt(x: number, y: number, bypass = false): TerrainPoint {
-        const key = this.toKey(x, y);
-        const result = this.cache.get(key);
-        if (!result) {
-            if (!bypass) {
-                throw new Error("getAt " + key);
-            }
-            const result = this.terrain.getTerrain(x, y);
-            this.cache.set(key, result);
+    getBlock(isDetail: boolean) {
+        return (x: number, y: number, gridSize: number, tileStep: number): VisualTerrainType[][][] => {
+            // const result = (window as any).DotNet.invokeMethod("Game.WebAsm", "GetTerrainBlock", terrainX, terrainY, gridSize, tileStep, isDetail) as number[][];
             this.cleanCache();
-            return result;
-        }
-        this.cache.delete(key);
-        this.cache.set(key, result);
-        return result;
+            // for (let x = 0; x < tileStep; x++) {
+            //     for (let y = 0; y < tileStep; y++) {
+            //         const key = this.toKey(gridSize * x + terrainX, gridSize * y + terrainY);
+            //         this.cache.set(key, VisualTerrainTypeFromDotNet[result[y][x]]);
+            //     }
+            // }
+            // return result.map(n => n.map(v => VisualTerrainTypeFromDotNet[v]));
+            // TODO
+            const steps = Array.from(Array(tileStep).keys())
+            return steps.map(iy => steps.map((ix => {
+                const terrainX = x + ix * gridSize;
+                const terrainY = y + iy * gridSize;
+                const terrainPoint = this.terrain.getTerrain(terrainX, terrainY);
+                const result = [isDetail ? terrainPoint.detailVisualCategory : terrainPoint.visualCategory];
+                if (terrainPoint.hasCave) {
+                    result.push("Cave");
+                }
+                return result;
+            })));
+        };
+    }
+
+    getAt(x: number, y: number) {
+        const key = this.toKey(x, y);
+        const cached = this.cache.get(key);
+        return cached || this.getBlock(false)(x, y, 0, 1)[0][0];
     }
 
     toKey(x: number, y: number) {

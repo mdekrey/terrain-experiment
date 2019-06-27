@@ -58,7 +58,7 @@ export class Game {
     async enterDetail() {
         if (this.playerPawn.isDoneMoving()) {
             const position = this.playerPawn.position();
-            if (this.terrain.getAt(position.x, position.y).hasCave) {
+            if (this.terrain.getAt(position.x, position.y).indexOf("Cave") !== -1) {
                 this.enterCave();
             } else {
                 this.gameMode$.next({ mode: "Detail" });
@@ -116,8 +116,8 @@ export class Game {
         const gameMode = this.gameMode$.value;
 
         const overworldCheck = () => {
-            const category = this.terrain.getAt(worldCoordinate.x, worldCoordinate.y).visualCategory;
-            return isPassable(category);
+            const category = this.terrain.getAt(worldCoordinate.x, worldCoordinate.y);
+            return !category.some(t => !isPassable(t));
         };
         if (forceOverworld) {
             return overworldCheck();
@@ -136,8 +136,8 @@ export class Game {
                 }
             case "Detail":
                 {
-                    const category = this.terrain.getAt(worldCoordinate.x, worldCoordinate.y).detailVisualCategory;
-                    return isPassable(category);
+                    const category = this.terrain.getAt(worldCoordinate.x, worldCoordinate.y);
+                    return !category.some(t => !isPassable(t));
                 }
         }
         function isPassable(category: VisualTerrainType) {

@@ -1,7 +1,7 @@
 import React from "react";
 import { useCanvas } from "./canvas";
 import { ViewportContext } from "./Viewport";
-import { useCaveSprites, getCaveSpotRenderer } from "./renderers/renderCaveSpot";
+import { useCaveSprites, getCaveSpotRenderer, CaveSpotType, getCaveSpotLoader } from "./renderers/renderCaveSpot";
 import { Cave } from "../cave-generation";
 import { TileCache } from "./renderers/TileCache";
 
@@ -26,7 +26,7 @@ export function CaveGrid(cave: Cave) {
     const sprites = useCaveSprites();
     const gridWidth = width / pixelSize;
     const gridHeight = height / pixelSize;
-    const tileCache = React.useMemo(() => new TileCache(null,
+    const tileCache = React.useMemo(() => new TileCache<CaveSpotType[]>(getCaveSpotLoader(cave),
         1, pixelSize, () => !Object.values(sprites).some(s => !s.isFinal), x, y, getCaveSpotRenderer(cave, sprites)),
         [cave, pixelSize, sprites, x, y]
     );

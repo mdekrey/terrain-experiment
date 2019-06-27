@@ -1,5 +1,5 @@
 import { GameCoordinates } from "../../game/GameCoordinates";
-import { TerrainCache } from "../../terrain-generation";
+import { TerrainCache, VisualTerrainType } from "../../terrain-generation";
 
 interface TileCacheEntry {
   useCount: number;
@@ -10,15 +10,17 @@ function keyPart(part: number) {
   return part.toFixed(6).replace(/\.0+$/, "");
 }
 
-export type TilePieceRenderer = (args: {
+export type BlockLoader<T> = (terrainX: number, terrainY: number, gridSize: number, tileStep: number) => T[][];
+
+export type TilePieceRenderer<T> = (args: {
   context: CanvasRenderingContext2D;
   screenCoordinates: GameCoordinates;
-  terrainCoordinates: GameCoordinates;
+  terrain: T;
   pixelSize: number;
 }) => void;
 
-export class TileCache {
-  private readonly terrainCache: TerrainCache | null;
+export class TileCache<T> {
+  private readonly terrainLoader: BlockLoader<T>;
   private readonly gridSize: number;
   private readonly pixelSize: number;
   private readonly canCache: () => boolean;
@@ -26,19 +28,19 @@ export class TileCache {
   private readonly viewportX: number;
   private readonly viewportY: number;
   private readonly cache = new Map<string, TileCacheEntry>();
-  private readonly renderTilePiece: TilePieceRenderer;
+  private readonly renderTilePiece: TilePieceRenderer<T>;
 
   constructor(
-    terrainCache: TerrainCache | null,
+    terrainLoader: BlockLoader<T>,
     gridSize: number,
     pixelSize: number,
     canCache: () => boolean,
     viewportX: number,
     viewportY: number,
-    renderTilePiece: TilePieceRenderer,
+    renderTilePiece: TilePieceRenderer<T>,
     tileStep: number = 5
   ) {
-    this.terrainCache = terrainCache;
+    this.terrainLoader = terrainLoader;
     this.gridSize = gridSize;
     this.pixelSize = pixelSize;
     this.canCache = canCache;
@@ -129,18 +131,13 @@ export class TileCache {
     offsetY: number
   ) {
     const { gridSize, tileStep, pixelSize } = this;
-    if (this.terrainCache) {
-      this.terrainCache.getBlock(terrainX, terrainY, gridSize, tileStep);
-    }
+    const block = this.terrainLoader(terrainX, terrainY, gridSize, tileStep);
     for (let x = 0; x < tileStep; x++) {
       for (let y = 0; y < tileStep; y++) {
         this.renderTilePiece({
           context,
           screenCoordinates: { x: offsetX + x, y: offsetY + y },
-          terrainCoordinates: {
-            x: x * gridSize + terrainX,
-            y: y * gridSize + terrainY
-          },
+          terrain: block[y][x],
           pixelSize
         });
       }
