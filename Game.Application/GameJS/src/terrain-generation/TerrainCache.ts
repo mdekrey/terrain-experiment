@@ -38,10 +38,10 @@ export class TerrainCache {
         };
     }
 
-    getAt(x: number, y: number) {
+    getAt(x: number, y: number, isDetail: boolean) {
         const key = this.toKey(x, y);
         const cached = this.cache.get(key);
-        return cached || this.getBlock(false)(x, y, 0, 1)[0][0];
+        return cached || this.getBlock(isDetail)(x, y, 0, 1)[0][0];
     }
 
     toKey(x: number, y: number) {

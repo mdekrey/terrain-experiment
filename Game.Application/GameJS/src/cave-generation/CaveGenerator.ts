@@ -25,7 +25,6 @@ export class CaveGenerator {
   ) {
     this.position = position;
     this.offset = offset;
-    console.log(position, offset);
 
     this.result = new Promise(this.buildMap);
   }

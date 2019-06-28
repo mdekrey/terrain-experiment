@@ -10,7 +10,6 @@ import { useObservable } from "../rxjs";
 import { GameMode } from "../game";
 import { useWindowSize } from "./useWindowSize";
 
-const pixelSize = 32;
 export function GameContainer() {
     const player = useService("player");
     const game = useService("game");
@@ -21,6 +20,7 @@ export function GameContainer() {
 
     const gridSize = 1 / zoom;
     const { width, height } = useWindowSize({ width: 1200, height: 800 });
+    const pixelSize = Math.max(1, Math.floor(Math.sqrt(width * height) / 16 / 20)) * 16;
 
     let gameModeJsx: JSX.Element;
     if (gameMode.mode === "Loading") {

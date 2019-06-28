@@ -1,5 +1,4 @@
 import { GameCoordinates } from "../../game/GameCoordinates";
-import { TerrainCache, VisualTerrainType } from "../../terrain-generation";
 
 interface TileCacheEntry {
   useCount: number;
@@ -38,7 +37,7 @@ export class TileCache<T> {
     viewportX: number,
     viewportY: number,
     renderTilePiece: TilePieceRenderer<T>,
-    tileStep: number = 5
+    tileStep: number = 8
   ) {
     this.terrainLoader = terrainLoader;
     this.gridSize = gridSize;
@@ -96,20 +95,13 @@ export class TileCache<T> {
       cached.useCount = 0;
       context.drawImage(
         cached.canvas,
-        (viewportX + screenX + offsetX) * pixelSize,
-        (viewportY + screenY + offsetY) * pixelSize,
-        pixelSize * tileStep,
-        pixelSize * tileStep
+        Math.round((viewportX + screenX + offsetX) * pixelSize),
+        Math.round((viewportY + screenY + offsetY) * pixelSize),
+        Math.round(pixelSize * tileStep),
+        Math.round(pixelSize * tileStep)
       );
       return;
-    }/*
-    this.renderTile(
-      context,
-      terrainX,
-      terrainY,
-      viewportX + screenX + offsetX,
-      viewportY + screenY + offsetY
-    );*/
+    }
   }
 
   private createCachableCanvas(terrainX: number, terrainY: number) {
@@ -119,6 +111,7 @@ export class TileCache<T> {
     const context = canvas.getContext("2d")!;
     context.imageSmoothingEnabled = false;
     this.renderTile(context, terrainX, terrainY, 0, 0);
+    // context.strokeRect(0.5, 0.5, pixelSize * tileStep,  pixelSize * tileStep)
     // document.body.appendChild(canvas);
     return canvas;
   }
@@ -136,7 +129,7 @@ export class TileCache<T> {
       for (let y = 0; y < tileStep; y++) {
         this.renderTilePiece({
           context,
-          screenCoordinates: { x: offsetX + x, y: offsetY + y },
+          screenCoordinates: { x: Math.round(offsetX + x), y: Math.round(offsetY + y) },
           terrain: block[y][x],
           pixelSize
         });

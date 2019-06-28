@@ -58,7 +58,7 @@ export class Game {
     async enterDetail() {
         if (this.playerPawn.isDoneMoving()) {
             const position = this.playerPawn.position();
-            if (this.terrain.getAt(position.x, position.y).indexOf("Cave") !== -1) {
+            if (this.terrain.getAt(position.x, position.y, false).indexOf("Cave") !== -1) {
                 this.enterCave();
             } else {
                 this.gameMode$.next({ mode: "Detail" });
@@ -116,7 +116,7 @@ export class Game {
         const gameMode = this.gameMode$.value;
 
         const overworldCheck = () => {
-            const category = this.terrain.getAt(worldCoordinate.x, worldCoordinate.y);
+            const category = this.terrain.getAt(worldCoordinate.x, worldCoordinate.y, false);
             return !category.some(t => !isPassable(t));
         };
         if (forceOverworld) {
@@ -136,7 +136,7 @@ export class Game {
                 }
             case "Detail":
                 {
-                    const category = this.terrain.getAt(worldCoordinate.x, worldCoordinate.y);
+                    const category = this.terrain.getAt(worldCoordinate.x, worldCoordinate.y, true);
                     return !category.some(t => !isPassable(t));
                 }
         }

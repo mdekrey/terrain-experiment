@@ -15,13 +15,15 @@ class SpriteAtlas {
 
     async getSprite(image: string, coords: Partial<SpriteCoordinates>[]): Promise<Sprite> {
         const img = this.atlas.get(image) ||
-            (function () {
+            (() => {
                 const temp = new Image();
-                return new Promise<HTMLImageElement>((resolve, reject) => {
+                const result = new Promise<HTMLImageElement>((resolve, reject) => {
                     temp.onload = () => resolve(temp);
                     temp.onerror = (err) => reject(err);
                     temp.src = image;
-                })
+                });
+                this.atlas.set(image, result);
+                return result;
             })();
         const imageSource = await img;
         return {
