@@ -9,14 +9,15 @@ import { CaveGrid } from "./CaveGrid";
 import { useObservable } from "../rxjs";
 import { GameMode } from "../game";
 import { useWindowSize } from "./useWindowSize";
+import { overworldZoom, localZoom } from "../terrain-generation";
 
 export function GameContainer() {
     const player = useService("player");
     const game = useService("game");
     const gameMode = useObservable<GameMode>(game.gameMode$, { mode: "Overworld" });
     const zoom = gameMode.mode === "Overworld"
-        ? game.overworldZoom
-        : game.localZoom;
+        ? overworldZoom
+        : localZoom;
 
     const gridSize = 1 / zoom;
     const { width, height } = useWindowSize({ width: 1200, height: 800 });

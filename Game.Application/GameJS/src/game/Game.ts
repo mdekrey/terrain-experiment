@@ -1,5 +1,5 @@
 import { TerrainSettings } from "../terrain-generation/TerrainSettings";
-import { TerrainGenerator, TerrainCache, VisualTerrainType } from "../terrain-generation";
+import { TerrainGenerator, TerrainCache, VisualTerrainType, overworldZoom, localZoom } from "../terrain-generation";
 import { Pawn } from "./Pawn";
 import { Cave, CaveGenerator } from "../cave-generation";
 import { BehaviorSubject } from "rxjs";
@@ -26,16 +26,12 @@ export interface LoadingGameMode {
 
 export type GameMode = OverworldGameMode | CaveGameMode | LoadingGameMode | DetailGameMode;
 
-const zoomExp = 2;
 
 export class Game {
     readonly terrain: TerrainCache;
     readonly playerPawn: Pawn;
     readonly gameMode$ = new BehaviorSubject<GameMode>({ mode: "Overworld" })
     readonly otherPlayers: Pawn[];
-
-    readonly overworldZoom = Math.pow(10, zoomExp) * 4;
-    readonly localZoom = Math.pow(10, zoomExp + 2) * 4;
 
     constructor(settings: TerrainSettings, playerPawn: Pawn) {
         const terrainGenerator = new TerrainGenerator(settings);
@@ -48,7 +44,7 @@ export class Game {
         const types = Object.values(PawnType);
         const generatePlayer = () => {
             const result = new Pawn();
-            result.moveTo({ x: Math.floor((Math.random() - 0.5) * 50) / this.overworldZoom, y: Math.floor((Math.random() - 0.5) * 50) / this.overworldZoom }, Math.floor(Math.random() * 4));
+            result.moveTo({ x: Math.floor((Math.random() - 0.5) * 50) / overworldZoom, y: Math.floor((Math.random() - 0.5) * 50) / overworldZoom }, Math.floor(Math.random() * 4));
             result.type = types[Math.floor(Math.random() * types.length)];
             return result;
         }
@@ -71,9 +67,9 @@ export class Game {
             const position = this.playerPawn.position();
             this.gameMode$.next({ mode: "Loading" });
 
-            const gen = new CaveGenerator({ x: position.x * this.overworldZoom, y: position.y * this.overworldZoom }, addCoordinates(position, { x: -0.5 / this.overworldZoom, y: -0.5 / this.overworldZoom }));
+            const gen = new CaveGenerator({ x: position.x * overworldZoom, y: position.y * overworldZoom }, addCoordinates(position, { x: -0.5 / overworldZoom, y: -0.5 / overworldZoom }));
             const cave = await gen.cave;
-            this.playerPawn.moveTo(addCoordinates(cave.offset, { x: cave.entrance.x / this.localZoom, y: cave.entrance.y / this.localZoom }), Direction.Down);
+            this.playerPawn.moveTo(addCoordinates(cave.offset, { x: cave.entrance.x / localZoom, y: cave.entrance.y / localZoom }), Direction.Down);
             this.gameMode$.next({ mode: "Cave", cave });
         }
     }
@@ -84,14 +80,14 @@ export class Game {
             const position = this.playerPawn.position();
             if (gameMode.mode === "Cave") {
                 const { offset, entrance } = gameMode.cave;
-                const x = Math.round((position.x - offset.x) * this.localZoom);
-                const y = Math.round((position.y - offset.y) * this.localZoom);
+                const x = Math.round((position.x - offset.x) * localZoom);
+                const y = Math.round((position.y - offset.y) * localZoom);
                 if (x !== entrance.x || y !== entrance.y) {
                     console.log("not at entrance", x, y, entrance);
                     return;
                 }
             }
-            const targetPosition = { x: Math.round(position.x * this.overworldZoom) / this.overworldZoom, y: Math.round(position.y * this.overworldZoom) / this.overworldZoom }
+            const targetPosition = { x: Math.round(position.x * overworldZoom) / overworldZoom, y: Math.round(position.y * overworldZoom) / overworldZoom }
             if (await this.isOpenSpace(targetPosition, true)) {
                 this.playerPawn.moveTo(targetPosition, Direction.Down);
                 this.gameMode$.next({ mode: "Overworld" });
@@ -125,8 +121,8 @@ export class Game {
         switch (gameMode.mode) {
             case "Cave":
                 const {cave} = gameMode;
-                const caveY = Math.round((worldCoordinate.y - cave.offset.y) * this.localZoom);
-                const caveX = Math.round((worldCoordinate.x - cave.offset.x) * this.localZoom);
+                const caveY = Math.round((worldCoordinate.y - cave.offset.y) * localZoom);
+                const caveX = Math.round((worldCoordinate.x - cave.offset.x) * localZoom);
                 return !cave.isSolid[caveY][caveX];
             case "Loading":
                 return false;
