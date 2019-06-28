@@ -1,7 +1,7 @@
 import { TerrainGenerator } from "./TerrainGenerator";
 import { GameCoordinates } from "../game/GameCoordinates";
 import { VisualTerrainType, VisualTerrainTypeFromDotNet } from "./VisualTerrainType";
-import { overworldZoom, localZoom } from "./ZoomLevels";
+import { zoomFactor } from "./ZoomLevels";
 
 export type TerrainTileInfo = VisualTerrainType[];
 
@@ -16,30 +16,18 @@ export class TerrainCache {
     constructor(terrain: TerrainGenerator, maxCount: number = 10000) {
         this.terrain = terrain;
         this.maxCount = maxCount;
-        console.log(this);
     }
 
     getBlock(isDetail: boolean) {
-        const factor = isDetail ? localZoom : overworldZoom;
-        return (x: number, y: number, gridSize: number, tileStep: number): TerrainTileInfo[][] | null => {
-            // const result = (window as any).DotNet.invokeMethod("Game.WebAsm", "GetTerrainBlock", terrainX, terrainY, gridSize, tileStep, isDetail) as number[][];
-            // this.cleanCache();
-            // for (let x = 0; x < tileStep; x++) {
-            //     for (let y = 0; y < tileStep; y++) {
-            //         const key = this.toKey(gridSize * x + terrainX, gridSize * y + terrainY);
-            //         this.cache.set(key, VisualTerrainTypeFromDotNet[result[y][x]]);
-            //     }
-            // }
-            // return result.map(n => n.map(v => VisualTerrainTypeFromDotNet[v]));
-            // TODO
-            const steps = Array.from(Array(tileStep).keys());
+        const factor = zoomFactor(isDetail);
+        return (x: number, y: number, tileStep: number): TerrainTileInfo[][] | null => {
             const result: TerrainTileInfo[][] = [];
             let failed = false;
             for (let iy = 0; iy < tileStep; iy++) {
                 result[iy] = [];
                 for (let ix = 0; ix < tileStep; ix++) {
-                    const terrainX = x + ix * gridSize;
-                    const terrainY = y + iy * gridSize;
+                    const terrainX = x + ix / factor;
+                    const terrainY = y + iy / factor;
                     const at = this.getAt(terrainX, terrainY, isDetail)
                     if (at) {
                         result[iy][ix] = at;
@@ -66,18 +54,18 @@ export class TerrainCache {
     }
 
     private cacheMiss(x: number, y: number, isDetail: boolean) {
-        const factor = isDetail ? localZoom : overworldZoom;
-        this.loadCache(Math.floor(x * factor / cacheRadius) * cacheRadius, Math.floor(y * factor / cacheRadius) * cacheRadius, isDetail);
+        const factor = zoomFactor(isDetail);
+        return this.loadCache(Math.floor(x * factor / cacheRadius) * cacheRadius, Math.floor(y * factor / cacheRadius) * cacheRadius, isDetail);
     }
     private loadCache(x: number, y: number, isDetail: boolean) {
         const promiseKey = this.toPromiseKey(x, y, isDetail);
 
         const oldPromise = this.promiseLoading.get(promiseKey);
         if (oldPromise) {
-            return;
+            return oldPromise;
         }
-        this.promiseLoading.set(promiseKey, (async () => {
-            const factor = isDetail ? localZoom : overworldZoom;
+        const result = (async () => {
+            const factor = zoomFactor(isDetail);
 
             for (let iy = 0; iy < cacheRadius; iy++) {
                 for (let ix = 0; ix < cacheRadius; ix++) {
@@ -94,7 +82,9 @@ export class TerrainCache {
             }
 
             // this.promiseLoading.delete(promiseKey);
-        })())
+        })();
+        this.promiseLoading.set(promiseKey, result);
+        return result;
     }
 
     async getAtAsync(x: number, y: number, isDetail: boolean): Promise<TerrainTileInfo> {
@@ -102,7 +92,8 @@ export class TerrainCache {
         if (result) {
             return result;
         }
-        throw new Error("TODO: Not implemented yet...");
+        await this.cacheMiss(x, y, isDetail);
+        return this.getAtAsync(x, y, isDetail);
     }
 
     toPromiseKey(x: number, y: number, isDetail: boolean) {

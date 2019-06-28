@@ -1,5 +1,5 @@
 import { TerrainSettings } from "../terrain-generation/TerrainSettings";
-import { TerrainGenerator, TerrainCache, VisualTerrainType, overworldZoom, localZoom } from "../terrain-generation";
+import { TerrainGenerator, TerrainCache, VisualTerrainType, overworldZoom, localZoom, zoomFactor } from "../terrain-generation";
 import { Pawn } from "./Pawn";
 import { Cave, CaveGenerator } from "../cave-generation";
 import { BehaviorSubject } from "rxjs";
@@ -139,5 +139,12 @@ export class Game {
         function isPassable(category: VisualTerrainType) {
             return category !== "SnowyMountains" && category !== "Mountains" && category !== "ShallowWater" && category !== "DeepWater";
         }
+    }
+
+    getZoomFactor() {
+        const gameMode = this.gameMode$.value.mode;
+        // TODO - I don't know how I feel about this here...
+        return gameMode === "Cave" ? localZoom
+            : zoomFactor(gameMode === "Detail");
     }
 }

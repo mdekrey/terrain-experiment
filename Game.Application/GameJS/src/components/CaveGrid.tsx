@@ -4,6 +4,7 @@ import { ViewportContext } from "./Viewport";
 import { useCaveSprites, getCaveSpotRenderer, CaveSpotType, getCaveSpotLoader } from "./renderers/renderCaveSpot";
 import { Cave } from "../cave-generation";
 import { TileCache } from "./renderers/TileCache";
+import { localZoom } from "../terrain-generation";
 
 function* coordinates(startX: number, startY: number, endX: number, endY: number, step: number) {
     const gridStartX = Math.floor(startX / step) * step;
@@ -22,19 +23,19 @@ function* coordinates(startX: number, startY: number, endX: number, endY: number
 }
 
 export function CaveGrid(cave: Cave) {
-    const { x, y, width, height, center , pixelSize, gridSize} = React.useContext(ViewportContext);
+    const { x, y, width, height, center , pixelSize} = React.useContext(ViewportContext);
     const sprites = useCaveSprites();
     const gridWidth = width / pixelSize;
     const gridHeight = height / pixelSize;
     const tileCache = React.useMemo(() => new TileCache<CaveSpotType[]>(getCaveSpotLoader(cave),
-        1, pixelSize, () => !Object.values(sprites).some(s => !s.isFinal), x, y, getCaveSpotRenderer(cave, sprites)),
+        pixelSize, () => !Object.values(sprites).some(s => !s.isFinal), x, y, getCaveSpotRenderer(cave, sprites)),
         [cave, pixelSize, sprites, x, y]
     );
 
     useCanvas(React.useCallback(context => {
         const { x: centerX, y: centerY } = center();
-        const leftX = (centerX - cave.offset.x) / gridSize - gridWidth / 2;
-        const topY = (centerY - cave.offset.y) / gridSize - gridHeight / 2;
+        const leftX = (centerX - cave.offset.x) * localZoom - gridWidth / 2;
+        const topY = (centerY - cave.offset.y) * localZoom - gridHeight / 2;
         const tileCountStartX = Math.floor(leftX / tileCache.tileStep) * tileCache.tileStep;
         const tileCountStartY = Math.floor(topY / tileCache.tileStep) * tileCache.tileStep;
         const startX = tileCountStartX;
@@ -48,6 +49,6 @@ export function CaveGrid(cave: Cave) {
             tileCache.render(context, { screenX, screenY, terrainX: caveX, terrainY: caveY, offsetX, offsetY });
         }
         tileCache.incrementUseCountAndCull();
-    }, [center, gridSize, gridWidth, gridHeight, tileCache, cave]));
+    }, [center, gridWidth, gridHeight, tileCache, cave]));
     return null;
 }

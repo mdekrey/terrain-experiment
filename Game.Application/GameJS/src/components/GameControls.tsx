@@ -2,21 +2,20 @@ import React from "react";
 import { useSubscription } from "../rxjs";
 import { useCommand, ContinuousContext } from "./keymap";
 import { useService } from "../injector";
-import { ViewportContext } from "./Viewport";
 import { Direction } from "../game";
 import { useAnimationFrame } from "./useAnimationFrame";
 
 export function GameControls() {
     const player = useService("player");
     const game = useService("game");
-    const { gridSize } = React.useContext(ViewportContext);
+    const zoomFactor = game.getZoomFactor();
     const currentContinuous = React.useContext(ContinuousContext);
 
     useAnimationFrame(React.useCallback(() => {
         if (!player.isDoneMoving()) {
             return;
         }
-        const moveAmount = 1 * gridSize;
+        const moveAmount = 1 / zoomFactor;
         let { x: centerX, y: centerY } = player.position();
         let facing = Direction.Down;
         switch (Array.from(currentContinuous.values()).filter(k => k.startsWith("MOVE_")).reverse()[0]) {
@@ -40,7 +39,7 @@ export function GameControls() {
                 return;
         }
         game.movePlayerTo({ x: centerX, y: centerY }, facing);
-    }, [player, gridSize, currentContinuous, game]));
+    }, [player, zoomFactor, currentContinuous, game]));
 
     useSubscription(useCommand("ACTIVATE"), React.useCallback(() => {
         switch (game.gameMode$.value.mode) {

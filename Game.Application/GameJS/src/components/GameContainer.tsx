@@ -9,17 +9,11 @@ import { CaveGrid } from "./CaveGrid";
 import { useObservable } from "../rxjs";
 import { GameMode } from "../game";
 import { useWindowSize } from "./useWindowSize";
-import { overworldZoom, localZoom } from "../terrain-generation";
 
 export function GameContainer() {
     const player = useService("player");
     const game = useService("game");
     const gameMode = useObservable<GameMode>(game.gameMode$, { mode: "Overworld" });
-    const zoom = gameMode.mode === "Overworld"
-        ? overworldZoom
-        : localZoom;
-
-    const gridSize = 1 / zoom;
     const { width, height } = useWindowSize({ width: 1200, height: 800 });
     const pixelSize = Math.max(1, Math.floor(Math.sqrt(width * height) / 16 / 20)) * 16;
 
@@ -43,7 +37,7 @@ export function GameContainer() {
     return (<>
         <Canvas width={width} height={height}>
             <Viewport center={player} x={0} y={0} width={width} height={height}
-                pixelSize={pixelSize} gridSize={gridSize}>
+                pixelSize={pixelSize}>
                 <GameControls />
                 <CanvasLayer>
                     {gameModeJsx}

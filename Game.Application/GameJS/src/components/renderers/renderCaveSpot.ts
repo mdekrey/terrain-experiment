@@ -45,11 +45,11 @@ export function getCaveSpotLoader(cave: Cave): BlockLoader<CaveSpotType[]> {
             : isSolid(x, y + 1) ? (isOdd ? CaveSpotType.Ceiling1 : CaveSpotType.Ceiling2)
             : (isOdd ? CaveSpotType.Wall1 : CaveSpotType.Wall2)
     }
-    return (x, y, gridSize, tileStep) => {
+    return (x, y, tileStep) => {
         const steps = Array.from(Array(tileStep).keys())
         return steps.map(iy => steps.map((ix => {
-            const caveX = x + ix * gridSize;
-            const caveY = y + iy * gridSize;
+            const caveX = x + ix;
+            const caveY = y + iy;
             const base = [caveSpotType(caveX, caveY)]
 
             if (cave.entrance.x === caveX && cave.entrance.y === caveY) {

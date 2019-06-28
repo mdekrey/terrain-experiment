@@ -5,6 +5,7 @@ import { ViewportContext } from "./Viewport";
 import { TileCache } from "./renderers/TileCache";
 import { getTerrainSpotRenderer } from "./renderers/renderTerrainSpot";
 import { useService } from "../injector";
+import { zoomFactor } from "../terrain-generation";
 
 function* coordinates(startX: number, startY: number, endX: number, endY: number, gridSize: number, step: number) {
     const gridStartX = Math.floor(startX / gridSize / step) * step;
@@ -22,12 +23,13 @@ function* coordinates(startX: number, startY: number, endX: number, endY: number
 
 export function TerrainGrid(props: { detail: boolean }) {
     const { detail } = props;
-    const { x, y, width, height, center, pixelSize, gridSize } = React.useContext(ViewportContext);
+    const gridSize = 1 / zoomFactor(detail);
+    const { x, y, width, height, center, pixelSize } = React.useContext(ViewportContext);
     const terrainCache = useService("terrainCache");
     const sprites = useTerrainSprites();
     const tileCache = React.useMemo(() => new TileCache(terrainCache.getBlock(detail),
-        gridSize, pixelSize, () => !Object.values(sprites).some(s => !s.isFinal), x, y, getTerrainSpotRenderer(terrainCache, sprites, detail)),
-        [terrainCache, gridSize, pixelSize, sprites, x, y, detail]
+        pixelSize, () => !Object.values(sprites).some(s => !s.isFinal), x, y, getTerrainSpotRenderer(terrainCache, sprites, detail)),
+        [terrainCache, pixelSize, sprites, x, y, detail]
     );
     const gridWidth = width / pixelSize;
     const gridHeight = height / pixelSize;

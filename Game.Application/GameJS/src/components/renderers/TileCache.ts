@@ -9,7 +9,7 @@ function keyPart(part: number) {
   return part.toFixed(6).replace(/\.0+$/, "");
 }
 
-export type BlockLoader<T> = (terrainX: number, terrainY: number, gridSize: number, tileStep: number) => T[][] | null;
+export type BlockLoader<T> = (terrainX: number, terrainY: number, tileStep: number) => T[][] | null;
 
 export type TilePieceRenderer<T> = (args: {
   context: CanvasRenderingContext2D;
@@ -20,7 +20,6 @@ export type TilePieceRenderer<T> = (args: {
 
 export class TileCache<T> {
   private readonly terrainLoader: BlockLoader<T>;
-  private readonly gridSize: number;
   private readonly pixelSize: number;
   private readonly canCache: () => boolean;
   public readonly tileStep: number;
@@ -31,7 +30,6 @@ export class TileCache<T> {
 
   constructor(
     terrainLoader: BlockLoader<T>,
-    gridSize: number,
     pixelSize: number,
     canCache: () => boolean,
     viewportX: number,
@@ -40,7 +38,6 @@ export class TileCache<T> {
     tileStep: number = 8
   ) {
     this.terrainLoader = terrainLoader;
-    this.gridSize = gridSize;
     this.pixelSize = pixelSize;
     this.canCache = canCache;
     this.viewportX = viewportX;
@@ -129,8 +126,8 @@ export class TileCache<T> {
     offsetX: number,
     offsetY: number
   ) {
-    const { gridSize, tileStep, pixelSize } = this;
-    const block = this.terrainLoader(terrainX, terrainY, gridSize, tileStep);
+    const { tileStep, pixelSize } = this;
+    const block = this.terrainLoader(terrainX, terrainY, tileStep);
     if (!block) {
       return false;
     }
