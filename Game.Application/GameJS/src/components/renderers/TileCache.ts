@@ -9,7 +9,7 @@ function keyPart(part: number) {
   return part.toFixed(6).replace(/\.0+$/, "");
 }
 
-export type BlockLoader<T> = (terrainX: number, terrainY: number, gridSize: number, tileStep: number) => T[][];
+export type BlockLoader<T> = (terrainX: number, terrainY: number, gridSize: number, tileStep: number) => T[][] | null;
 
 export type TilePieceRenderer<T> = (args: {
   context: CanvasRenderingContext2D;
@@ -86,9 +86,13 @@ export class TileCache<T> {
     if (this.canCache()) {
       let cached = this.cache.get(key);
       if (!cached) {
+        const canvas = this.createCachableCanvas(terrainX, terrainY);
+        if (!canvas) {
+          return;
+        }
         cached = {
           useCount: 0,
-          canvas: this.createCachableCanvas(terrainX, terrainY)
+          canvas
         };
         this.cache.set(key, cached);
       }
@@ -110,10 +114,12 @@ export class TileCache<T> {
     canvas.width = canvas.height = pixelSize * tileStep;
     const context = canvas.getContext("2d")!;
     context.imageSmoothingEnabled = false;
-    this.renderTile(context, terrainX, terrainY, 0, 0);
-    // context.strokeRect(0.5, 0.5, pixelSize * tileStep,  pixelSize * tileStep)
-    // document.body.appendChild(canvas);
-    return canvas;
+    if (this.renderTile(context, terrainX, terrainY, 0, 0)) {
+      // context.strokeRect(0.5, 0.5, pixelSize * tileStep,  pixelSize * tileStep)
+      // document.body.appendChild(canvas);
+      return canvas;
+    }
+    return null;
   }
 
   private renderTile(
@@ -125,6 +131,9 @@ export class TileCache<T> {
   ) {
     const { gridSize, tileStep, pixelSize } = this;
     const block = this.terrainLoader(terrainX, terrainY, gridSize, tileStep);
+    if (!block) {
+      return false;
+    }
     for (let x = 0; x < tileStep; x++) {
       for (let y = 0; y < tileStep; y++) {
         this.renderTilePiece({
@@ -135,5 +144,6 @@ export class TileCache<T> {
         });
       }
     }
+    return true;
   }
 }

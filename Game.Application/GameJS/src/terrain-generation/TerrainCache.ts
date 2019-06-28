@@ -2,9 +2,11 @@ import { TerrainGenerator } from "./TerrainGenerator";
 import { GameCoordinates } from "../game/GameCoordinates";
 import { VisualTerrainType, VisualTerrainTypeFromDotNet } from "./VisualTerrainType";
 
+export type TerrainTileInfo = VisualTerrainType[];
+
 export class TerrainCache {
     private readonly terrain: TerrainGenerator;
-    private readonly cache = new Map<string, VisualTerrainType[]>();
+    private readonly cache = new Map<string, TerrainTileInfo>();
     private readonly maxCount: number;
 
     constructor(terrain: TerrainGenerator, maxCount: number = 10000) {
@@ -13,7 +15,7 @@ export class TerrainCache {
     }
 
     getBlock(isDetail: boolean) {
-        return (x: number, y: number, gridSize: number, tileStep: number): VisualTerrainType[][][] => {
+        return (x: number, y: number, gridSize: number, tileStep: number): TerrainTileInfo[][] | null => {
             // const result = (window as any).DotNet.invokeMethod("Game.WebAsm", "GetTerrainBlock", terrainX, terrainY, gridSize, tileStep, isDetail) as number[][];
             this.cleanCache();
             // for (let x = 0; x < tileStep; x++) {
@@ -38,10 +40,25 @@ export class TerrainCache {
         };
     }
 
-    getAt(x: number, y: number, isDetail: boolean) {
+    getAt(x: number, y: number, isDetail: boolean): TerrainTileInfo | null {
         const key = this.toKey(x, y);
         const cached = this.cache.get(key);
-        return cached || this.getBlock(isDetail)(x, y, 0, 1)[0][0];
+        if (cached) {
+            return cached;
+        }
+        const result = this.getBlock(isDetail)(x, y, 0, 1);
+        if (result) {
+            return result[0][0];
+        }
+        return null;
+    }
+
+    async getAtAsync(x: number, y: number, isDetail: boolean): Promise<TerrainTileInfo> {
+        const result = await this.getAt(x,y,isDetail);
+        if (result) {
+            return result;
+        }
+        throw new Error("TODO: Not implemented yet...");
     }
 
     toKey(x: number, y: number) {

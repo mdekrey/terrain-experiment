@@ -58,7 +58,7 @@ export class Game {
     async enterDetail() {
         if (this.playerPawn.isDoneMoving()) {
             const position = this.playerPawn.position();
-            if (this.terrain.getAt(position.x, position.y, false).indexOf("Cave") !== -1) {
+            if ((await this.terrain.getAtAsync(position.x, position.y, false)).indexOf("Cave") !== -1) {
                 this.enterCave();
             } else {
                 this.gameMode$.next({ mode: "Detail" });
@@ -78,7 +78,7 @@ export class Game {
         }
     }
 
-    moveToOverworld() {
+    async moveToOverworld() {
         const gameMode = this.gameMode$.value;
         if (this.playerPawn.isDoneMoving()) {
             const position = this.playerPawn.position();
@@ -92,7 +92,7 @@ export class Game {
                 }
             }
             const targetPosition = { x: Math.round(position.x * this.overworldZoom) / this.overworldZoom, y: Math.round(position.y * this.overworldZoom) / this.overworldZoom }
-            if (this.isOpenSpace(targetPosition, true)) {
+            if (await this.isOpenSpace(targetPosition, true)) {
                 this.playerPawn.moveTo(targetPosition, Direction.Down);
                 this.gameMode$.next({ mode: "Overworld" });
             } else {
@@ -101,22 +101,22 @@ export class Game {
         }
     }
 
-    movePlayerTo(worldCoordinate: GameCoordinates, facing: Direction) {
+    async movePlayerTo(worldCoordinate: GameCoordinates, facing: Direction) {
         if (!this.playerPawn.isDoneMoving()) {
             return;
         }
-        if (this.isOpenSpace(worldCoordinate)) {
+        if (await this.isOpenSpace(worldCoordinate)) {
             this.playerPawn.moveTo(worldCoordinate, facing, 100);
         } else {
             this.playerPawn.facing = facing;
         }
     }
 
-    isOpenSpace(worldCoordinate: GameCoordinates, forceOverworld = false) {
+    async isOpenSpace(worldCoordinate: GameCoordinates, forceOverworld = false) {
         const gameMode = this.gameMode$.value;
 
-        const overworldCheck = () => {
-            const category = this.terrain.getAt(worldCoordinate.x, worldCoordinate.y, false);
+        const overworldCheck = async () => {
+            const category = await this.terrain.getAtAsync(worldCoordinate.x, worldCoordinate.y, false);
             return !category.some(t => !isPassable(t));
         };
         if (forceOverworld) {
@@ -136,7 +136,7 @@ export class Game {
                 }
             case "Detail":
                 {
-                    const category = this.terrain.getAt(worldCoordinate.x, worldCoordinate.y, true);
+                    const category = await this.terrain.getAtAsync(worldCoordinate.x, worldCoordinate.y, true);
                     return !category.some(t => !isPassable(t));
                 }
         }
