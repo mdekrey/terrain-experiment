@@ -101,7 +101,7 @@ namespace Game.Domain.Terrain
                 WaterOrIceFragment().Concat(
                 new[]
                 {
-                    SwitchCase(Not(IsAltitude(AltitudeCategory.None)), If(IsFeatureGreaterThanAltitude(1, -0.05f), HillsOnly(), Mountains()))
+                    SwitchCase(Not(IsAltitude(AltitudeCategory.None)), If(IsFeatureGreaterThanAltitude(1, -0.05f), HillsOnly(), MountainOrHills()))
                 }),
                 BiomeBase()
             );
@@ -113,7 +113,8 @@ namespace Game.Domain.Terrain
                 WaterOrIceFragment().Concat(
                 new[]
                 {
-                    SwitchCase(Not(Or(IsAltitude(AltitudeCategory.None), IsFeatureGreaterThan(0.3f))), Mountains())
+                    SwitchCase(Not(Or(IsAltitude(AltitudeCategory.None), IsFeatureGreaterThan(0.05f))), MountainOrHills()),
+                    SwitchCase(Not(Or(IsAltitude(AltitudeCategory.None), IsFeatureGreaterThan(0.3f))), HillsOnly())
                 }),
                 BiomeDetailResult()
             );
@@ -187,7 +188,7 @@ namespace Game.Domain.Terrain
             return If(IsSnowy(), Result(VisualTerrainType.SnowyHills), Result(VisualTerrainType.Hills));
         }
 
-        private ISpecification<ITerrainSituation, VisualTerrainType> Mountains()
+        private ISpecification<ITerrainSituation, VisualTerrainType> MountainOrHills()
         {
             return Switch(new[] {
                 SwitchCase(And(IsAltitude(AltitudeCategory.Mountain), IsSnowy()), Result(VisualTerrainType.SnowyMountains)),

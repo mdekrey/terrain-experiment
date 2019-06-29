@@ -12,8 +12,6 @@ namespace Game.Application.Maps
     [ApiController]
     public class TerrainController : ControllerBase
     {
-        private static readonly float overworldZoom = 4e-2f;
-        private static readonly float localZoom = 4e-4f;
         private static readonly TerrainSettings settings = new TerrainSettingsGenerator().Generate();
 
         public class GameCoordinate
@@ -31,9 +29,9 @@ namespace Game.Application.Maps
         }
 
         [HttpPost]
-        public VisualTerrainType[][][] GetTerrainSettings([FromBody] GetTerrainSettingsRequest body)
+        public VisualTerrainType[][][] GetTerrain([FromBody] GetTerrainSettingsRequest body)
         {
-            var stepSize = body.IsDetail ? localZoom : overworldZoom;
+            var stepSize = body.IsDetail ? TerrainSettings.localGridSize : TerrainSettings.overworldGridSize;
             var startX = body.Coordinates.X * stepSize;
             var startY = body.Coordinates.Y * stepSize;
             return Enumerable.Range(0, body.Height)
@@ -41,10 +39,26 @@ namespace Game.Application.Maps
                             .Select(y => Enumerable.Range(0, body.Width)
                                                     .Select(ix => ix * stepSize + startX)
                                                     .Select(x => settings.GenerateSituation(x, y))
-                                                    .Select(point => new[] { body.IsDetail ? settings.DetailVisualizationSpec.Execute(point) : settings.VisualizationSpec.Execute(point) })
+                                                    .Select(point => GetTerrainType(point, body.IsDetail).ToArray())
                                                     .ToArray()
                                 )
                             .ToArray();
+        }
+
+        private IEnumerable<VisualTerrainType> GetTerrainType(TerrainPoint point, bool isDetail)
+        {
+            if (isDetail)
+            {
+                yield return settings.DetailVisualizationSpec.Execute(point);
+            }
+            else
+            {
+                yield return settings.VisualizationSpec.Execute(point);
+            }
+            if (point.IsCave)
+            {
+                yield return VisualTerrainType.Cave;
+            }
         }
 
         public class CaveResponse
@@ -62,8 +76,8 @@ namespace Game.Application.Maps
         [HttpPost("cave")]
         public async Task<CaveResponse> GetCave([FromBody] CaveRequest body)
         {
-            var startX = body.Coordinates.X * overworldZoom;
-            var startY = body.Coordinates.Y * overworldZoom;
+            var startX = body.Coordinates.X * TerrainSettings.overworldGridSize;
+            var startY = body.Coordinates.Y * TerrainSettings.overworldGridSize;
             var result = await new CaveGenerator(100, 100, 2, (int)(settings.CaveSeeds.GetValue(startX, startY, 0) * 100000)).Generate();
             return new CaveResponse
             {

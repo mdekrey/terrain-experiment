@@ -12,38 +12,30 @@ namespace Game.Domain.Terrain
         public readonly float heat;
         public readonly float altitude;
         public readonly float feature;
+        private readonly bool isCave;
         public readonly TemperatureCategory temperatureCategory;
         public readonly HumidityCategory humidityCategory;
         public readonly AltitudeCategory altitudeCategory;
 
-        public TerrainPoint(GameCoordinate coordinates, float humidity, float heat, float altitude, float feature, TerrainSettings settings)
+        public TerrainPoint(GameCoordinate coordinates, float humidity, float heat, float altitude, float feature, bool isCave, TerrainSettings settings)
         {
             this.coordinates = coordinates;
             this.humidity = humidity;
             this.heat = heat;
             this.altitude = altitude;
             this.feature = feature;
-
-            temperatureCategory = GetBestKey(settings.TemperatureStep, heat);
+            this.isCave = isCave;
+            temperatureCategory = TerrainSettings.GetBestKey(settings.TemperatureStep, heat);
             humidityCategory = (HumidityCategory)Math.Min(
                   BiomeDetails.biomeLabels[temperatureCategory].Count - 1, 
-                  (int)GetBestKey(settings.HumidityStep, humidity)
+                  (int)TerrainSettings.GetBestKey(settings.HumidityStep, humidity)
                 );
-            altitudeCategory = GetBestKey(settings.AltitudeStep, altitude);
+            altitudeCategory = TerrainSettings.GetBestKey(settings.AltitudeStep, altitude);
 
             //System.Diagnostics.Debug.Assert(temperatureCategory >= TemperatureCategory.Polar && temperatureCategory <= TemperatureCategory.Tropical);
             //System.Diagnostics.Debug.Assert(humidityCategory >= HumidityCategory.Superarid && humidityCategory <= HumidityCategory.Superhumid);
             //System.Diagnostics.Debug.Assert(altitudeCategory >= AltitudeCategory.DeepWater && altitudeCategory <= AltitudeCategory.Mountain);
 
-        }
-
-        private static T GetBestKey<T>(Dictionary<T, float> steps, float target)
-        {
-            return (from kvp in steps
-                    orderby kvp.Value
-                    where kvp.Value > target
-                    select kvp.Key
-                    ).FirstOrDefault();
         }
 
         public BiomeLabel BiomeLabel => BiomeDetails.biomeLabels[temperatureCategory][humidityCategory];
@@ -62,5 +54,7 @@ namespace Game.Domain.Terrain
         public HumidityCategory HumidityCategory => humidityCategory;
 
         public AltitudeCategory AltitudeCategory => altitudeCategory;
+
+        public bool IsCave => isCave;
     }
 }

@@ -1,20 +1,18 @@
-import { TerrainGenerator } from "./TerrainGenerator";
-import { GameCoordinates } from "../game/GameCoordinates";
 import { VisualTerrainType, VisualTerrainTypeFromDotNet } from "./VisualTerrainType";
 import { zoomFactor } from "./ZoomLevels";
+import { ajax } from "rxjs/ajax";
 
 export type TerrainTileInfo = VisualTerrainType[];
 
-const cacheRadius = 10;
+const cacheRadius = 50;
 
 export class TerrainCache {
-    private readonly terrain: TerrainGenerator;
     private readonly cache = new Map<string, TerrainTileInfo>();
     private readonly promiseLoading = new Map<string, Promise<void>>();
     private readonly maxCount: number;
 
-    constructor(terrain: TerrainGenerator, maxCount: number = 10000) {
-        this.terrain = terrain;
+    constructor(maxCount: number = 100000) {
+        console.log(this);
         this.maxCount = maxCount;
     }
 
@@ -44,7 +42,7 @@ export class TerrainCache {
     }
 
     getAt(x: number, y: number, isDetail: boolean): TerrainTileInfo | null {
-        const key = this.toKey(x, y);
+        const key = this.toKey(x, y, isDetail);
         const cached = this.cache.get(key);
         if (cached) {
             return cached;
@@ -67,21 +65,21 @@ export class TerrainCache {
         const result = (async () => {
             const factor = zoomFactor(isDetail);
 
+            const response = await ajax({ url: "/api/terrain", body: { Coordinates: { X: Math.round(x), Y: Math.round(y) }, Width: cacheRadius, Height: cacheRadius, IsDetail: isDetail }, method: "POST", headers: { 'Content-Type': 'application/json' } })
+                .toPromise();
+            const result = response.response as number[][][];
+            this.cleanCache();
+
             for (let iy = 0; iy < cacheRadius; iy++) {
                 for (let ix = 0; ix < cacheRadius; ix++) {
                     const terrainX = (x + ix) / factor;
                     const terrainY = (y + iy) / factor;
-                    const terrainPoint = this.terrain.getTerrain(terrainX, terrainY);
-                    const result = [isDetail ? terrainPoint.detailVisualCategory : terrainPoint.visualCategory];
-                    if (terrainPoint.hasCave) {
-                        result.push("Cave");
-                    }
-                    const k = this.toKey(terrainX, terrainY);
-                    this.cache.set(k, result);
+                    const k = this.toKey(terrainX, terrainY, isDetail);
+                    this.cache.set(k, result[iy][ix].map(v => VisualTerrainTypeFromDotNet[v]));
                 }
             }
 
-            // this.promiseLoading.delete(promiseKey);
+            this.promiseLoading.delete(promiseKey);
         })();
         this.promiseLoading.set(promiseKey, result);
         return result;
@@ -99,13 +97,9 @@ export class TerrainCache {
     toPromiseKey(x: number, y: number, isDetail: boolean) {
         return `${x.toFixed(0)}x${y.toFixed(0)}x${isDetail}`;
     }
-    toKey(x: number, y: number) {
+    toKey(x: number, y: number, isDetail: boolean) {
         function part(v: number) { return (Math.round(v * 1e6) / 1e6).toFixed(6).replace(/\.?0+$/,''); }
-        return `${part(x)}x${part(y)}`;
-    }
-
-    getCaveSeedAt(point: GameCoordinates) {
-        return this.terrain.getCaveSeedAt(point);
+        return `${part(x)}x${part(y)}x${isDetail}`;
     }
 
     private cleanCache() {

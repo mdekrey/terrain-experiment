@@ -20,7 +20,7 @@ injectorBuilder.set(
     () => new Pawn()
 );
 
-injectorBuilder.set("game", Scope.Component, resolver => new Game(resolver("terrainSettings"), resolver("player")));
+injectorBuilder.set("game", Scope.Component, resolver => new Game(resolver("player")));
 injectorBuilder.set(
   "terrainCache",
   Scope.Component,

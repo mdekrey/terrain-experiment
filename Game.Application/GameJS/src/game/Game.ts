@@ -1,5 +1,4 @@
-import { TerrainSettings } from "../terrain-generation/TerrainSettings";
-import { TerrainGenerator, TerrainCache, VisualTerrainType, overworldZoom, localZoom, zoomFactor } from "../terrain-generation";
+import { TerrainCache, VisualTerrainType, overworldZoom, localZoom, zoomFactor } from "../terrain-generation";
 import { Pawn } from "./Pawn";
 import { Cave, CaveGenerator } from "../cave-generation";
 import { BehaviorSubject } from "rxjs";
@@ -33,9 +32,8 @@ export class Game {
     readonly gameMode$ = new BehaviorSubject<GameMode>({ mode: "Overworld" })
     readonly otherPlayers: Pawn[];
 
-    constructor(settings: TerrainSettings, playerPawn: Pawn) {
-        const terrainGenerator = new TerrainGenerator(settings);
-        this.terrain = new TerrainCache(terrainGenerator);
+    constructor(playerPawn: Pawn) {
+        this.terrain = new TerrainCache();
         this.playerPawn = playerPawn;
         if (process.env.NODE_ENV === "development") {
             (window as any).game = this;
