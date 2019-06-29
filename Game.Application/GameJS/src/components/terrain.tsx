@@ -27,8 +27,9 @@ export function TerrainGrid(props: { detail: boolean }) {
     const { x, y, width, height, center, pixelSize } = React.useContext(ViewportContext);
     const terrainCache = useService("terrainCache");
     const sprites = useTerrainSprites();
-    const tileCache = React.useMemo(() => new TileCache(terrainCache.getBlock(detail),
-        pixelSize, () => !Object.values(sprites).some(s => !s.isFinal), x, y, getTerrainSpotRenderer(terrainCache, sprites, detail)),
+    const tileCache = React.useMemo(() =>
+        new TileCache(terrainCache.getBlock(detail),
+            pixelSize, () => !Object.values(sprites).some(s => !s.isFinal), x, y, getTerrainSpotRenderer(sprites)),
         [terrainCache, pixelSize, sprites, x, y, detail]
     );
     const gridWidth = width / pixelSize;
