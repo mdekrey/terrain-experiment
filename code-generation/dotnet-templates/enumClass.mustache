@@ -5,7 +5,6 @@
         {{#description}}
         /// <value>{{{description}}}</value>
         {{/description}}
-        {{#allowableValues}}{{#enumVars}}{{#-first}}{{#isString}}[JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]{{/isString}}{{/-first}}{{/enumVars}}{{/allowableValues}}
         public enum {{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}
         {
             {{#allowableValues}}{{#enumVars}}
@@ -13,6 +12,6 @@
             /// Enum {{name}} for {{{value}}}
             /// </summary>
             {{#isString}}[EnumMember(Value = "{{{value}}}")]{{/isString}}
-            {{name}}{{^isString}} = {{{value}}}{{/isString}}{{#isString}} = {{-index}}{{/isString}}{{#hasMore}},
-            {{/hasMore}}{{/enumVars}}{{/allowableValues}}
+            {{name}}{{^isString}} = {{{value}}}{{/isString}},
+            {{/enumVars}}{{/allowableValues}}
         }

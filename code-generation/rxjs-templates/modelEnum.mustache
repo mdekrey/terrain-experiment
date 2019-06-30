@@ -1,9 +1,7 @@
-export type {{classname}} = {{#allowableValues}}{{#enumVars}}{{{value}}}{{#hasMore}} | {{/hasMore}}{{/enumVars}}{{/allowableValues}};
-
-export const {{classname}} = {
+export enum {{classname}} {
 {{#allowableValues}}
 {{#enumVars}}
-    {{name}}: {{{value}}} as {{classname}}{{#hasMore}},{{/hasMore}}
+    {{name}} = {{{value}}},
 {{/enumVars}}
 {{/allowableValues}}
 };

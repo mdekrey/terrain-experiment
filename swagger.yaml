@@ -213,6 +213,30 @@ components:
           type: integer
         height:
           type: integer
+    VisualTerrainType:
+      type: string
+      enum:
+      - Permafrost
+      - Tundra
+      - ColdParklands
+      - ConiferousForests
+      - CoolDeserts
+      - Steppes
+      - MixedForests
+      - HotDeserts
+      - Chaparral
+      - DeciduousForests
+      - Savanna
+      - TropicalSeasonalForests
+      - TropicalRainForests
+      - ShallowWater
+      - DeepWater
+      - SnowyMountains
+      - Mountains
+      - SnowyHills
+      - Hills
+      - Ice
+      - Cave
     # Pet:
     #   allOf:
     #   - $ref: '#/components/schemas/NewPet'
