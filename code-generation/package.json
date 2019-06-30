@@ -1,0 +1,17 @@
+{
+  "name": "code-generation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "gen-dotnet": "rimraf ./output.local/* && sc generate -t dotnet-templates -o ./output.local -i ../swagger.yaml -l aspnetcore --additional-properties packageName=Game.Application",
+    "gen-node": "rimraf ./node.local && snc -o ./node.local ../swagger.yaml"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "rimraf": "^2.6.3",
+    "swagger-node-codegen": "^1.6.3",
+    "swagger-nodegen-cli": "3.0.8"
+  }
+}

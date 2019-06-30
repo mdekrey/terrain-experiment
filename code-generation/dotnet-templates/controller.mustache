@@ -1,0 +1,50 @@
+{{>partial_header}}
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using {{packageName}}.Attributes;
+using {{packageName}}.Models;
+
+namespace {{packageName}}.Controllers
+{ {{#operations}}
+    /// <summary>
+    /// {{description}}
+    /// </summary>{{#description}}
+    [Description("{{description}}")]{{/description}}
+    public interface I{{classname}}Controller
+    { {{#operation}}
+        /// <summary>
+        /// {{#summary}}{{summary}}{{/summary}}
+        /// </summary>
+        {{#notes}}/// <remarks>{{notes}}</remarks>{{/notes}}{{#allParams}}
+        /// <param name="{{paramName}}">{{description}}</param>{{/allParams}}{{#responses}}
+        /// <response code="{{code}}">{{message}}</response>{{/responses}}
+        Task<IActionResult> {{operationId}}Async({{#allParams}}{{>pathParam}}{{>queryParam}}{{>bodyParam}}{{>formParam}}{{>headerParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
+        {{/operation}}
+    }
+
+    /// <summary>
+    /// {{description}}
+    /// </summary>{{#description}}
+    [Description("{{description}}")]{{/description}}
+    public partial class {{classname}}Controller : Controller, I{{classname}}Controller
+    {
+{{#operation}}
+        /// <summary>
+        /// {{#summary}}{{summary}}{{/summary}}
+        /// </summary>
+        {{#notes}}/// <remarks>{{notes}}</remarks>{{/notes}}{{#allParams}}
+        /// <param name="{{paramName}}">{{description}}</param>{{/allParams}}{{#responses}}
+        /// <response code="{{code}}">{{message}}</response>{{/responses}}
+        [{{httpMethod}}]
+        [Route("{{{basePathWithoutHost}}}{{{path}}}")]
+        [ValidateModelState]{{#responses}}{{#dataType}}
+        [ProducesResponseType(statusCode: {{code}}, type: typeof({{&dataType}}))] // {{message}}{{/dataType}}{{^dataType}}{{/dataType}}{{/responses}}
+        public Task<IActionResult> {{operationId}}({{#allParams}}{{>pathParam}}{{>queryParam}}{{>bodyParam}}{{>formParam}}{{>headerParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
+        {
+            return this.{{operationId}}Async({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
+        }
+        {{/operation}}
+    }
+{{/operations}}
+}

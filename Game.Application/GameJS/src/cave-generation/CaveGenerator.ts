@@ -32,10 +32,10 @@ export class CaveGenerator {
   private readonly buildMap = async (
     resolve: (t: { isSolid: boolean[][]; treasure: GameCoordinates[], entrance: GameCoordinates }) => void
   ) => {
-    const response = await ajax({ url: "/api/terrain/cave", body: { Coordinates: { X: Math.round(this.position.x), Y: Math.round(this.position.y) } }, method: "POST", headers: { 'Content-Type': 'application/json' } })
+    const response = await ajax({ url: "/api/terrain/cave", body: { coordinate: { x: Math.round(this.position.x), y: Math.round(this.position.y) } }, method: "POST", headers: { 'Content-Type': 'application/json' } })
       .toPromise();
-    const result = response.response as { map: boolean[][]; treasure: GameCoordinates[], entrance: GameCoordinates };
-    resolve({ isSolid: result.map, treasure: result.treasure, entrance: result.entrance });
+    const result = response.response as { isSolid: boolean[][]; treasure: GameCoordinates[], entrance: GameCoordinates };
+    resolve({ isSolid: result.isSolid, treasure: result.treasure, entrance: result.entrance });
   };
 
   get cave(): Promise<Cave> {

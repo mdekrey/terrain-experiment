@@ -65,7 +65,7 @@ export class TerrainCache {
         const result = (async () => {
             const factor = zoomFactor(isDetail);
 
-            const response = await ajax({ url: "/api/terrain", body: { Coordinates: { X: Math.round(x), Y: Math.round(y) }, Width: cacheRadius, Height: cacheRadius, IsDetail: isDetail }, method: "POST", headers: { 'Content-Type': 'application/json' } })
+            const response = await ajax({ url: "/api/terrain", body: { Coordinate: { X: Math.round(x), Y: Math.round(y) }, size: { Width: cacheRadius, Height: cacheRadius }, IsDetail: isDetail }, method: "POST", headers: { 'Content-Type': 'application/json' } })
                 .toPromise();
             const result = response.response as number[][][];
             this.cleanCache();

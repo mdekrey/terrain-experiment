@@ -1,4 +1,6 @@
-﻿using Game.Domain.Caves;
+﻿using Game.Application.Controllers;
+using Game.Application.Models;
+using Game.Domain.Caves;
 using Game.Domain.Terrain;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -6,43 +8,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Game.Application.Maps
+namespace Game.Application.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class TerrainController : ControllerBase
+    public partial class TerrainApiController : ITerrainApiController
     {
         private static readonly TerrainSettings settings = new TerrainSettingsGenerator().Generate();
 
-        public class GameCoordinate
+        public Task<IActionResult> GetTerrainAsync([FromBody] Models.GetTerrainSettingsRequest body)
         {
-            public int X { get; set; }
-            public int Y { get; set; }
-        }
-
-        public class GetTerrainSettingsRequest
-        {
-            public GameCoordinate Coordinates { get; set; }
-            public int Width { get; set; } = 100;
-            public int Height { get; set; } = 100;
-            public bool IsDetail { get; set; } = false;
-        }
-
-        [HttpPost]
-        public VisualTerrainType[][][] GetTerrain([FromBody] GetTerrainSettingsRequest body)
-        {
-            var stepSize = body.IsDetail ? TerrainSettings.localGridSize : TerrainSettings.overworldGridSize;
-            var startX = body.Coordinates.X * stepSize;
-            var startY = body.Coordinates.Y * stepSize;
-            return Enumerable.Range(0, body.Height)
+            var stepSize = body.IsDetail.Value ? TerrainSettings.localGridSize : TerrainSettings.overworldGridSize;
+            var startX = body.Coordinate.X.Value * stepSize;
+            var startY = body.Coordinate.Y.Value * stepSize;
+            return Task.FromResult<IActionResult>(Ok(Enumerable.Range(0, body.Size.Height.Value)
                             .Select(iy => iy * stepSize + startY)
-                            .Select(y => Enumerable.Range(0, body.Width)
+                            .Select(y => Enumerable.Range(0, body.Size.Width.Value)
                                                     .Select(ix => ix * stepSize + startX)
                                                     .Select(x => settings.GenerateSituation(x, y))
-                                                    .Select(point => GetTerrainType(point, body.IsDetail).ToArray())
+                                                    .Select(point => GetTerrainType(point, body.IsDetail.Value).ToArray())
                                                     .ToArray()
                                 )
-                            .ToArray();
+                            .ToArray()));
         }
 
         private IEnumerable<VisualTerrainType> GetTerrainType(TerrainPoint point, bool isDetail)
@@ -61,30 +46,18 @@ namespace Game.Application.Maps
             }
         }
 
-        public class CaveResponse
+        public async Task<IActionResult> GetCaveAsync([FromBody] GetCaveRequest body)
         {
-            public bool[][] Map { get; set; }
-            public GameCoordinate[] Treasure { get; set; }
-            public GameCoordinate Entrance { get; set; }
-        }
-
-        public class CaveRequest
-        {
-            public GameCoordinate Coordinates { get; set; }
-        }
-
-        [HttpPost("cave")]
-        public async Task<CaveResponse> GetCave([FromBody] CaveRequest body)
-        {
-            var startX = body.Coordinates.X * TerrainSettings.overworldGridSize;
-            var startY = body.Coordinates.Y * TerrainSettings.overworldGridSize;
+            var startX = body.Coordinate.X.Value * TerrainSettings.overworldGridSize;
+            var startY = body.Coordinate.Y.Value * TerrainSettings.overworldGridSize;
             var result = await new CaveGenerator(100, 100, 2, (int)(settings.CaveSeeds.GetValue(startX, startY, 0) * 100000)).Generate();
-            return new CaveResponse
+            return Ok(new GetCaveResponse
             {
-                Map = result.Map,
-                Treasure = result.Treasure.Select(c => new GameCoordinate { X = c.x, Y = c.y }).ToArray(),
+                IsSolid = result.Map.Select(row => row.Cast<bool?>().ToList()).ToList(),
+                Treasure = result.Treasure.Select(c => new GameCoordinate { X = c.x, Y = c.y }).ToList(),
                 Entrance = new GameCoordinate { X = result.Entrance.x, Y = result.Entrance.y },
-            };
+            });
         }
+
     }
 }

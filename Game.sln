@@ -12,9 +12,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Game.WebAsm", "Game.WebAsm\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Game.Domain", "Game.Domain\Game.Domain.csproj", "{1752B463-4791-4FA1-8272-E17E51A707A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game.Logic.Tests", "Game.Logic.Tests\Game.Logic.Tests.csproj", "{F7676144-75B1-4F31-8CB7-0159D3B54427}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Game.Logic.Tests", "Game.Logic.Tests\Game.Logic.Tests.csproj", "{F7676144-75B1-4F31-8CB7-0159D3B54427}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibNoise", "LibNoise\LibNoise.csproj", "{26A8BE1E-5E49-4292-9DA3-646C1EEC231F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibNoise", "LibNoise\LibNoise.csproj", "{26A8BE1E-5E49-4292-9DA3-646C1EEC231F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F0A01F8A-B9A2-47FF-BBAC-57A653F506D2}"
+	ProjectSection(SolutionItems) = preProject
+		swagger.yaml = swagger.yaml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
