@@ -22,7 +22,7 @@ injectorBuilder.set(
 injectorBuilder.set(
   "terrainService",
   Scope.Singleton,
-  () => new TerrainService()
+  () => new TerrainService("/api")
 );
 
 injectorBuilder.set("game", Scope.Component, resolver => new Game(resolver("player"), resolver("terrainService")));

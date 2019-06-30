@@ -24,7 +24,7 @@ namespace Game.WebAsm
         [JSInvokable]
         public static VisualTerrainType[] GetTerrain(Coord[] coordinates)
         {
-            return coordinates.Select(c => c.ToCoordinate()).Select(t => VisualTerrainType.CoolDeserts).ToArray();
+            return coordinates.Select(c => c.ToCoordinate()).Select(t => VisualTerrainType.Grassland).ToArray();
         }
         [JSInvokable]
         public static VisualTerrainType[][] GetTerrainBlock(float startX, float startY, float stepSize, int stepCount, bool isDetail)

@@ -26,7 +26,7 @@ namespace Game.Application.Controllers
                             .Select(y => Enumerable.Range(0, body.Size.Width.Value)
                                                     .Select(ix => ix * stepSize + startX)
                                                     .Select(x => settings.GenerateSituation(x, y))
-                                                    .Select(point => GetTerrainType(point, body.IsDetail.Value).Cast<int>().Cast<int?>().ToList())
+                                                    .Select(point => GetTerrainType(point, body.IsDetail.Value).Select(v => v.ToString("g")).ToList())
                                                     .ToList()
                                 )
                             .ToList()
@@ -34,7 +34,7 @@ namespace Game.Application.Controllers
             return Task.FromResult<IActionResult>(Ok(response));
         }
 
-        private IEnumerable<VisualTerrainType> GetTerrainType(TerrainPoint point, bool isDetail)
+        private IEnumerable<Domain.Terrain.VisualTerrainType> GetTerrainType(TerrainPoint point, bool isDetail)
         {
             if (isDetail)
             {
@@ -46,7 +46,7 @@ namespace Game.Application.Controllers
             }
             if (point.IsCave)
             {
-                yield return VisualTerrainType.Cave;
+                yield return Domain.Terrain.VisualTerrainType.Cave;
             }
         }
 

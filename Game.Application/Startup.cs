@@ -29,7 +29,12 @@ namespace WoostiDatasetReview
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddMvc()
+                .AddJsonOptions(options =>
+                {
+                    // TODO: preview 7
+                    // options.JsonSerializerOptions.Converters
+                });
 
             services.AddSpaStaticFiles(configuration =>
             {

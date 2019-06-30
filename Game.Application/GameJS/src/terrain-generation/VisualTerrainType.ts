@@ -1,16 +1,14 @@
 export type VisualTerrainType =
-  | "Permafrost"
-  | "Tundra"
-  | "ColdParklands"
+  | "Snow"
+  | "SnowWithGrass"
+  | "SnowWithBushes"
+  | "SnowWithConiferousForests"
+  | "Grassland"
+  | "Bushes"
   | "ConiferousForests"
-  | "CoolDeserts"
-  | "Steppes"
-  | "MixedForests"
   | "HotDeserts"
-  | "Chaparral"
+  | "Bushes"
   | "DeciduousForests"
-  | "Savanna"
-  | "TropicalSeasonalForests"
   | "TropicalRainForests"
   | "ShallowWater"
   | "DeepWater"
@@ -22,18 +20,15 @@ export type VisualTerrainType =
   | "Cave";
 
 export const VisualTerrainTypeFromDotNet: VisualTerrainType[] = [
-  "Permafrost",
-  "Tundra",
-  "ColdParklands",
+  "Snow",
+  "SnowWithGrass",
+  "SnowWithBushes",
+  "SnowWithConiferousForests",
+  "Grassland",
+  "Bushes",
   "ConiferousForests",
-  "CoolDeserts",
-  "Steppes",
-  "MixedForests",
   "HotDeserts",
-  "Chaparral",
   "DeciduousForests",
-  "Savanna",
-  "TropicalSeasonalForests",
   "TropicalRainForests",
   "ShallowWater",
   "DeepWater",

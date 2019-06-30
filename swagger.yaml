@@ -166,7 +166,9 @@ components:
             items:
               type: array
               items:
-                type: integer
+                # TODO: 3.0.0 preview 7
+                # $ref: '#/components/schemas/VisualTerrainType'
+                type: string
     GetCaveRequest:
       required:
       - coordinate
@@ -216,18 +218,15 @@ components:
     VisualTerrainType:
       type: string
       enum:
-      - Permafrost
-      - Tundra
-      - ColdParklands
+      - Snow
+      - SnowWithGrass
+      - SnowWithBushes
+      - SnowWithConiferousForests
+      - Grassland
+      - Bushes
       - ConiferousForests
-      - CoolDeserts
-      - Steppes
-      - MixedForests
       - HotDeserts
-      - Chaparral
       - DeciduousForests
-      - Savanna
-      - TropicalSeasonalForests
       - TropicalRainForests
       - ShallowWater
       - DeepWater

@@ -122,47 +122,47 @@ namespace Game.Domain.Terrain
 
 
         private readonly Dictionary<BiomeCategory, (float, VisualTerrainType)[]> biomeDetailMap = new Dictionary<BiomeCategory, (float, VisualTerrainType)[]>() {
-          { BiomeCategory.Permafrost, new[] { (0f, VisualTerrainType.Permafrost), (0.8f, VisualTerrainType.Tundra) } },
-          { BiomeCategory.Tundra, new[] { (0f, VisualTerrainType.Tundra), (0.85f, VisualTerrainType.ColdParklands) } },
+          { BiomeCategory.Permafrost, new[] { (0f, VisualTerrainType.Snow), (0.8f, VisualTerrainType.SnowWithGrass) } },
+          { BiomeCategory.Tundra, new[] { (0f, VisualTerrainType.SnowWithGrass), (0.85f, VisualTerrainType.SnowWithBushes) } },
           { BiomeCategory.ColdParklands, new[] {
-            (0f, VisualTerrainType.Tundra),
-            (0.05f, VisualTerrainType.ColdParklands),
-            (0.85f, VisualTerrainType.ConiferousForests)
+            (0f, VisualTerrainType.SnowWithGrass),
+            (0.05f, VisualTerrainType.SnowWithBushes),
+            (0.85f, VisualTerrainType.SnowWithConiferousForests)
           } },
           { BiomeCategory.ConiferousForests, new[] {
-            (0f, VisualTerrainType.ConiferousForests),
-            (0.65f, VisualTerrainType.Tundra)
+            (0f, VisualTerrainType.SnowWithConiferousForests),
+            (0.65f, VisualTerrainType.SnowWithGrass)
           } },
-          { BiomeCategory.CoolDeserts, new[] { (0f, VisualTerrainType.CoolDeserts), (0.85f, VisualTerrainType.Steppes) } },
-          { BiomeCategory.Steppes, new[] { (0f, VisualTerrainType.CoolDeserts), (0.3f, VisualTerrainType.Steppes) } },
+          { BiomeCategory.CoolDeserts, new[] { (0f, VisualTerrainType.Grassland), (0.85f, VisualTerrainType.Bushes) } },
+          { BiomeCategory.Steppes, new[] { (0f, VisualTerrainType.Grassland), (0.3f, VisualTerrainType.Bushes) } },
           { BiomeCategory.MixedForests, new[] {
-            (0f, VisualTerrainType.MixedForests),
+            (0f, VisualTerrainType.ConiferousForests),
             (0.5f, VisualTerrainType.DeciduousForests),
-            (0.9f, VisualTerrainType.CoolDeserts)
+            (0.9f, VisualTerrainType.Grassland)
           } },
           { BiomeCategory.HotDeserts, new[] { (0f, VisualTerrainType.HotDeserts) } },
           { BiomeCategory.Chaparral, new[] {
-            (0f, VisualTerrainType.Chaparral),
+            (0f, VisualTerrainType.Bushes),
             (0.5f, VisualTerrainType.DeciduousForests),
-            (0.6f, VisualTerrainType.Chaparral),
-            (0.8f, VisualTerrainType.CoolDeserts)
+            (0.6f, VisualTerrainType.Bushes),
+            (0.8f, VisualTerrainType.Grassland)
           } },
           { BiomeCategory.DeciduousForests, new[] {
             (0f, VisualTerrainType.DeciduousForests),
             (0.5f, VisualTerrainType.TropicalRainForests),
             (0.55f, VisualTerrainType.DeciduousForests),
-            (0.8f, VisualTerrainType.Chaparral),
-            (0.9f, VisualTerrainType.CoolDeserts)
+            (0.8f, VisualTerrainType.Bushes),
+            (0.9f, VisualTerrainType.Grassland)
           } },
           { BiomeCategory.Savanna, new[] {
-            (0f, VisualTerrainType.Savanna),
+            (0f, VisualTerrainType.Grassland),
             (0.5f, VisualTerrainType.HotDeserts),
             (0.625f, VisualTerrainType.DeciduousForests),
-            (0.65f, VisualTerrainType.Savanna)
+            (0.65f, VisualTerrainType.Grassland)
           } },
           { BiomeCategory.TropicalSeasonalForests, new[] {
             (0f, VisualTerrainType.TropicalRainForests),
-            (0.5f, VisualTerrainType.Chaparral),
+            (0.5f, VisualTerrainType.Bushes),
             (0.6f, VisualTerrainType.TropicalRainForests),
             (0.7f, VisualTerrainType.DeciduousForests)
           } },
@@ -214,25 +214,25 @@ namespace Game.Domain.Terrain
 
         private readonly Dictionary<BiomeCategory, VisualTerrainType> biomeMap = new Dictionary<BiomeCategory, VisualTerrainType>()
         {
-            { BiomeCategory.Permafrost, VisualTerrainType.Permafrost },
-            { BiomeCategory.Tundra, VisualTerrainType.Tundra },
-            { BiomeCategory.ColdParklands, VisualTerrainType.ColdParklands },
-            { BiomeCategory.ConiferousForests, VisualTerrainType.ConiferousForests },
-            { BiomeCategory.CoolDeserts, VisualTerrainType.CoolDeserts },
-            { BiomeCategory.Steppes, VisualTerrainType.Steppes },
-            { BiomeCategory.MixedForests, VisualTerrainType.MixedForests },
+            { BiomeCategory.Permafrost, VisualTerrainType.Snow },
+            { BiomeCategory.Tundra, VisualTerrainType.SnowWithGrass },
+            { BiomeCategory.ColdParklands, VisualTerrainType.SnowWithBushes },
+            { BiomeCategory.ConiferousForests, VisualTerrainType.SnowWithConiferousForests },
+            { BiomeCategory.CoolDeserts, VisualTerrainType.Grassland },
+            { BiomeCategory.Steppes, VisualTerrainType.Bushes },
+            { BiomeCategory.MixedForests, VisualTerrainType.ConiferousForests },
             { BiomeCategory.HotDeserts, VisualTerrainType.HotDeserts },
-            { BiomeCategory.Chaparral, VisualTerrainType.Chaparral },
+            { BiomeCategory.Chaparral, VisualTerrainType.Bushes },
             { BiomeCategory.DeciduousForests, VisualTerrainType.DeciduousForests },
-            { BiomeCategory.Savanna, VisualTerrainType.Savanna },
-            { BiomeCategory.TropicalSeasonalForests, VisualTerrainType.TropicalSeasonalForests },
+            { BiomeCategory.Savanna, VisualTerrainType.Grassland },
+            { BiomeCategory.TropicalSeasonalForests, VisualTerrainType.DeciduousForests },
             { BiomeCategory.TropicalRainForests, VisualTerrainType.TropicalRainForests }
         };
         private ISpecification<ITerrainSituation, VisualTerrainType> BiomeBase()
         {
             return Switch(
                 biomeMap.Select(kvp => SwitchCase(IsBiome(kvp.Key), Result(kvp.Value))),
-                Result(VisualTerrainType.CoolDeserts)
+                Result(VisualTerrainType.Grassland)
             );
         }
     }
