@@ -76,7 +76,7 @@ export class TerrainCache {
                     const terrainX = (x + ix) / factor;
                     const terrainY = (y + iy) / factor;
                     const k = this.toKey(terrainX, terrainY, isDetail);
-                    this.cache.set(k, result[iy][ix].map(v => VisualTerrainTypeFromDotNet[v]));
+                    this.cache.set(k, result.terrain[iy][ix].map(v => VisualTerrainTypeFromDotNet[v]));
                 }
             }
 

@@ -14,20 +14,24 @@ namespace Game.Application.Controllers
     {
         private static readonly TerrainSettings settings = new TerrainSettingsGenerator().Generate();
 
-        public Task<IActionResult> GetTerrainAsync([FromBody] Models.GetTerrainSettingsRequest body)
+        public Task<IActionResult> GetTerrainAsync([FromBody] Models.GetTerrainRequest body)
         {
             var stepSize = body.IsDetail.Value ? TerrainSettings.localGridSize : TerrainSettings.overworldGridSize;
             var startX = body.Coordinate.X.Value * stepSize;
             var startY = body.Coordinate.Y.Value * stepSize;
-            return Task.FromResult<IActionResult>(Ok(Enumerable.Range(0, body.Size.Height.Value)
+            var response = new GetTerrainResponse
+            {
+                Terrain = Enumerable.Range(0, body.Size.Height.Value)
                             .Select(iy => iy * stepSize + startY)
                             .Select(y => Enumerable.Range(0, body.Size.Width.Value)
                                                     .Select(ix => ix * stepSize + startX)
                                                     .Select(x => settings.GenerateSituation(x, y))
-                                                    .Select(point => GetTerrainType(point, body.IsDetail.Value).ToArray())
-                                                    .ToArray()
+                                                    .Select(point => GetTerrainType(point, body.IsDetail.Value).Cast<int>().Cast<int?>().ToList())
+                                                    .ToList()
                                 )
-                            .ToArray()));
+                            .ToList()
+            };
+            return Task.FromResult<IActionResult>(Ok(response));
         }
 
         private IEnumerable<VisualTerrainType> GetTerrainType(TerrainPoint point, bool isDetail)

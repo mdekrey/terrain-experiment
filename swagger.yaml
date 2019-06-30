@@ -21,7 +21,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GetTerrainSettingsRequest'
+              $ref: '#/components/schemas/GetTerrainRequest'
         required: true
       responses:
         200:
@@ -29,13 +29,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: array
-                  items:
-                    type: array
-                    items:
-                      type: integer
+                $ref: '#/components/schemas/GetTerrainResponse'
         default:
           description: unexpected error
           content:
@@ -147,7 +141,7 @@ components:
           type: object
           additionalProperties:
             type: string
-    GetTerrainSettingsRequest:
+    GetTerrainRequest:
       required:
       - coordinate
       - isDetail
@@ -160,6 +154,19 @@ components:
         size:
           $ref: '#/components/schemas/GameSize'
           default: { width: 100, height: 100 }
+    GetTerrainResponse:
+      required:
+      - terrain
+      type: object
+      properties:
+        terrain:
+          type: array
+          items:
+            type: array
+            items:
+              type: array
+              items:
+                type: integer
     GetCaveRequest:
       required:
       - coordinate
