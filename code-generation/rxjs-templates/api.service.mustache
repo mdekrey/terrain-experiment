@@ -1,0 +1,241 @@
+{{>licenseInfo}}
+/* tslint:disable:no-unused-variable member-ordering */
+
+import { Observable }                                        from 'rxjs/Observable';
+import { ajax, AjaxRequest }                                 from "rxjs/ajax";
+import { map }                                               from "rxjs/operators";
+
+import { {{#imports}}
+    {{classname}},{{/imports}}
+} from '../model/models';
+
+import { Configuration }                                     from '../configuration';
+
+{{#operations}}
+
+{{#description}}
+/**
+ * {{&description}}
+ */
+{{/description}}
+export class {{classname}} {
+
+    private defaultHeaders = {};
+    protected basePath = '{{{basePath}}}';
+    public configuration = new Configuration();
+
+    constructor(basePath: string, configuration: Configuration) {
+        if (basePath) {
+            this.basePath = basePath;
+        }
+        if (configuration) {
+            this.configuration = configuration;
+            this.basePath = basePath || configuration.basePath || this.basePath;
+        }
+    }
+
+{{^useHttpClient}}
+{{! Before HttpClient implementation or method overloading we relied on 2 functions, 1 to return the straight body as json
+    and another to get the full response.}}
+{{#operation}}
+    /**
+     * {{&notes}}
+     {{#summary}}
+     * @summary {{&summary}}
+     {{/summary}}
+     {{#allParams}}* @param {{paramName}} {{description}}
+     {{/allParams}}*/
+    {{! if you change this method signature, also change the version below }}
+    public {{nickname}}({{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{^useHttpClient}}{{#hasParams}}, {{/hasParams}}extraHttpRequestParams?: AjaxRequest{{/useHttpClient}}): Observable<{{#returnType}}{{{returnType}}}{{#isResponseTypeFile}}|undefined{{/isResponseTypeFile}}{{/returnType}}{{^returnType}}{}{{/returnType}}> {
+        return this.{{nickname}}WithHttpInfo({{#allParams}}{{paramName}}, {{/allParams}}extraHttpRequestParams)
+            .map((response: Response) => {
+                if (response.status === 204) {
+                    return undefined;
+                } else {
+{{^isResponseFile}}
+                    return response.json() || {};
+{{/isResponseFile}}
+{{#isResponseFile}}
+                    return response.blob();
+{{/isResponseFile}}
+                }
+            });
+    }
+
+{{/operation}}
+{{/useHttpClient}}
+
+{{#operation}}
+    /**
+     * {{summary}}
+     * {{notes}}
+     {{#allParams}}* @param {{paramName}} {{description}}
+     {{/allParams}}
+     */
+    public {{nickname}}WithHttpInfo({{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}, {{/allParams}}extraHttpRequestParams?: AjaxRequest): Observable<Response> {
+{{#allParams}}
+
+{{#required}}
+        {{#isConstEnumParam}}
+        let {{paramName}} = {{{dataType}}};
+        {{/isConstEnumParam}}
+        {{^isConstEnumParam}}
+        if ({{paramName}} === null || {{paramName}} === undefined) {
+            throw new Error('Required parameter {{paramName}} was null or undefined when calling {{nickname}}.');
+        }
+        {{/isConstEnumParam}}
+{{/required}}
+{{/allParams}}
+
+{{#hasQueryParams}}
+        let queryParameters = new URLSearchParams('', new CustomQueryEncoderHelper());
+{{#queryParams}}
+        {{#isListContainer}}
+        if ({{paramName}}) {
+            {{paramName}}.forEach((element) => {
+                queryParameters = queryParameters.append('{{baseName}}', <any>element);
+            })
+        }
+        {{/isListContainer}}
+        {{^isListContainer}}
+        if ({{paramName}} !== undefined && {{paramName}} !== null) {
+        {{#isDateTime}}
+            queryParameters = queryParameters.set('{{baseName}}', <any>{{paramName}}.toISOString());
+        {{/isDateTime}}
+        {{^isDateTime}}
+            queryParameters = queryParameters.set('{{baseName}}', <any>{{paramName}});
+        {{/isDateTime}}
+        }
+        {{/isListContainer}}
+{{/queryParams}}
+
+{{/hasQueryParams}}
+        let headers = { ...this.defaultHeaders };
+{{#headerParams}}
+        if ({{paramName}} !== undefined && {{paramName}} !== null) {
+            headers['{{baseName}}'] = {{paramName}};
+        }
+{{/headerParams}}
+
+{{#authMethods}}
+        // authentication ({{name}}) required
+{{#isApiKey}}
+{{#isKeyInHeader}}
+        if (this.configuration.apiKeys["{{keyParamName}}"]) {
+            headers['{{keyParamName}}'] = this.configuration.apiKeys["{{keyParamName}}"];
+        }
+
+{{/isKeyInHeader}}
+{{#isKeyInQuery}}
+        if (this.configuration.apiKeys["{{keyParamName}}"]) {
+            {{#useHttpClient}}queryParameters = {{/useHttpClient}}queryParameters.set('{{keyParamName}}', this.configuration.apiKeys["{{keyParamName}}"]);
+        }
+
+{{/isKeyInQuery}}
+{{/isApiKey}}
+{{#isBasic}}
+        if (this.configuration.username || this.configuration.password) {
+            headers['Authorization'] = 'Basic ' + btoa(this.configuration.username + ':' + this.configuration.password);
+        }
+
+{{/isBasic}}
+{{#isOAuth}}
+        if (this.configuration.accessToken) {
+            const accessToken = typeof this.configuration.accessToken === 'function'
+                ? this.configuration.accessToken()
+                : this.configuration.accessToken;
+            headers['Authorization'] = 'Bearer ' + accessToken;
+        }
+
+{{/isOAuth}}
+{{/authMethods}}
+        // to determine the Accept header
+        let httpHeaderAccepts: string[] = [
+            {{#produces}}
+            '{{{mediaType}}}'{{#hasMore}},{{/hasMore}}
+            {{/produces}}
+        ];
+        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        if (httpHeaderAcceptSelected != undefined) {
+            headers['Accept'] = httpHeaderAcceptSelected;
+        }
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            {{#consumes}}
+            '{{{mediaType}}}'{{#hasMore}},{{/hasMore}}
+            {{/consumes}}
+        ];
+{{#bodyParam}}
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected != undefined) {
+            headers['Content-Type'] = httpContentTypeSelected;
+        }
+{{/bodyParam}}
+
+{{#hasFormParams}}
+        const canConsumeForm = this.canConsumeForm(consumes);
+
+        let formParams: { append(param: string, value: any): void; };
+        let useForm = false;
+        let convertFormParamsToString = false;
+{{#formParams}}
+{{#isFile}}
+        // use FormData to transmit files using content-type "multipart/form-data"
+        // see https://stackoverflow.com/questions/4007969/application-x-www-form-urlencoded-or-multipart-form-data
+        useForm = canConsumeForm;
+{{/isFile}}
+{{/formParams}}
+        if (useForm) {
+            formParams = new FormData();
+        } else {
+{{#useHttpClient}}
+            formParams = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+{{/useHttpClient}}
+{{^useHttpClient}}
+            // TODO: this fails if a parameter is a file, the api can't consume "multipart/form-data" and a blob is passed.
+            convertFormParamsToString = true;
+            formParams = new URLSearchParams('', new CustomQueryEncoderHelper());
+            // set the content-type explicitly to avoid having it set to 'text/plain'
+            headers.set('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+{{/useHttpClient}}
+        }
+
+{{#formParams}}
+        {{#isListContainer}}
+        if ({{paramName}}) {
+            {{paramName}}.forEach((element) => {
+                {{#useHttpClient}}formParams = {{/useHttpClient}}formParams.append('{{baseName}}', <any>element){{#useHttpClient}} || formParams{{/useHttpClient}};
+            })
+        }
+        {{/isListContainer}}
+        {{^isListContainer}}
+        if ({{paramName}} !== undefined) {
+            {{#useHttpClient}}formParams = {{/useHttpClient}}formParams.append('{{baseName}}', <any>{{paramName}}){{#useHttpClient}} || formParams{{/useHttpClient}};
+        }
+        {{/isListContainer}}
+{{/formParams}}
+
+{{/hasFormParams}}
+        return ajax(`${this.basePath}{{{path}}}`,{{#isBodyAllowed}}
+            {{#bodyParam}}{{paramName}}{{/bodyParam}}{{^bodyParam}}{{#hasFormParams}}convertFormParamsToString ? formParams.toString() : formParams{{/hasFormParams}}{{^hasFormParams}}null{{/hasFormParams}}{{/bodyParam}},{{/isBodyAllowed}}
+            {
+                ...extraHttpRequestParams,
+                method: '{{httpMethod}}',
+{{#hasQueryParams}}
+                params: queryParameters,
+{{/hasQueryParams}}
+{{#isResponseFile}}
+                responseType: "blob",
+{{/isResponseFile}}
+                withCredentials: this.configuration.withCredentials,
+                headers: headers
+            }
+        ).pipe(
+            map(response => ({ response, data: response.data{{^isResponseFile}} as {{#returnType}}{{{returnType}}}{{#isResponseTypeFile}}|undefined{{/isResponseTypeFile}}{{/returnType}}{{^returnType}}any{{/returnType}}{{/isResponseFile}} }))
+        );
+    }
+
+{{/operation}}
+}
+{{/operations}}
