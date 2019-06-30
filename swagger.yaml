@@ -61,11 +61,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/GetCaveResponse'
+                $ref: '#/components/schemas/GetCaveResponse'
         default:
           description: unexpected error
           content:

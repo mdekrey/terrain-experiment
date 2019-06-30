@@ -1,7 +1,7 @@
 import {
   GameCoordinates
 } from "../game/GameCoordinates";
-import { ajax } from "rxjs/ajax";
+import { TerrainService } from "../rxjs-api";
 
 export interface Cave {
   offset: GameCoordinates;
@@ -18,11 +18,14 @@ export class CaveGenerator {
   }>;
   private readonly position: GameCoordinates;
   private readonly offset: GameCoordinates;
+  private readonly terrainService: TerrainService;
 
   constructor(
+    terrainService: TerrainService,
     position: GameCoordinates,
     offset: GameCoordinates
   ) {
+    this.terrainService = terrainService;
     this.position = position;
     this.offset = offset;
 
@@ -32,9 +35,9 @@ export class CaveGenerator {
   private readonly buildMap = async (
     resolve: (t: { isSolid: boolean[][]; treasure: GameCoordinates[], entrance: GameCoordinates }) => void
   ) => {
-    const response = await ajax({ url: "/api/terrain/cave", body: { coordinate: { x: Math.round(this.position.x), y: Math.round(this.position.y) } }, method: "POST", headers: { 'Content-Type': 'application/json' } })
+    const response = await this.terrainService.getCave({ coordinate: { x: Math.round(this.position.x), y: Math.round(this.position.y) } })
       .toPromise();
-    const result = response.response as { isSolid: boolean[][]; treasure: GameCoordinates[], entrance: GameCoordinates };
+    const result = response.data;
     resolve({ isSolid: result.isSolid, treasure: result.treasure, entrance: result.entrance });
   };
 

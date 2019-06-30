@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "gen-dotnet": "rimraf ./output.local/* && sc generate -t dotnet-templates -o ./output.local -i ../swagger.yaml -l aspnetcore --additional-properties packageName=Game.Application",
-    "gen-rxjs": "rimraf ./rxjs.local/* && sc generate -t rxjs-templates -o ./rxjs.local -i ../swagger.yaml -l typescript-angular"
+    "gen-rxjs": "rimraf ../Game.Application/GameJS/src/rxjs-api/* && sc generate -t rxjs-templates -o ../Game.Application/GameJS/src/rxjs-api -i ../swagger.yaml -l typescript-angular"
   },
   "author": "",
   "license": "ISC",

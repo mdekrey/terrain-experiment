@@ -5,6 +5,7 @@ import { BehaviorSubject } from "rxjs";
 import { addCoordinates, GameCoordinates } from "./GameCoordinates";
 import { Direction } from "./Direction";
 import { PawnType } from "./PawnType";
+import { TerrainService } from "../rxjs-api";
 
 export interface OverworldGameMode {
     mode: "Overworld";
@@ -31,9 +32,11 @@ export class Game {
     readonly playerPawn: Pawn;
     readonly gameMode$ = new BehaviorSubject<GameMode>({ mode: "Overworld" })
     readonly otherPlayers: Pawn[];
+    readonly terrainService: TerrainService;
 
-    constructor(playerPawn: Pawn) {
-        this.terrain = new TerrainCache();
+    constructor(playerPawn: Pawn, service: TerrainService) {
+        this.terrainService = service;
+        this.terrain = new TerrainCache(service);
         this.playerPawn = playerPawn;
         if (process.env.NODE_ENV === "development") {
             (window as any).game = this;
@@ -65,7 +68,7 @@ export class Game {
             const position = this.playerPawn.position();
             this.gameMode$.next({ mode: "Loading" });
 
-            const gen = new CaveGenerator({ x: position.x * overworldZoom, y: position.y * overworldZoom }, addCoordinates(position, { x: -0.5 / overworldZoom, y: -0.5 / overworldZoom }));
+            const gen = new CaveGenerator(this.terrainService, { x: position.x * overworldZoom, y: position.y * overworldZoom }, addCoordinates(position, { x: -0.5 / overworldZoom, y: -0.5 / overworldZoom }));
             const cave = await gen.cave;
             this.playerPawn.moveTo(addCoordinates(cave.offset, { x: cave.entrance.x / localZoom, y: cave.entrance.y / localZoom }), Direction.Down);
             this.gameMode$.next({ mode: "Cave", cave });

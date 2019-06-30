@@ -1,6 +1,6 @@
 import { VisualTerrainType, VisualTerrainTypeFromDotNet } from "./VisualTerrainType";
 import { zoomFactor } from "./ZoomLevels";
-import { ajax } from "rxjs/ajax";
+import { TerrainService } from "../rxjs-api";
 
 export type TerrainTileInfo = VisualTerrainType[];
 
@@ -10,9 +10,10 @@ export class TerrainCache {
     private readonly cache = new Map<string, TerrainTileInfo>();
     private readonly promiseLoading = new Map<string, Promise<void>>();
     private readonly maxCount: number;
+    private readonly service = new TerrainService();
 
-    constructor(maxCount: number = 100000) {
-        console.log(this);
+    constructor(service: TerrainService, maxCount: number = 100000) {
+        this.service = service;
         this.maxCount = maxCount;
     }
 
@@ -65,9 +66,9 @@ export class TerrainCache {
         const result = (async () => {
             const factor = zoomFactor(isDetail);
 
-            const response = await ajax({ url: "/api/terrain", body: { Coordinate: { X: Math.round(x), Y: Math.round(y) }, size: { Width: cacheRadius, Height: cacheRadius }, IsDetail: isDetail }, method: "POST", headers: { 'Content-Type': 'application/json' } })
+            const response = await this.service.getTerrain({ coordinate: { x: Math.round(x), y: Math.round(y) }, size: { width: cacheRadius, height: cacheRadius }, isDetail: isDetail })
                 .toPromise();
-            const result = response.response as number[][][];
+            const result = response.data;
             this.cleanCache();
 
             for (let iy = 0; iy < cacheRadius; iy++) {
