@@ -7,13 +7,13 @@ import { Viewport } from "./Viewport";
 import { GameControls } from "./GameControls";
 import { CaveGrid } from "./CaveGrid";
 import { useObservable } from "../rxjs";
-import { GameMode } from "../game";
+import { GameModes } from "../game";
 import { useWindowSize } from "./useWindowSize";
 
 export function GameContainer() {
     const player = useService("player");
     const game = useService("game");
-    const gameMode = useObservable<GameMode>(game.gameMode$, { mode: "Overworld" });
+    const gameMode = useObservable(game.gameMode$, GameModes.Overworld());
     const { width, height } = useWindowSize({ width: 1200, height: 800 });
     const pixelSize = Math.max(1, Math.floor(Math.sqrt(width * height) / 16 / 20)) * 16;
 

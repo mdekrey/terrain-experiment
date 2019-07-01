@@ -6,31 +6,30 @@ import { BehaviorSubject } from "rxjs";
 import { addCoordinates, GameCoordinates } from "./GameCoordinates";
 import { Direction } from "./Direction";
 import { PawnType } from "./PawnType";
+import { unionize, ofType, UnionOf } from "unionize";
 
-export interface OverworldGameMode {
-    mode: "Overworld";
+export const GameModes = unionize({
+    Overworld: {},
+    Detail: {},
+    Cave: ofType<{ cave: Cave }>(),
+    Loading: {}
+}, { tag: "mode" });
+
+export type GameMode = UnionOf<typeof GameModes>;
+
+function roundToOverworld(position: GameCoordinates) {
+    return  { x: Math.round(position.x * overworldZoom) / overworldZoom, y: Math.round(position.y * overworldZoom) / overworldZoom };
 }
 
-export interface DetailGameMode {
-    mode: "Detail";
+function areSame(lhs: GameCoordinates, rhs: GameCoordinates) {
+    return Math.abs(lhs.x - rhs.x) < 1 / localZoom
+        && Math.abs(lhs.y - rhs.y) < 1 / localZoom
 }
-
-export interface CaveGameMode {
-    mode: "Cave";
-    cave: Cave;
-}
-
-export interface LoadingGameMode {
-    mode: "Loading";
-}
-
-export type GameMode = OverworldGameMode | CaveGameMode | LoadingGameMode | DetailGameMode;
-
 
 export class Game {
     readonly terrain: TerrainCache;
     readonly playerPawn: Pawn;
-    readonly gameMode$ = new BehaviorSubject<GameMode>({ mode: "Detail" })
+    readonly gameMode$ = new BehaviorSubject<GameMode>(GameModes.Detail())
     readonly otherPlayers: Pawn[];
     readonly terrainService: TerrainService;
 
@@ -54,19 +53,19 @@ export class Game {
 
     async enterDetail() {
         if (this.playerPawn.isDoneMoving()) {
-            this.gameMode$.next({ mode: "Detail" });
+            this.gameMode$.next(GameModes.Detail());
         }
     }
 
     async enterCave() {
         if (this.playerPawn.isDoneMoving()) {
             const position = this.playerPawn.position();
-            this.gameMode$.next({ mode: "Loading" });
+            this.gameMode$.next(GameModes.Loading());
 
             const gen = new CaveGenerator(this.terrainService, { x: position.x * overworldZoom, y: position.y * overworldZoom }, addCoordinates(position, { x: -0.5 / overworldZoom, y: -0.5 / overworldZoom }));
             const cave = await gen.cave;
             this.playerPawn.moveTo(addCoordinates(cave.offset, { x: cave.entrance.x / localZoom, y: cave.entrance.y / localZoom }), Direction.Down);
-            this.gameMode$.next({ mode: "Cave", cave });
+            this.gameMode$.next(GameModes.Cave({ cave }));
         }
     }
 
@@ -74,9 +73,8 @@ export class Game {
         const gameMode = this.gameMode$.value;
         if (this.playerPawn.isDoneMoving()) {
             const position = this.playerPawn.position();
-            const targetPosition = { x: Math.round(position.x * overworldZoom) / overworldZoom, y: Math.round(position.y * overworldZoom) / overworldZoom }
-            // FIXME: This equality check has rounding errors
-            if (gameMode.mode !== "Cave" && targetPosition.x === position.x && targetPosition.y === position.y && (await this.terrain.getAtAsync(position.x, position.y, false)).indexOf("Cave" as VisualTerrainType) !== -1) {
+            const targetPosition = roundToOverworld(position);
+            if (gameMode.mode !== "Cave" && areSame(targetPosition, position) && (await this.terrain.getAtAsync(position.x, position.y, false)).indexOf("Cave" as VisualTerrainType) !== -1) {
                 this.enterCave();
             } else {
                 if (gameMode.mode === "Cave") {
@@ -91,11 +89,13 @@ export class Game {
 
                 if (await this.isOpenSpace(targetPosition, true)) {
                     this.playerPawn.moveTo(targetPosition, Direction.Down);
-                    this.gameMode$.next({ mode: "Overworld" });
+                    this.gameMode$.next(GameModes.Overworld());
                 } else {
                     console.log("not in open space", targetPosition)
                 }
             }
+        } else {
+
         }
     }
 

@@ -91,6 +91,7 @@ export class TerrainCache {
             return result;
         }
         await this.cacheMiss(x, y, isDetail);
+        // TODO - this is a bad way of doing it, as it has been getting in endless loops
         return this.getAtAsync(x, y, isDetail);
     }
 
