@@ -236,6 +236,7 @@ components:
       - Hills
       - Ice
       - Cave
+      - Teleportal
     # Pet:
     #   allOf:
     #   - $ref: '#/components/schemas/NewPet'

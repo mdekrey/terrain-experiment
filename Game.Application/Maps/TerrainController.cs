@@ -48,6 +48,17 @@ namespace Game.Application.Controllers
             {
                 yield return VisualTerrainType.Cave;
             }
+            if (point.coordinates.x == 0 && point.coordinates.y == 0)
+            {
+                if (isDetail)
+                {
+                    yield return VisualTerrainType.Teleportal;
+                }
+                else
+                {
+                    yield return VisualTerrainType.Shrine;
+                }
+            }
         }
 
         public async Task<IActionResult> GetCaveAsync([FromBody] GetCaveRequest body)
