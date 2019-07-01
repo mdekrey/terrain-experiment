@@ -30,7 +30,7 @@ export type GameMode = OverworldGameMode | CaveGameMode | LoadingGameMode | Deta
 export class Game {
     readonly terrain: TerrainCache;
     readonly playerPawn: Pawn;
-    readonly gameMode$ = new BehaviorSubject<GameMode>({ mode: "Overworld" })
+    readonly gameMode$ = new BehaviorSubject<GameMode>({ mode: "Detail" })
     readonly otherPlayers: Pawn[];
     readonly terrainService: TerrainService;
 
@@ -54,12 +54,7 @@ export class Game {
 
     async enterDetail() {
         if (this.playerPawn.isDoneMoving()) {
-            const position = this.playerPawn.position();
-            if ((await this.terrain.getAtAsync(position.x, position.y, false)).indexOf("Cave" as VisualTerrainType) !== -1) {
-                this.enterCave();
-            } else {
-                this.gameMode$.next({ mode: "Detail" });
-            }
+            this.gameMode$.next({ mode: "Detail" });
         }
     }
 
@@ -79,21 +74,27 @@ export class Game {
         const gameMode = this.gameMode$.value;
         if (this.playerPawn.isDoneMoving()) {
             const position = this.playerPawn.position();
-            if (gameMode.mode === "Cave") {
-                const { offset, entrance } = gameMode.cave;
-                const x = Math.round((position.x - offset.x) * localZoom);
-                const y = Math.round((position.y - offset.y) * localZoom);
-                if (x !== entrance.x || y !== entrance.y) {
-                    console.log("not at entrance", x, y, entrance);
-                    return;
-                }
-            }
             const targetPosition = { x: Math.round(position.x * overworldZoom) / overworldZoom, y: Math.round(position.y * overworldZoom) / overworldZoom }
-            if (await this.isOpenSpace(targetPosition, true)) {
-                this.playerPawn.moveTo(targetPosition, Direction.Down);
-                this.gameMode$.next({ mode: "Overworld" });
+            // FIXME: This equality check has rounding errors
+            if (gameMode.mode !== "Cave" && targetPosition.x === position.x && targetPosition.y === position.y && (await this.terrain.getAtAsync(position.x, position.y, false)).indexOf("Cave" as VisualTerrainType) !== -1) {
+                this.enterCave();
             } else {
-                console.log("not in open space", targetPosition)
+                if (gameMode.mode === "Cave") {
+                    const { offset, entrance } = gameMode.cave;
+                    const x = Math.round((position.x - offset.x) * localZoom);
+                    const y = Math.round((position.y - offset.y) * localZoom);
+                    if (x !== entrance.x || y !== entrance.y) {
+                        console.log("not at entrance", x, y, entrance);
+                        return;
+                    }
+                }
+
+                if (await this.isOpenSpace(targetPosition, true)) {
+                    this.playerPawn.moveTo(targetPosition, Direction.Down);
+                    this.gameMode$.next({ mode: "Overworld" });
+                } else {
+                    console.log("not in open space", targetPosition)
+                }
             }
         }
     }

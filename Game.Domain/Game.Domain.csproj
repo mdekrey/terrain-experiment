@@ -11,11 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\code-generation\dotnet-templates\**" Link="codegen\%(RecursiveDir)%(Filename)%(Extension)" />
-    <Compile Include="..\code-generation\output.local\src\Game.Application\Models\*.cs" Link="Models\%(RecursiveDir)%(Filename)%(Extension)" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <ProjectReference Include="..\LibNoise\LibNoise.csproj" />
   </ItemGroup>
 

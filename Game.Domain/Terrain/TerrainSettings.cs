@@ -1,5 +1,4 @@
-﻿using Game.Application.Models;
-using Game.Domain.Specifications;
+﻿using Game.Domain.Specifications;
 using LibNoise;
 using System;
 using System.Collections.Generic;

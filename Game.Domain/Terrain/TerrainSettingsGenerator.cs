@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-using Game.Application.Models;
 
 namespace Game.Domain.Terrain
 {

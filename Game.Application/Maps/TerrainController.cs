@@ -1,5 +1,4 @@
 ﻿using Game.Application.Controllers;
-using Game.Application.Models;
 using Game.Domain.Caves;
 using Game.Domain.Terrain;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace Game.Application.Controllers
 {
+    using Game.Application.Models;
+
     public partial class TerrainApiController : ITerrainApiController
     {
         private static readonly TerrainSettings settings = new TerrainSettingsGenerator().Generate();
@@ -46,11 +47,11 @@ namespace Game.Application.Controllers
         {
             if (isDetail)
             {
-                yield return settings.DetailVisualizationSpec.Execute(point);
+                yield return settings.DetailVisualizationSpec.Execute(point).ToApi();
             }
             else
             {
-                yield return settings.VisualizationSpec.Execute(point);
+                yield return settings.VisualizationSpec.Execute(point).ToApi();
             }
             if (point.IsCave)
             {
