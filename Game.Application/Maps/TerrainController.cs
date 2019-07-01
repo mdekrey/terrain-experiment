@@ -14,7 +14,7 @@ namespace Game.Application.Controllers
     {
         private static readonly TerrainSettings settings = new TerrainSettingsGenerator().Generate();
 
-        public Task<IActionResult> GetTerrainAsync([FromBody] Models.GetTerrainRequest body)
+        public Task<IActionResult> GetTerrainAsync([System.ComponentModel.DataAnnotations.Required] [FromBody] Models.GetTerrainRequest body)
         {
             var stepSize = body.IsDetail.Value ? TerrainSettings.localGridSize : TerrainSettings.overworldGridSize;
             var startX = body.Coordinate.X.Value * stepSize;
@@ -34,7 +34,7 @@ namespace Game.Application.Controllers
             return Task.FromResult<IActionResult>(Ok(response));
         }
 
-        private IEnumerable<Domain.Terrain.VisualTerrainType> GetTerrainType(TerrainPoint point, bool isDetail)
+        private IEnumerable<VisualTerrainType> GetTerrainType(TerrainPoint point, bool isDetail)
         {
             if (isDetail)
             {
@@ -46,7 +46,7 @@ namespace Game.Application.Controllers
             }
             if (point.IsCave)
             {
-                yield return Domain.Terrain.VisualTerrainType.Cave;
+                yield return VisualTerrainType.Cave;
             }
         }
 
@@ -58,8 +58,8 @@ namespace Game.Application.Controllers
             return Ok(new GetCaveResponse
             {
                 IsSolid = result.Map.Select(row => row.Cast<bool?>().ToList()).ToList(),
-                Treasure = result.Treasure.Select(c => new GameCoordinate { X = c.x, Y = c.y }).ToList(),
-                Entrance = new GameCoordinate { X = result.Entrance.x, Y = result.Entrance.y },
+                Treasure = result.Treasure.Select(c => new IntCoordinate { X = c.x, Y = c.y }).ToList(),
+                Entrance = new IntCoordinate { X = result.Entrance.x, Y = result.Entrance.y },
             });
         }
 

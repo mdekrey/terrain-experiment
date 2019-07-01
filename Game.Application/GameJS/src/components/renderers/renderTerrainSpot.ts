@@ -1,4 +1,4 @@
-import { VisualTerrainType } from "../../terrain-generation";
+import { VisualTerrainType } from "../../rxjs-api";
 import { SpriteLookup } from "../canvas";
 import { TilePieceRenderer } from "./TileCache";
 

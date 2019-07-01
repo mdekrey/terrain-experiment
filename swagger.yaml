@@ -148,7 +148,7 @@ components:
       type: object
       properties:
         coordinate:
-          $ref: '#/components/schemas/GameCoordinate'
+          $ref: '#/components/schemas/IntCoordinate'
         isDetail:
           type: boolean
         size:
@@ -175,7 +175,7 @@ components:
       type: object
       properties:
         coordinate:
-          $ref: '#/components/schemas/GameCoordinate'
+          $ref: '#/components/schemas/IntCoordinate'
     GetCaveResponse:
       required:
         - isSolid
@@ -190,12 +190,12 @@ components:
             items:
               type: boolean
         entrance:
-          $ref: '#/components/schemas/GameCoordinate'
+          $ref: '#/components/schemas/IntCoordinate'
         treasure:
           type: array
           items:
-            $ref: '#/components/schemas/GameCoordinate'
-    GameCoordinate:
+            $ref: '#/components/schemas/IntCoordinate'
+    IntCoordinate:
       required:
       - x
       - y

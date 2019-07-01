@@ -1,5 +1,5 @@
 import dw4Tiles from "../../images/dw4-world-sprites.png";
-import { VisualTerrainType } from "../../terrain-generation";
+import { VisualTerrainType } from "../../rxjs-api";
 import { SpriteDefinition, useSpritelookup } from "../canvas";
 
 const dw4Ocean = { image: dw4Tiles, coords: [{ x: 160, y: 224 }] };

@@ -1,11 +1,11 @@
-import { TerrainCache, VisualTerrainType, overworldZoom, localZoom, zoomFactor } from "../terrain-generation";
+import { TerrainService, VisualTerrainType } from "../rxjs-api";
+import { TerrainCache, overworldZoom, localZoom, zoomFactor } from "../terrain-generation";
 import { Pawn } from "./Pawn";
 import { Cave, CaveGenerator } from "../cave-generation";
 import { BehaviorSubject } from "rxjs";
 import { addCoordinates, GameCoordinates } from "./GameCoordinates";
 import { Direction } from "./Direction";
 import { PawnType } from "./PawnType";
-import { TerrainService } from "../rxjs-api";
 
 export interface OverworldGameMode {
     mode: "Overworld";
@@ -55,7 +55,7 @@ export class Game {
     async enterDetail() {
         if (this.playerPawn.isDoneMoving()) {
             const position = this.playerPawn.position();
-            if ((await this.terrain.getAtAsync(position.x, position.y, false)).indexOf("Cave") !== -1) {
+            if ((await this.terrain.getAtAsync(position.x, position.y, false)).indexOf("Cave" as VisualTerrainType) !== -1) {
                 this.enterCave();
             } else {
                 this.gameMode$.next({ mode: "Detail" });

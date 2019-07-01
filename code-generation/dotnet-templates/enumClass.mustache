@@ -11,7 +11,6 @@
             /// <summary>
             /// Enum {{name}} for {{{value}}}
             /// </summary>
-            {{#isString}}[EnumMember(Value = "{{{value}}}")]{{/isString}}
-            {{name}}{{^isString}} = {{{value}}}{{/isString}},
+            {{{value}}},
             {{/enumVars}}{{/allowableValues}}
         }

@@ -1,4 +1,5 @@
-﻿using Game.Domain;
+﻿using Game.Application.Models;
+using Game.Domain;
 using Game.Domain.Terrain;
 using Microsoft.JSInterop;
 using System;

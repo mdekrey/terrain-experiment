@@ -1,6 +1,5 @@
-import { VisualTerrainType, VisualTerrainTypeFromDotNet } from "./VisualTerrainType";
 import { zoomFactor } from "./ZoomLevels";
-import { TerrainService } from "../rxjs-api";
+import { TerrainService, VisualTerrainType } from "../rxjs-api";
 
 export type TerrainTileInfo = VisualTerrainType[];
 
@@ -76,7 +75,7 @@ export class TerrainCache {
                     const terrainX = (x + ix) / factor;
                     const terrainY = (y + iy) / factor;
                     const k = this.toKey(terrainX, terrainY, isDetail);
-                    this.cache.set(k, result.terrain[iy][ix].map(v => v));
+                    this.cache.set(k, result.terrain[iy][ix].map(v => v as VisualTerrainType));
                 }
             }
 

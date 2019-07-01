@@ -26,9 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\code-generation\dotnet-templates\**" Link="codegen\%(RecursiveDir)%(Filename)%(Extension)" />
     <Compile Include="..\code-generation\output.local\src\Game.Application\Attributes\*.cs" Link="Attributes\%(RecursiveDir)%(Filename)%(Extension)" />
-    <Compile Include="..\code-generation\output.local\src\Game.Application\Models\*.cs" Link="Models\%(RecursiveDir)%(Filename)%(Extension)" />
     <Compile Include="..\code-generation\output.local\src\Game.Application\Controllers\*.cs" Link="Controllers\%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
   

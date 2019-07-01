@@ -7,8 +7,14 @@
   <ItemGroup>
     <PackageReference Include="LibNoise.NetStandart" Version="0.2.0" />
     <PackageReference Include="System.Collections.Immutable" Version="1.5.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.6.0-preview6.19303.8" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\code-generation\dotnet-templates\**" Link="codegen\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="..\code-generation\output.local\src\Game.Application\Models\*.cs" Link="Models\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\LibNoise\LibNoise.csproj" />
   </ItemGroup>
