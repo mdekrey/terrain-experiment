@@ -13,6 +13,14 @@ namespace Game.Application.Controllers
     public partial class TerrainApiController : ITerrainApiController
     {
         private static readonly TerrainSettings settings = new TerrainSettingsGenerator().Generate();
+        private static readonly VisualTerrainType[][] shrine = new[]
+        {
+            new[] { VisualTerrainType.Flowers, VisualTerrainType.Flowers, VisualTerrainType.Flowers, VisualTerrainType.Flowers, VisualTerrainType.Flowers, },
+            new[] { VisualTerrainType.Flowers, VisualTerrainType.ShrineFancyTile, VisualTerrainType.ShrineFancyTile, VisualTerrainType.ShrineFancyTile, VisualTerrainType.Flowers, },
+            new[] { VisualTerrainType.Flowers, VisualTerrainType.ShrineFancyTile, VisualTerrainType.Teleportal, VisualTerrainType.ShrineFancyTile, VisualTerrainType.Flowers, },
+            new[] { VisualTerrainType.Flowers, VisualTerrainType.ShrineFancyTile, VisualTerrainType.ShrineFancyTile, VisualTerrainType.ShrineFancyTile, VisualTerrainType.Flowers, },
+            new[] { VisualTerrainType.Flowers, VisualTerrainType.Flowers, VisualTerrainType.Flowers, VisualTerrainType.Flowers, VisualTerrainType.Flowers, },
+        };
 
         public Task<IActionResult> GetTerrainAsync([System.ComponentModel.DataAnnotations.Required] [FromBody] Models.GetTerrainRequest body)
         {
@@ -48,13 +56,19 @@ namespace Game.Application.Controllers
             {
                 yield return VisualTerrainType.Cave;
             }
-            if (point.coordinates.x == 0 && point.coordinates.y == 0)
+            
             {
+
                 if (isDetail)
                 {
-                    yield return VisualTerrainType.Teleportal;
+                    var x = (int)Math.Round(point.coordinates.x / TerrainSettings.localGridSize) + 2;
+                    var y = (int)Math.Round(point.coordinates.y / TerrainSettings.localGridSize) + 2;
+                    if (x >= 0 && x < shrine.Length && y >= 0 && y < shrine[x].Length)
+                    {
+                        yield return shrine[x][y];
+                    }
                 }
-                else
+                else if (point.coordinates.x == 0 && point.coordinates.y == 0)
                 {
                     yield return VisualTerrainType.Shrine;
                 }

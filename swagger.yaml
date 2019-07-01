@@ -237,6 +237,10 @@ components:
       - Ice
       - Cave
       - Teleportal
+      - ShrineFancyTile
+      - DarkRedTile
+      - Flowers
+      - DogStatue
     # Pet:
     #   allOf:
     #   - $ref: '#/components/schemas/NewPet'

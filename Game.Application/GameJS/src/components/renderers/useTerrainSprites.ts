@@ -88,6 +88,22 @@ const dw4Teleportal = {
     { x: tileSize * 5, y: tileSize * 6 },
     { x: tileSize * 5, y: tileSize * 7 }]
 };
+const dw4ShrineFancyTile = {
+  image: dw4Tiles,
+  coords: [{ x: tileSize * 17, y: tileSize * 4 }]
+};
+const dw4DarkRedTile = {
+  image: dw4Tiles,
+  coords: [{ x: tileSize * 23, y: tileSize * 4 }]
+};
+const dw4Flowers = {
+  image: dw4Tiles,
+  coords: [{ x: tileSize * 26, y: tileSize * 4 }]
+};
+const dw4DogStatue = {
+  image: dw4Tiles,
+  coords: [{ x: tileSize * 27, y: tileSize * 4 }]
+};
 
 const color: Record<VisualTerrainType, string> = {
   DeepWater: "#000088",
@@ -110,6 +126,10 @@ const color: Record<VisualTerrainType, string> = {
   Cave: "transparent",
   Shrine: "grey",
   Teleportal: "blue",
+  ShrineFancyTile: 'transparent',
+  DarkRedTile: 'transparent',
+  Flowers: 'transparent',
+  DogStatue: 'transparent',
 };
 
 const terrainSpriteDefinitions: Record<VisualTerrainType, SpriteDefinition> = {
@@ -133,6 +153,10 @@ const terrainSpriteDefinitions: Record<VisualTerrainType, SpriteDefinition> = {
   Cave: { ...dw4Cave, fallbackColor: color["Cave"] },
   Shrine: { ...dw4Shrine, fallbackColor: color["Shrine"] },
   Teleportal: { ...dw4Teleportal, fallbackColor: color["Teleportal"] },
+  ShrineFancyTile: { ...dw4ShrineFancyTile, fallbackColor: color["ShrineFancyTile"] },
+  DarkRedTile: { ...dw4DarkRedTile, fallbackColor: color["DarkRedTile"] },
+  Flowers: { ...dw4Flowers, fallbackColor: color["Flowers"] },
+  DogStatue: { ...dw4DogStatue, fallbackColor: color["DogStatue"] },
 };
 
 export function useTerrainSprites() {

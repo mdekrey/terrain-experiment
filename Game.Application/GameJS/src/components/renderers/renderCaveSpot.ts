@@ -19,7 +19,7 @@ const dw4CaveCeiling2 =  { image: dw4Tiles, coords: [{ x: 272, y: 176 }] };
 const dw4CaveWall2 =  { image: dw4Tiles, coords: [{ x: 256, y: 192 }] };
 const dw4Floor =  { image: dw4Tiles, coords: [{ x: 240, y: 64 }] };
 const dw4Stairway =  { image: dw4Tiles, coords: [{ x: 448, y: 48 }] };
-const dw4Treasure =  { image: dw4Tiles, coords: [{ x: 416, y: 144 }] };
+const dw4Treasure =  { image: dw4Tiles, coords: [{ x: 432, y: 144 }] };
 
 const caveSpriteDefinitions: Record<CaveSpotType, SpriteDefinition> = {
     [CaveSpotType.Ceiling1]: { ...dw4CaveCeiling1, fallbackColor: "rgb(244, 174, 92)" },
