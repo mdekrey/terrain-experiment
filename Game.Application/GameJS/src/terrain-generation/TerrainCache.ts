@@ -1,5 +1,6 @@
-import { zoomFactor } from "./ZoomLevels";
+import { zoomFactor, localZoom } from "./ZoomLevels";
 import { TerrainService, VisualTerrainType } from "../rxjs-api";
+import { GameCoordinates } from "../game";
 
 export type TerrainTileInfo = VisualTerrainType[];
 
@@ -7,9 +8,10 @@ const cacheRadius = 50;
 
 export class TerrainCache {
     private readonly cache = new Map<string, TerrainTileInfo>();
+    private readonly specialLocationCache = new Map<string, GameCoordinates>();
     private readonly promiseLoading = new Map<string, Promise<void>>();
     private readonly maxCount: number;
-    private readonly service = new TerrainService();
+    private readonly service: TerrainService;
 
     constructor(service: TerrainService, maxCount: number = 100000) {
         this.service = service;
@@ -79,10 +81,21 @@ export class TerrainCache {
                 }
             }
 
+            if (!isDetail) {
+                result.specialLocations.forEach(({ initial, target }) => {
+                    const key = this.toKey(initial.x * factor, initial.y * factor, isDetail);
+                    this.specialLocationCache.set(key, { x: target.x / localZoom, y: target.y / localZoom })
+                });
+            }
+
             this.promiseLoading.delete(promiseKey);
         })();
         this.promiseLoading.set(promiseKey, result);
         return result;
+    }
+
+    getSpecialLocationAt(x: number, y: number, isDetail: boolean) {
+        return this.specialLocationCache.get(this.toKey(x, y, isDetail));
     }
 
     async getAtAsync(x: number, y: number, isDetail: boolean): Promise<TerrainTileInfo> {
@@ -92,6 +105,7 @@ export class TerrainCache {
         }
         await this.cacheMiss(x, y, isDetail);
         // TODO - this is a bad way of doing it, as it has been getting in endless loops
+        console.log("cache miss", x, y);
         return this.getAtAsync(x, y, isDetail);
     }
 

@@ -23,6 +23,11 @@ namespace Game.Application.Controllers
             new[] { VisualTerrainType.Flowers, VisualTerrainType.Flowers, VisualTerrainType.Flowers, VisualTerrainType.Flowers, VisualTerrainType.Flowers, },
         };
 
+        private static readonly SpecialLocation[] specialLocations = new[]
+        {
+            new SpecialLocation { Initial = new IntCoordinate { X = 0, Y = 0 }, Target = new IntCoordinate { X = 3, Y = 11 } }
+        };
+
         public Task<IActionResult> GetTerrainAsync([System.ComponentModel.DataAnnotations.Required] [FromBody] Models.GetTerrainRequest body)
         {
             var stepSize = body.IsDetail.Value ? TerrainSettings.localGridSize : TerrainSettings.overworldGridSize;
@@ -38,7 +43,12 @@ namespace Game.Application.Controllers
                                                     .Select(point => GetTerrainType(point, body.IsDetail.Value).Select(v => v.ToString("g")).ToList())
                                                     .ToList()
                                 )
-                            .ToList()
+                            .ToList(),
+                SpecialLocations = body.IsDetail.Value 
+                    ? new List<SpecialLocation>()
+                    : specialLocations.Where(l => l.Initial.X >= body.Coordinate.X.Value && l.Initial.X < body.Coordinate.X.Value + body.Size.Width.Value
+                                               && l.Initial.Y >= body.Coordinate.Y.Value && l.Initial.Y < body.Coordinate.Y.Value + body.Size.Height.Value)
+                                      .ToList()
             };
             return Task.FromResult<IActionResult>(Ok(response));
         }

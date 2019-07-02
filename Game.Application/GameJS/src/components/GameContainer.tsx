@@ -9,11 +9,14 @@ import { CaveGrid } from "./CaveGrid";
 import { useObservable } from "../rxjs";
 import { GameModes } from "../game";
 import { useWindowSize } from "./useWindowSize";
+import { subscribeOn } from "rxjs/operators";
+import { animationFrameScheduler } from "rxjs";
 
 export function GameContainer() {
     const player = useService("player");
     const game = useService("game");
-    const gameMode = useObservable(game.gameMode$, GameModes.Overworld());
+    const gameMode$ = React.useMemo(() => game.gameMode$.pipe(subscribeOn(animationFrameScheduler)), [game.gameMode$]);
+    const gameMode = useObservable(gameMode$, GameModes.Overworld());
     const { width, height } = useWindowSize({ width: 1200, height: 800 });
     const pixelSize = Math.max(1, Math.floor(Math.sqrt(width * height) / 16 / 20)) * 16;
 

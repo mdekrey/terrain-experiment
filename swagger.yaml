@@ -157,6 +157,7 @@ components:
     GetTerrainResponse:
       required:
       - terrain
+      - specialLocations
       type: object
       properties:
         terrain:
@@ -169,6 +170,10 @@ components:
                 # TODO: 3.0.0 preview 7
                 # $ref: '#/components/schemas/VisualTerrainType'
                 type: string
+        specialLocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/SpecialLocation'
     GetCaveRequest:
       required:
       - coordinate
@@ -215,6 +220,16 @@ components:
           type: integer
         height:
           type: integer
+    SpecialLocation:
+      required:
+      - initial
+      - target
+      type: object
+      properties:
+        initial:
+          $ref: '#/components/schemas/IntCoordinate'
+        target:
+          $ref: '#/components/schemas/IntCoordinate'
     VisualTerrainType:
       type: string
       enum:
@@ -236,6 +251,7 @@ components:
       - Hills
       - Ice
       - Cave
+      - Shrine
       - Teleportal
       - ShrineFancyTile
       - DarkRedTile

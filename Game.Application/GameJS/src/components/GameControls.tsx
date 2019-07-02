@@ -15,30 +15,33 @@ export function GameControls() {
         if (!player.isDoneMoving()) {
             return;
         }
-        const moveAmount = 1 / zoomFactor;
         let { x: centerX, y: centerY } = player.position();
+        centerX *= zoomFactor;
+        centerY *= zoomFactor;
         let facing = Direction.Down;
         switch (Array.from(currentContinuous.values()).filter(k => k.startsWith("MOVE_")).reverse()[0]) {
             case "MOVE_LEFT":
-                centerX -= moveAmount;
+                centerX -= 1;
                 facing = Direction.Left;
                 break;
             case "MOVE_RIGHT":
-                centerX += moveAmount;
+                centerX += 1;
                 facing = Direction.Right;
                 break;
             case "MOVE_UP":
-                centerY -= moveAmount;
+                centerY -= 1;
                 facing = Direction.Up;
                 break;
             case "MOVE_DOWN":
-                centerY += moveAmount;
+                centerY += 1;
                 facing = Direction.Down;
                 break;
             default:
                 return;
         }
-        game.movePlayerTo({ x: centerX, y: centerY }, facing);
+        centerX = Math.round(centerX);
+        centerY = Math.round(centerY);
+        game.movePlayerTo({ x: centerX / zoomFactor, y: centerY / zoomFactor }, facing);
     }, [player, zoomFactor, currentContinuous, game]));
 
     useSubscription(useCommand("ACTIVATE"), React.useCallback(() => {
@@ -47,8 +50,10 @@ export function GameControls() {
                 game.enterDetail();
                 break;
             case "Detail":
+                game.moveToOverworldOrCave();
+                break;
             case "Cave":
-                game.moveToOverworld();
+                game.exitCave();
                 break;
         }
     }, [game]));

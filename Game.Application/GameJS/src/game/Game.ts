@@ -22,8 +22,8 @@ function roundToOverworld(position: GameCoordinates) {
 }
 
 function areSame(lhs: GameCoordinates, rhs: GameCoordinates) {
-    return Math.abs(lhs.x - rhs.x) < 1 / localZoom
-        && Math.abs(lhs.y - rhs.y) < 1 / localZoom
+    return Math.abs(lhs.x - rhs.x) < 1 / localZoom / 2
+        && Math.abs(lhs.y - rhs.y) < 1 / localZoom / 2
 }
 
 export class Game {
@@ -53,6 +53,11 @@ export class Game {
 
     async enterDetail() {
         if (this.playerPawn.isDoneMoving()) {
+            const position = this.playerPawn.position();
+            const specialLocation = this.terrain.getSpecialLocationAt(position.x, position.y, false);
+            if (specialLocation) {
+                this.playerPawn.moveTo(specialLocation, this.playerPawn.facing);
+            }
             this.gameMode$.next(GameModes.Detail());
         }
     }
@@ -69,12 +74,36 @@ export class Game {
         }
     }
 
-    async moveToOverworld() {
+    async exitCave() {
         const gameMode = this.gameMode$.value;
         if (this.playerPawn.isDoneMoving()) {
             const position = this.playerPawn.position();
             const targetPosition = roundToOverworld(position);
-            if (gameMode.mode !== "Cave" && areSame(targetPosition, position) && (await this.terrain.getAtAsync(position.x, position.y, false)).indexOf("Cave" as VisualTerrainType) !== -1) {
+            if (gameMode.mode === "Cave") {
+                const { offset, entrance } = gameMode.cave;
+                const x = Math.round((position.x - offset.x) * localZoom);
+                const y = Math.round((position.y - offset.y) * localZoom);
+                if (x !== entrance.x || y !== entrance.y) {
+                    console.log("not at entrance", x, y, entrance);
+                    return;
+                }
+            }
+
+            if (await this.isOpenSpace(targetPosition, "Detail")) {
+                this.playerPawn.moveTo(targetPosition, Direction.Down);
+                this.gameMode$.next(GameModes.Detail());
+            } else {
+                console.log("not in open space", targetPosition)
+            }
+        }
+    }
+
+    async moveToOverworldOrCave() {
+        const gameMode = this.gameMode$.value;
+        if (this.playerPawn.isDoneMoving()) {
+            const position = this.playerPawn.position();
+            const targetPosition = roundToOverworld(position);
+            if (areSame(targetPosition, position) && (await this.terrain.getAtAsync(targetPosition.x, targetPosition.y, false)).indexOf("Cave" as VisualTerrainType) !== -1) {
                 this.enterCave();
             } else {
                 if (gameMode.mode === "Cave") {
@@ -87,15 +116,13 @@ export class Game {
                     }
                 }
 
-                if (await this.isOpenSpace(targetPosition, true)) {
+                if (await this.isOpenSpace(targetPosition, "Overworld")) {
                     this.playerPawn.moveTo(targetPosition, Direction.Down);
                     this.gameMode$.next(GameModes.Overworld());
                 } else {
                     console.log("not in open space", targetPosition)
                 }
             }
-        } else {
-
         }
     }
 
@@ -110,19 +137,16 @@ export class Game {
         }
     }
 
-    async isOpenSpace(worldCoordinate: GameCoordinates, forceOverworld = false) {
+    async isOpenSpace(worldCoordinate: GameCoordinates, forceGameMode?: "Loading" | "Overworld" | "Detail") {
         const gameMode = this.gameMode$.value;
 
         const overworldCheck = async () => {
             const category = await this.terrain.getAtAsync(worldCoordinate.x, worldCoordinate.y, false);
             return !category.some(t => !isPassable(t));
         };
-        if (forceOverworld) {
-            return overworldCheck();
-        }
-        switch (gameMode.mode) {
+        switch (forceGameMode || gameMode.mode) {
             case "Cave":
-                const {cave} = gameMode;
+                const {cave} = gameMode as (typeof GameModes)["_Record"]["Cave"];
                 const caveY = Math.round((worldCoordinate.y - cave.offset.y) * localZoom);
                 const caveX = Math.round((worldCoordinate.x - cave.offset.x) * localZoom);
                 return !cave.isSolid[caveY][caveX];
