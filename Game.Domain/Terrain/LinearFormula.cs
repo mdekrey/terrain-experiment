@@ -2,7 +2,7 @@
 {
     public class LinearFormula
     {
-        public float Slope { get; set; }
-        public float Offset { get; set; }
+        public double Slope { get; set; }
+        public double Offset { get; set; }
     }
 }

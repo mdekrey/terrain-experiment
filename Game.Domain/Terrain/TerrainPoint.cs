@@ -8,16 +8,16 @@ namespace Game.Domain.Terrain
     public readonly struct TerrainPoint : ITerrainSituation
     {
         public readonly GameCoordinate coordinates;
-        public readonly float humidity;
-        public readonly float heat;
-        public readonly float altitude;
-        public readonly float feature;
+        public readonly double humidity;
+        public readonly double heat;
+        public readonly double altitude;
+        public readonly double feature;
         private readonly bool isCave;
         public readonly TemperatureCategory temperatureCategory;
         public readonly HumidityCategory humidityCategory;
         public readonly AltitudeCategory altitudeCategory;
 
-        public TerrainPoint(GameCoordinate coordinates, float humidity, float heat, float altitude, float feature, bool isCave, TerrainSettings settings)
+        public TerrainPoint(GameCoordinate coordinates, double humidity, double heat, double altitude, double feature, bool isCave, TerrainSettings settings)
         {
             this.coordinates = coordinates;
             this.humidity = humidity;
@@ -41,13 +41,13 @@ namespace Game.Domain.Terrain
         public BiomeLabel BiomeLabel => BiomeDetails.biomeLabels[temperatureCategory][humidityCategory];
         public BiomeCategory BiomeCategory => BiomeDetails.CategoryLookup[BiomeLabel];
 
-        public float Altitude => altitude;
+        public double Altitude => altitude;
 
-        public float Heat => heat;
+        public double Heat => heat;
 
-        public float Humidity => humidity;
+        public double Humidity => humidity;
 
-        public float Feature => feature;
+        public double Feature => feature;
 
         public TemperatureCategory TemperatureCategory => temperatureCategory;
 

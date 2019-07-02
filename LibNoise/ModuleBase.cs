@@ -5,7 +5,7 @@ namespace LibNoise
 {
     public abstract class ModuleBase
     {
-        public abstract float GetValue(float x, float y, float z);
+        public abstract double GetValue(double x, double y, double z);
     }
 
 }

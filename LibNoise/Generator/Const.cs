@@ -6,14 +6,14 @@ namespace LibNoise.Generator
 {
     public class Const : ModuleBase
     {
-        private readonly float value;
+        private readonly double value;
 
-        public Const(float value)
+        public Const(double value)
         {
             this.value = value;
         }
 
-        public override float GetValue(float x, float y, float z)
+        public override double GetValue(double x, double y, double z)
         {
             return value;
         }

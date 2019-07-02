@@ -6,12 +6,12 @@ namespace LibNoise.Operator
 {
     public class Scale : ModuleBase
     {
-        private readonly float sx;
-        private readonly float sy;
-        private readonly float sz;
+        private readonly double sx;
+        private readonly double sy;
+        private readonly double sz;
         private readonly ModuleBase original;
 
-        public Scale(float sx, float sy, float sz, ModuleBase original)
+        public Scale(double sx, double sy, double sz, ModuleBase original)
         {
             this.sx = sx;
             this.sy = sy;
@@ -19,7 +19,7 @@ namespace LibNoise.Operator
             this.original = original;
         }
 
-        public override float GetValue(float x, float y, float z)
+        public override double GetValue(double x, double y, double z)
         {
             return original.GetValue(sx * x, sy * y, sz * z);
         }

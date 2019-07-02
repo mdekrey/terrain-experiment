@@ -2,10 +2,10 @@
 {
     public interface ITerrainSituation
     {
-        float Altitude { get; }
-        float Heat { get; }
-        float Humidity { get; }
-        float Feature { get; }
+        double Altitude { get; }
+        double Heat { get; }
+        double Humidity { get; }
+        double Feature { get; }
         TemperatureCategory TemperatureCategory { get; } 
         HumidityCategory HumidityCategory { get; } 
         BiomeCategory BiomeCategory { get; } 

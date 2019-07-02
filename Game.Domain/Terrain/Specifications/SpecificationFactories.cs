@@ -22,17 +22,17 @@ namespace Game.Domain.Terrain.Specifications
             return new DelegatingSpecification<ITerrainSituation, bool>(s => s.TemperatureCategory == biome);
         }
 
-        public static ISpecification<ITerrainSituation, bool> IsFeatureGreaterThanHeat(float slope, float offset)
+        public static ISpecification<ITerrainSituation, bool> IsFeatureGreaterThanHeat(double slope, double offset)
         {
             return new DelegatingSpecification<ITerrainSituation, bool>(s => s.Feature * slope + offset > s.Heat);
         }
 
-        public static ISpecification<ITerrainSituation, bool> IsFeatureGreaterThanAltitude(float slope, float offset)
+        public static ISpecification<ITerrainSituation, bool> IsFeatureGreaterThanAltitude(double slope, double offset)
         {
             return new DelegatingSpecification<ITerrainSituation, bool>(s => s.Feature * slope + offset > s.Altitude);
         }
 
-        public static ISpecification<ITerrainSituation, bool> IsFeatureGreaterThan(float constant)
+        public static ISpecification<ITerrainSituation, bool> IsFeatureGreaterThan(double constant)
         {
             return new DelegatingSpecification<ITerrainSituation, bool>(s => s.Feature >= constant);
         }

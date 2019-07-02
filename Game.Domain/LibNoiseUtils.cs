@@ -41,7 +41,7 @@ namespace Game.Domain
                 this.original = original;
             }
 
-            public override float GetValue(float x, float y, float z)
+            public override double GetValue(double x, double y, double z)
             {
                 var val = Utils.Clamp(original.GetValue(x, y, z), 0, 1);
                 return 1 - val * (1 - val) * 4;

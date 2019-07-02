@@ -13,7 +13,7 @@ namespace LibNoise.Generator
             this.seed = seed;
         }
 
-        public override float GetValue(float x, float y, float z)
+        public override double GetValue(double x, double y, double z)
         {
             return Utils.ValueNoise3DInt(x % 10, y % 10, z % 10, seed);
         }

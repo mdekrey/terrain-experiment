@@ -6,14 +6,14 @@ namespace LibNoise.Generator
 {
     public class RidgedMultifractal : ModuleBase
     {
-        public readonly float frequency;
-        public readonly float lacunarity;
+        public readonly double frequency;
+        public readonly double lacunarity;
         public readonly int octaves;
         public readonly int seed;
         public readonly QualityMode quality;
-        private readonly float[] weights;
+        private readonly double[] weights;
 
-        public RidgedMultifractal(float frequency = 1f, float lacunarity = 2f, int octaves = 8, int seed = 0, QualityMode quality = QualityMode.Medium)
+        public RidgedMultifractal(double frequency = 1f, double lacunarity = 2f, int octaves = 8, int seed = 0, QualityMode quality = QualityMode.Medium)
         {
             this.frequency = frequency;
 
@@ -28,15 +28,15 @@ namespace LibNoise.Generator
             weights = CalculateWeights(octaves, lacunarity);
         }
 
-        public override float GetValue(float x, float y, float z)
+        public override double GetValue(double x, double y, double z)
         {
             x *= frequency;
             y *= frequency;
             z *= frequency;
-            var value = 0.0f;
-            var weight = 1.0f;
-            var offset = 1.0f;
-            var gain = 2.0f;
+            var value = 0.0;
+            var weight = 1.0;
+            var offset = 1.0;
+            var gain = 2.0;
             for (var i = 0; i < octaves; i++)
             {
                 var nx = Utils.MakeInt32Range(x);
@@ -49,7 +49,7 @@ namespace LibNoise.Generator
                 signal *= signal;
                 signal *= weight;
                 weight = signal * gain;
-                weight = weight > 1.0f ? 1.0f : weight < 0 ? 0 : weight;
+                weight = weight > 1.0 ? 1.0 : weight < 0 ? 0 : weight;
                 value += (signal * weights[i]);
                 x *= lacunarity;
                 y *= lacunarity;
@@ -58,13 +58,13 @@ namespace LibNoise.Generator
             return (value * 1.25f) - 1.0f;
         }
 
-        private static float[] CalculateWeights(int octaves, float lacunarity)
+        private static double[] CalculateWeights(int octaves, double lacunarity)
         {
-            var weights = new float[octaves];
+            var weights = new double[octaves];
             var f = 1.0;
             for (var i = 0; i < octaves; i++)
             {
-                weights[i] = (float)Math.Pow(f, -1.0);
+                weights[i] = (double)Math.Pow(f, -1.0);
                 f *= lacunarity;
             }
             return weights;

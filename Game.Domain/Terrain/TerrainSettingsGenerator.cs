@@ -13,49 +13,49 @@ namespace Game.Domain.Terrain
 {
     public class TerrainSettingsGenerator
     {
-        private readonly float yOffset = 9f / 400;
+        private readonly double yOffset = 9.0 / 400;
 
         public TerrainSettings Generate()
         {
             return new TerrainSettings
             {
-                TemperatureStep = new Dictionary<TemperatureCategory, float>
+                TemperatureStep = new Dictionary<TemperatureCategory, double>
                 {
-                    {TemperatureCategory.Polar , 0.126f},
-                    {TemperatureCategory.Subpolar, 0.235f},
-                    {TemperatureCategory.Boreal, 0.406f},
-                    {TemperatureCategory.CoolTemperate, 0.561f},
-                    {TemperatureCategory.WarmTemperate, 0.634f},
-                    {TemperatureCategory.Subtropical, 0.876f},
-                    {TemperatureCategory.Tropical, float.MaxValue}
+                    {TemperatureCategory.Polar , 0.126},
+                    {TemperatureCategory.Subpolar, 0.235},
+                    {TemperatureCategory.Boreal, 0.406},
+                    {TemperatureCategory.CoolTemperate, 0.561},
+                    {TemperatureCategory.WarmTemperate, 0.634},
+                    {TemperatureCategory.Subtropical, 0.876},
+                    {TemperatureCategory.Tropical, double.MaxValue}
                 },
-                HumidityStep = new Dictionary<HumidityCategory, float>
+                HumidityStep = new Dictionary<HumidityCategory, double>
                 {
-                    {HumidityCategory.Superarid , 1/8f},
-                    {HumidityCategory.Perarid, 2/8f},
-                    {HumidityCategory.Arid, 3/8f},
-                    {HumidityCategory.Semiarid, 4/8f},
-                    {HumidityCategory.Subhumid, 5/8f},
-                    {HumidityCategory.Humid, 6/8f},
-                    {HumidityCategory.Perhumid, 7/8f},
-                    {HumidityCategory.Superhumid, float.MaxValue}
+                    {HumidityCategory.Superarid , 1/8.0},
+                    {HumidityCategory.Perarid, 2/8.0},
+                    {HumidityCategory.Arid, 3/8.0},
+                    {HumidityCategory.Semiarid, 4/8.0},
+                    {HumidityCategory.Subhumid, 5/8.0},
+                    {HumidityCategory.Humid, 6/8.0},
+                    {HumidityCategory.Perhumid, 7/8.0},
+                    {HumidityCategory.Superhumid, double.MaxValue}
                 },
-                AltitudeStep = new Dictionary<AltitudeCategory, float>
+                AltitudeStep = new Dictionary<AltitudeCategory, double>
                 {
-                    {AltitudeCategory.DeepWater , 0.2f},
-                    {AltitudeCategory.ShallowWater, 0.4f},
-                    {AltitudeCategory.None, 0.8f},
-                    {AltitudeCategory.Hills, 0.9f},
-                    {AltitudeCategory.Mountain, float.MaxValue},
+                    {AltitudeCategory.DeepWater , 0.2},
+                    {AltitudeCategory.ShallowWater, 0.4},
+                    {AltitudeCategory.None, 0.8},
+                    {AltitudeCategory.Hills, 0.9},
+                    {AltitudeCategory.Mountain, double.MaxValue},
                 },
-                HumidityCurve = new LinearFormula { Slope = 0.8f, Offset = 0.2f },
-                TemperaturePenalty = new LinearFormula { Slope = 2, Offset = -1.7f },
-                Humidity = GeneratePerlin(seed: 0, lacunarity: 3.2f),
-                Heat = GeneratePerlin(seed: 1750, lacunarity: 3.2f),
-                Altitude = GenerateRidged(scale: 3f, seed: 500, slope: 1/1.95f, offset: 0.75f),
-                Feature = GenerateRidged(scale: 6000f, seed: 670, lacunarity: 3.45f, offset: 0.5f),
+                HumidityCurve = new LinearFormula { Slope = 0.8, Offset = 0.2 },
+                TemperaturePenalty = new LinearFormula { Slope = 2, Offset = -1.7 },
+                Humidity = GeneratePerlin(seed: 0, lacunarity: 3.2),
+                Heat = GeneratePerlin(seed: 1750, lacunarity: 3.2),
+                Altitude = GenerateRidged(scale: 3, seed: 500, slope: 1/1.95, offset: 0.75),
+                Feature = GenerateRidged(scale: 6000, seed: 670, lacunarity: 3.45, offset: 0.5),
                 CaveIndicator = GenerateNoncohesive(1000),
-                CaveSeeds = GeneratePerlin(seed: 900, lacunarity: 3.2f),
+                CaveSeeds = GeneratePerlin(seed: 900, lacunarity: 3.2),
                 VisualizationSpec = GenerateVisualizationSpec(),
                 DetailVisualizationSpec = GenerateDetailVisualizationSpec(),
             };
@@ -66,7 +66,7 @@ namespace Game.Domain.Terrain
             return new NonCohesiveNoiseGenerator(seed);
         }
 
-        private ModuleBase GenerateRidged(float scale, int seed, float lacunarity = 2f, float slope = 1f, float offset = 0f)
+        private ModuleBase GenerateRidged(double scale, int seed, double lacunarity = 2.0, double slope = 1.0, double offset = 0.0)
         {
             return new Translate(0, yOffset, 0,
                 new Scale(scale, scale, 1, new Clamp(0, 1,
@@ -81,13 +81,13 @@ namespace Game.Domain.Terrain
             );
         }
 
-        private ModuleBase GeneratePerlin(int seed, float lacunarity)
+        private ModuleBase GeneratePerlin(int seed, double lacunarity)
         {
             return new Translate(0, yOffset, 0,
                 new Clamp(0, 1, new Add(
                     new Multiply(
                         new Perlin(lacunarity: lacunarity, seed: seed),
-                        new Const(1 / 1.77f)
+                        new Const(1 / 1.77)
                     ),
                     new Const(0.5f)
                 ))
@@ -121,54 +121,54 @@ namespace Game.Domain.Terrain
         }
 
 
-        private readonly Dictionary<BiomeCategory, (float, VisualTerrainType)[]> biomeDetailMap = new Dictionary<BiomeCategory, (float, VisualTerrainType)[]>() {
-          { BiomeCategory.Permafrost, new[] { (0f, VisualTerrainType.Snow), (0.8f, VisualTerrainType.SnowWithGrass) } },
-          { BiomeCategory.Tundra, new[] { (0f, VisualTerrainType.SnowWithGrass), (0.85f, VisualTerrainType.SnowWithBushes) } },
+        private readonly Dictionary<BiomeCategory, (double, VisualTerrainType)[]> biomeDetailMap = new Dictionary<BiomeCategory, (double, VisualTerrainType)[]>() {
+          { BiomeCategory.Permafrost, new[] { (0.0, VisualTerrainType.Snow), (0.8, VisualTerrainType.SnowWithGrass) } },
+          { BiomeCategory.Tundra, new[] { (0.0, VisualTerrainType.SnowWithGrass), (0.85, VisualTerrainType.SnowWithBushes) } },
           { BiomeCategory.ColdParklands, new[] {
-            (0f, VisualTerrainType.SnowWithGrass),
-            (0.05f, VisualTerrainType.SnowWithBushes),
-            (0.85f, VisualTerrainType.SnowWithConiferousForests)
+            (0.0, VisualTerrainType.SnowWithGrass),
+            (0.05, VisualTerrainType.SnowWithBushes),
+            (0.85, VisualTerrainType.SnowWithConiferousForests)
           } },
           { BiomeCategory.ConiferousForests, new[] {
-            (0f, VisualTerrainType.SnowWithConiferousForests),
-            (0.65f, VisualTerrainType.SnowWithGrass)
+            (0.0, VisualTerrainType.SnowWithConiferousForests),
+            (0.65, VisualTerrainType.SnowWithGrass)
           } },
-          { BiomeCategory.CoolDeserts, new[] { (0f, VisualTerrainType.Grassland), (0.85f, VisualTerrainType.Bushes) } },
-          { BiomeCategory.Steppes, new[] { (0f, VisualTerrainType.Grassland), (0.3f, VisualTerrainType.Bushes) } },
+          { BiomeCategory.CoolDeserts, new[] { (0.0, VisualTerrainType.Grassland), (0.85, VisualTerrainType.Bushes) } },
+          { BiomeCategory.Steppes, new[] { (0.0, VisualTerrainType.Grassland), (0.3, VisualTerrainType.Bushes) } },
           { BiomeCategory.MixedForests, new[] {
-            (0f, VisualTerrainType.ConiferousForests),
-            (0.5f, VisualTerrainType.DeciduousForests),
-            (0.9f, VisualTerrainType.Grassland)
+            (0.0, VisualTerrainType.ConiferousForests),
+            (0.5, VisualTerrainType.DeciduousForests),
+            (0.9, VisualTerrainType.Grassland)
           } },
-          { BiomeCategory.HotDeserts, new[] { (0f, VisualTerrainType.HotDeserts) } },
+          { BiomeCategory.HotDeserts, new[] { (0.0, VisualTerrainType.HotDeserts) } },
           { BiomeCategory.Chaparral, new[] {
-            (0f, VisualTerrainType.Bushes),
-            (0.5f, VisualTerrainType.DeciduousForests),
-            (0.6f, VisualTerrainType.Bushes),
-            (0.8f, VisualTerrainType.Grassland)
+            (0.0, VisualTerrainType.Bushes),
+            (0.5, VisualTerrainType.DeciduousForests),
+            (0.6, VisualTerrainType.Bushes),
+            (0.8, VisualTerrainType.Grassland)
           } },
           { BiomeCategory.DeciduousForests, new[] {
-            (0f, VisualTerrainType.DeciduousForests),
-            (0.5f, VisualTerrainType.TropicalRainForests),
-            (0.55f, VisualTerrainType.DeciduousForests),
-            (0.8f, VisualTerrainType.Bushes),
-            (0.9f, VisualTerrainType.Grassland)
+            (0.0, VisualTerrainType.DeciduousForests),
+            (0.5, VisualTerrainType.TropicalRainForests),
+            (0.55, VisualTerrainType.DeciduousForests),
+            (0.8, VisualTerrainType.Bushes),
+            (0.9, VisualTerrainType.Grassland)
           } },
           { BiomeCategory.Savanna, new[] {
-            (0f, VisualTerrainType.Grassland),
-            (0.5f, VisualTerrainType.HotDeserts),
-            (0.625f, VisualTerrainType.DeciduousForests),
-            (0.65f, VisualTerrainType.Grassland)
+            (0.0, VisualTerrainType.Grassland),
+            (0.5, VisualTerrainType.HotDeserts),
+            (0.625, VisualTerrainType.DeciduousForests),
+            (0.65, VisualTerrainType.Grassland)
           } },
           { BiomeCategory.TropicalSeasonalForests, new[] {
-            (0f, VisualTerrainType.TropicalRainForests),
-            (0.5f, VisualTerrainType.Bushes),
-            (0.6f, VisualTerrainType.TropicalRainForests),
-            (0.7f, VisualTerrainType.DeciduousForests)
+            (0.0, VisualTerrainType.TropicalRainForests),
+            (0.5, VisualTerrainType.Bushes),
+            (0.6, VisualTerrainType.TropicalRainForests),
+            (0.7, VisualTerrainType.DeciduousForests)
           } },
           { BiomeCategory.TropicalRainForests, new[] {
-            (0f, VisualTerrainType.TropicalRainForests),
-            (0.7f, VisualTerrainType.DeciduousForests)
+            (0.0, VisualTerrainType.TropicalRainForests),
+            (0.7, VisualTerrainType.DeciduousForests)
           } }
         };
 
@@ -206,7 +206,7 @@ namespace Game.Domain.Terrain
         {
             return new[]
             {
-                SwitchCase(And(Or(IsAltitude(AltitudeCategory.DeepWater), IsAltitude(AltitudeCategory.ShallowWater)), IsTemperature(TemperatureCategory.Polar), IsFeatureGreaterThanHeat(0.235f, 0)), Result(VisualTerrainType.Ice)),
+                SwitchCase(And(Or(IsAltitude(AltitudeCategory.DeepWater), IsAltitude(AltitudeCategory.ShallowWater)), IsTemperature(TemperatureCategory.Polar), IsFeatureGreaterThanHeat(0.235, 0)), Result(VisualTerrainType.Ice)),
                 SwitchCase(IsAltitude(AltitudeCategory.DeepWater), Result(VisualTerrainType.DeepWater)),
                 SwitchCase(IsAltitude(AltitudeCategory.ShallowWater), Result(VisualTerrainType.ShallowWater)),
             };

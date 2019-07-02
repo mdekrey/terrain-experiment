@@ -7,16 +7,16 @@ namespace LibNoise
 {
     public static class Utils
     {
-        public const float SQRT3 = 1.7320508075688772935f;
+        public const double SQRT3 = 1.7320508075688772935f;
         public const int OctavesMaximum = 30;
-        public const float Deg2Rad = 0.01745329251f;
+        public const double Deg2Rad = 0.01745329251f;
         private const int GeneratorNoiseX = 1619;
         private const int GeneratorNoiseY = 31337;
         private const int GeneratorNoiseZ = 6971;
         private const int GeneratorSeed = 1013;
         private const int GeneratorShift = 8;
 
-        private static readonly float[] Randoms = {
+        private static readonly double[] Randoms = {
             -0.763874f, -0.596439f, -0.246489f, 0.0f, 0.396055f, 0.904518f, -0.158073f, 0.0f,
             -0.499004f, -0.8665f, -0.0131631f, 0.0f, 0.468724f, -0.824756f, 0.316346f, 0.0f,
             0.829598f, 0.43195f, 0.353816f, 0.0f, -0.454473f, 0.629497f, -0.630228f, 0.0f,
@@ -147,12 +147,12 @@ namespace LibNoise
             0.991353f, 0.112814f, 0.0670273f, 0.0f, 0.0337884f, -0.979891f, -0.196654f, 0.0f
         };
 
-        public static float Clamp(float value, float min, float max)
+        public static double Clamp(double value, double min, double max)
         {
             return Math.Min(max, Math.Max(min, value));
         }
 
-        static public float GradientCoherentNoise3D(float x, float y, float z, long seed, QualityMode quality)
+        static public double GradientCoherentNoise3D(double x, double y, double z, long seed, QualityMode quality)
         {
             var x0 = x > 0.0 ? (int)(x) : (int)(x) - 1;
             var x1 = x0 + 1;
@@ -160,9 +160,9 @@ namespace LibNoise
             var y1 = y0 + 1;
             var z0 = z > 0.0 ? (int)(z) : (int)(z) - 1;
             var z1 = z0 + 1;
-            var xs = 0.0f;
-            var ys = 0.0f;
-            var zs = 0.0f;
+            var xs = 0.0;
+            var ys = 0.0;
+            var zs = 0.0;
 
             switch (quality)
             {
@@ -199,7 +199,7 @@ namespace LibNoise
             return InterpolateLinear(iy0, iy1, zs);
         }
 
-        static public float GradientNoise3D(float fx, float fy, float fz, int ix, int iy, int iz, long seed)
+        static public double GradientNoise3D(double fx, double fy, double fz, int ix, int iy, int iz, long seed)
         {
             var i = (GeneratorNoiseX * ix + GeneratorNoiseY * iy + GeneratorNoiseZ * iz +
             GeneratorSeed * seed) & 0xffffffff;
@@ -214,17 +214,17 @@ namespace LibNoise
             return ((xvg * xvp) + (yvg * yvp) + (zvg * zvp)) * 2.12f;
         }
 
-        static public float InterpolateLinear(float a, float b, float position)
+        static public double InterpolateLinear(double a, double b, double position)
         {
             return ((1.0f - position) * a) + (position * b);
         }
 
-        static public float Fmod(float a, float b)
+        static public double Fmod(double a, double b)
         {
-            return a - (float)Math.Floor(a / b) * b;
+            return a - (double)Math.Floor(a / b) * b;
         }
 
-        static public float MakeInt32Range(float value)
+        static public double MakeInt32Range(double value)
         {
             if (value >= 1073741824.0f)
             {
@@ -237,12 +237,12 @@ namespace LibNoise
             return value;
         }
 
-        static public float MapCubicSCurve(float value)
+        static public double MapCubicSCurve(double value)
         {
             return value * value * (3.0f - 2.0f * value);
         }
 
-        static public float MapQuinticSCurve(float value)
+        static public double MapQuinticSCurve(double value)
         {
             var a3 = value * value * value;
             var a4 = a3 * value;
@@ -251,7 +251,7 @@ namespace LibNoise
         }
 
 
-        internal static float ValueNoise3DInt(float x, float y, float z, int seed)
+        internal static double ValueNoise3DInt(double x, double y, double z, int seed)
         {
             var n = (int)(GeneratorNoiseX * x + GeneratorNoiseY * y + GeneratorNoiseZ * z + GeneratorSeed * seed) & 0x7fffffff;
             n = (n >> 13) ^ n;

@@ -15,7 +15,7 @@ namespace LibNoise.Operator
             this.rhs = rhs;
         }
 
-        public override float GetValue(float x, float y, float z)
+        public override double GetValue(double x, double y, double z)
         {
             return lhs.GetValue(x, y, z) * rhs.GetValue(x, y, z);
         }

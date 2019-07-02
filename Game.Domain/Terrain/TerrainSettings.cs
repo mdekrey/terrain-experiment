@@ -9,13 +9,13 @@ namespace Game.Domain.Terrain
 {
     public class TerrainSettings
     {
-        public const float overworldGridSize = 0.25e-2f;
-        public const float localGridSizeDiff = 1e-2f;
-        public const float localGridSize = 0.25e-4f;
+        public const double overworldGridSize = 0.25e-2;
+        public const double localGridSizeDiff = 1e-2;
+        public const double localGridSize = 0.25e-4;
 
-        public Dictionary<TemperatureCategory, float> TemperatureStep { get; set; }
-        public Dictionary<HumidityCategory, float> HumidityStep { get; set; }
-        public Dictionary<AltitudeCategory, float> AltitudeStep { get; set; }
+        public Dictionary<TemperatureCategory, double> TemperatureStep { get; set; }
+        public Dictionary<HumidityCategory, double> HumidityStep { get; set; }
+        public Dictionary<AltitudeCategory, double> AltitudeStep { get; set; }
         public LinearFormula HumidityCurve { get; set; }
         public LinearFormula TemperaturePenalty { get; set; }
         public ModuleBase Humidity { get; set; }
@@ -27,7 +27,7 @@ namespace Game.Domain.Terrain
         public ISpecification<ITerrainSituation, VisualTerrainType> VisualizationSpec { get; set; }
         public ISpecification<ITerrainSituation, VisualTerrainType> DetailVisualizationSpec { get; set; }
 
-        public float CalculateTemperaturePenalty(float altitude)
+        public double CalculateTemperaturePenalty(double altitude)
         {
             return Math.Max(
               0,
@@ -35,12 +35,12 @@ namespace Game.Domain.Terrain
             );
         }
 
-        public float CalculateHumidity(float originalHumidity, float heat)
+        public double CalculateHumidity(double originalHumidity, double heat)
         {
             return (HumidityCurve.Offset + heat * HumidityCurve.Slope) * originalHumidity;
         }
 
-        public TerrainPoint GenerateSituation(float x, float y)
+        public TerrainPoint GenerateSituation(double x, double y)
         {
             var altitude = Altitude.GetValue(x, y, 0);
             var heat = Heat.GetValue(x, y, 0) - CalculateTemperaturePenalty(altitude);
@@ -62,17 +62,17 @@ namespace Game.Domain.Terrain
             return new TerrainPoint(new GameCoordinate(x, y), humidity, heat, altitude, feature, isCave, this);
         }
 
-        public static bool IsOnGrid(float x, float y)
+        public static bool IsOnGrid(double x, double y)
         {
 
-            bool IsCoordinateOnGrid(float coord) => Math.Abs(Math.Round(coord / overworldGridSize) - Math.Round(coord / localGridSize) * localGridSizeDiff) <= localGridSize;
+            bool IsCoordinateOnGrid(double coord) => Math.Abs(Math.Round(coord / overworldGridSize) - Math.Round(coord / localGridSize) * localGridSizeDiff) <= localGridSize;
 
             var onGrid = IsCoordinateOnGrid(x) && IsCoordinateOnGrid(y);
 
             return onGrid;
         }
 
-        public static T GetBestKey<T>(Dictionary<T, float> steps, float target)
+        public static T GetBestKey<T>(Dictionary<T, double> steps, double target)
         {
             return (from kvp in steps
                     orderby kvp.Value

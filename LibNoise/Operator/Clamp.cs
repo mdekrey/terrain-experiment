@@ -6,18 +6,18 @@ namespace LibNoise.Operator
 {
     public class Clamp : ModuleBase
     {
-        private readonly float min;
-        private readonly float max;
+        private readonly double min;
+        private readonly double max;
         private readonly ModuleBase original;
 
-        public Clamp(float min, float max, ModuleBase original)
+        public Clamp(double min, double max, ModuleBase original)
         {
             this.min = min;
             this.max = max;
             this.original = original;
         }
 
-        public override float GetValue(float x, float y, float z)
+        public override double GetValue(double x, double y, double z)
         {
             return Math.Min(max, Math.Max(min, original.GetValue(x, y, z)));
         }

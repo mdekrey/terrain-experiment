@@ -8,15 +8,15 @@ namespace LibNoise.Generator
     {
 
 
-        public readonly float frequency;
-        public readonly float lacunarity;
-        public readonly float persistence;
+        public readonly double frequency;
+        public readonly double lacunarity;
+        public readonly double persistence;
         public readonly int octaves;
         public readonly int seed;
         public readonly QualityMode quality;
 
 
-        public Perlin(float frequency = 1f, float lacunarity = 2f, float persistence = 0.5f, int octaves = 8, int seed = 0, QualityMode quality = QualityMode.Medium)
+        public Perlin(double frequency = 1, double lacunarity = 2, double persistence = 0.5, int octaves = 8, int seed = 0, QualityMode quality = QualityMode.Medium)
         {
             this.frequency = frequency;
 
@@ -31,11 +31,11 @@ namespace LibNoise.Generator
             this.quality = quality;
         }
 
-        public override float GetValue(float x, float y, float z)
+        public override double GetValue(double x, double y, double z)
         {
 
-            var value = 0.0f;
-            var cp = 1.0f;
+            var value = 0.0;
+            var cp = 1.0;
             x *= frequency;
             y *= frequency;
             z *= frequency;

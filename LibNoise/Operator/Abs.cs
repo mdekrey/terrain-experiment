@@ -13,7 +13,7 @@ namespace LibNoise.Operator
             this.original = original;
         }
 
-        public override float GetValue(float x, float y, float z)
+        public override double GetValue(double x, double y, double z)
         {
             return Math.Abs(original.GetValue(x, y, z));
         }
