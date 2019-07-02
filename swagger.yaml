@@ -208,8 +208,10 @@ components:
       properties:
         x:
           type: integer
+          format: int64
         y:
           type: integer
+          format: int64
     GameSize:
       required:
       - width
