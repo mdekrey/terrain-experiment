@@ -34,6 +34,7 @@
   
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="3.0.0-preview6.19307.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.0.0-preview6.19307.2" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.0.0-preview6.19307.2" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.0.0-preview6.19307.2" />

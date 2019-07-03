@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using Game.Application.Account;
 
 namespace WoostiDatasetReview
 {
@@ -41,25 +42,40 @@ namespace WoostiDatasetReview
                 configuration.RootPath = "wwwroot";
             });
 
+            services.AddAuthentication()
+                .AddGoogle(options =>
+                {
+                    var googleAuthNSection = Configuration.GetSection("Authentication:Google");
+                    options.ClientId = googleAuthNSection["ClientId"];
+                    options.ClientSecret = googleAuthNSection["ClientSecret"];
+                });
+
             var keySecret = Configuration["JwtSigningKey"];
             var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keySecret));
 
-            services.AddAuthentication()
-                .AddJwtBearer(options =>
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.Google.GoogleDefaults.AuthenticationScheme;
+                    options.DefaultSignInScheme = Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultAuthenticateScheme = Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultSignInScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtSignIn(options =>
                 {
                     options.TokenValidationParameters.ValidateIssuerSigningKey = true;
                     options.TokenValidationParameters.IssuerSigningKey = symmetricKey;
 
                     options.TokenValidationParameters.ValidateAudience = false;
                     options.TokenValidationParameters.ValidateIssuer = false;
-                });
+                })
+                .AddCookie();
             services.AddAuthorization(options =>
             {
-                var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(
+                var builder = new AuthorizationPolicyBuilder(
                     JwtBearerDefaults.AuthenticationScheme);
-                defaultAuthorizationPolicyBuilder =
-                    defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
-                options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
+                builder =
+                    builder.RequireAuthenticatedUser();
+                options.DefaultPolicy = builder.Build();
             });
         }
 
@@ -71,10 +87,11 @@ namespace WoostiDatasetReview
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
-            app.UseRouting();
-            app.UseAuthorization();
+            app.UseAuthentication();
+            //app.UseAuthorization();
+            app.UseRouting().UseAuthorization();
 
 
             app.UseEndpoints(endpoints =>

@@ -40,8 +40,10 @@ namespace Game.Domain.Terrain
             return (HumidityCurve.Offset + heat * HumidityCurve.Slope) * originalHumidity;
         }
 
-        public TerrainPoint GenerateSituation(double x, double y)
+        public TerrainPoint GenerateSituation(GameCoordinate coordinate)
         {
+            var x = coordinate.x;
+            var y = coordinate.y;
             var altitude = Altitude.GetValue(x, y, 0);
             var heat = Heat.GetValue(x, y, 0) - CalculateTemperaturePenalty(altitude);
             var humidity = CalculateHumidity(Humidity.GetValue(x, y, 0), heat);

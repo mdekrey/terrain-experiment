@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 namespace Game.Application.Controllers
 {
     using Game.Application.Models;
+    using Game.Domain;
 
     public partial class TerrainApiController : ITerrainApiController
     {
@@ -39,8 +40,7 @@ namespace Game.Application.Controllers
                             .Select(iy => iy * stepSize + startY)
                             .Select(y => Enumerable.Range(0, body.Size.Width.Value)
                                                     .Select(ix => ix * stepSize + startX)
-                                                    .Select(x => settings.GenerateSituation(x, y))
-                                                    .Select(point => GetTerrainType(point, body.IsDetail.Value).Select(v => v.ToString("g")).ToList())
+                                                    .Select(x => GetTerrainType(new GameCoordinate(x, y), body.IsDetail.Value).Select(v => v.ToString("g")).ToList())
                                                     .ToList()
                                 )
                             .ToList(),
@@ -53,8 +53,9 @@ namespace Game.Application.Controllers
             return Task.FromResult<IActionResult>(Ok(response));
         }
 
-        private IEnumerable<VisualTerrainType> GetTerrainType(TerrainPoint point, bool isDetail)
+        private IEnumerable<VisualTerrainType> GetTerrainType(GameCoordinate coordinate, bool isDetail)
         {
+            var point = settings.GenerateSituation(coordinate);
             if (isDetail)
             {
                 yield return settings.DetailVisualizationSpec.Execute(point).ToApi();
@@ -72,8 +73,8 @@ namespace Game.Application.Controllers
 
                 if (isDetail)
                 {
-                    var x = (int)Math.Round(point.coordinates.x / TerrainSettings.localGridSize) + 2;
-                    var y = (int)Math.Round(point.coordinates.y / TerrainSettings.localGridSize) + 2;
+                    var x = (int)Math.Round(point.coordinates.x / TerrainSettings.localGridSize) - 1;
+                    var y = (int)Math.Round(point.coordinates.y / TerrainSettings.localGridSize) - 5;
                     if (x >= 0 && x < shrine.Length && y >= 0 && y < shrine[x].Length)
                     {
                         yield return shrine[x][y];
