@@ -17,7 +17,7 @@ export function Avatar({ pawn, frameDelay, zoomFactor }: { pawn: Pawn, frameDela
         const x = (pawnPosition.x - worldPosition.x) * zoomFactor, y = (pawnPosition.y - worldPosition.y) * zoomFactor;
         const timer = Math.floor((Date.now() - originalNow) / frameDelay) % 2;
         const sprite = sprites[pawn.facing];
-        sprite.render(timer, context, x * pixelSize + screenCenterX, y * pixelSize + screenCenterY, pixelSize, pixelSize);
+        sprite.render(timer, context, Math.round(x * pixelSize + screenCenterX), Math.round(y * pixelSize + screenCenterY), pixelSize, pixelSize);
     }, [pawn, pixelSize, originalNow, sprites, frameDelay, zoomFactor, center, screenCenterX, screenCenterY]));
     return null;
 }

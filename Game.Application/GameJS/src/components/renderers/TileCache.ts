@@ -9,8 +9,6 @@ function keyPart(part: number) {
   return part.toFixed(6).replace(/\.0+$/, "");
 }
 
-const ys = new Set<number>();
-
 export type BlockLoader<T> = (terrainX: number, terrainY: number, tileStep: number) => T[][] | null;
 
 export type TilePieceRenderer<T> = (args: {
@@ -58,7 +56,6 @@ export class TileCache<T> {
       }
     }
     for (let key of toRemove) {
-      console.log("remove", key);
       this.cache.delete(key);
     }
   }
@@ -98,15 +95,10 @@ export class TileCache<T> {
         this.cache.set(key, cached);
       }
       cached.useCount = 0;
-      const y = Math.round((viewportY + screenY + offsetY) * pixelSize);
-      if (!ys.has(y)) {
-        console.log(y, viewportY, screenY, offsetY, pixelSize);
-        ys.add(y);
-      }
       context.drawImage(
         cached.canvas,
         Math.round((viewportX + screenX + offsetX) * pixelSize),
-        y,
+        Math.round((viewportY + screenY + offsetY) * pixelSize),
         size,
         size
       );
@@ -120,7 +112,7 @@ export class TileCache<T> {
     const context = canvas.getContext("2d")!;
     context.imageSmoothingEnabled = false;
     if (this.renderTile(context, terrainX, terrainY, 0, 0)) {
-      context.strokeRect(0, 0, pixelSize * tileStep,  pixelSize * tileStep)
+      // context.strokeRect(0, 0, pixelSize * tileStep,  pixelSize * tileStep)
       // document.body.appendChild(canvas);
       return canvas;
     }
