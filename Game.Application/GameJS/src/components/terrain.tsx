@@ -56,6 +56,6 @@ export function TerrainGrid(props: { detail: boolean }) {
             tileCache.render(context, { screenX, screenY, terrainX, terrainY, offsetX, offsetY });
         }
         tileCache.incrementUseCountAndCull();
-    }, [center, gridSize, x, y, gridWidth, gridHeight, tileCache]));
+    }, [center, gridSize, x, y, gridWidth, gridHeight, tileCache, pixelSize]));
     return null;
 }
