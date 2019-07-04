@@ -19,7 +19,8 @@
     "noEmit": true,
     "jsx": "preserve",
     "downlevelIteration": true,
-    "typeRoots": ["./src/typings/*", "node_modules/@types"]
+    "typeRoots": ["./src/typings/*", "node_modules/@types"],
+    "strictNullChecks": true
   },
   "include": [
     "src"

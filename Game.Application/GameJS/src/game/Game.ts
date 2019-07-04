@@ -1,4 +1,4 @@
-import { TerrainService, VisualTerrainType } from "../rxjs-api";
+import { TerrainService, VisualTerrainType } from "../api";
 import { TerrainCache, overworldZoom, localZoom, zoomFactor } from "../terrain-generation";
 import { Pawn } from "./Pawn";
 import { Cave, CaveGenerator } from "../cave-generation";

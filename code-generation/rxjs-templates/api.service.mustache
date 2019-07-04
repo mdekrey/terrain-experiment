@@ -17,7 +17,7 @@ import { Configuration }                                     from '../configurat
 {{/description}}
 export class {{classname}} {
 
-    private defaultHeaders = {};
+    public defaultHeaders: Record<string, any> = {};
     protected readonly basePath: string;
     public readonly configuration = new Configuration();
 
@@ -74,7 +74,7 @@ export class {{classname}} {
 {{/queryParams}}
 
 {{/hasQueryParams}}
-        let headers: Record<string, string | string[]> = { ...this.defaultHeaders };
+        const headers: Record<string, string | string[]> = { ...this.defaultHeaders };
 {{#headerParams}}
         if ({{paramName}} !== undefined && {{paramName}} !== null) {
             headers['{{baseName}}'] = {{paramName}};
@@ -125,6 +125,7 @@ export class {{classname}} {
         }
 
         // to determine the Content-Type header
+        // eslint-disable-next-line
         const consumes: string[] = [
             {{#consumes}}
             '{{{mediaType}}}'{{#hasMore}},{{/hasMore}}

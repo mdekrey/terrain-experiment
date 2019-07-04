@@ -19,6 +19,7 @@ export function GameContainer() {
     const gameMode = useObservable(gameMode$, GameModes.Overworld());
     const { width, height } = useWindowSize({ width: 1200, height: 800 });
     const pixelSize = Math.max(1, Math.floor(Math.sqrt(width * height) / 16 / 20)) * 16;
+    const zoomFactor = game.getZoomFactor();
 
     let gameModeJsx: JSX.Element;
     if (gameMode.mode === "Loading") {
@@ -39,7 +40,7 @@ export function GameContainer() {
     }
     return (<>
         <Canvas width={width} height={height}>
-            <Viewport center={player} x={0} y={0} width={width} height={height}
+            <Viewport center={player.position} x={0} y={0} width={width} height={height}
                 pixelSize={pixelSize}>
                 <GameControls />
                 <CanvasLayer>
@@ -48,13 +49,11 @@ export function GameContainer() {
                 <CanvasLayer>
                     {/* TODO - need an "avatars" display for this */}
                     {game.otherPlayers.map((p, i) =>
-                    <Avatar key={i} pawn={p} frameDelay={250} />
+                        <Avatar zoomFactor={zoomFactor} key={i} pawn={p} frameDelay={250} />
                     )}
                 </CanvasLayer>
                 <CanvasLayer>
-                    <Avatar pawn={player}
-                        frameDelay={250}
-                    />
+                    <Avatar zoomFactor={zoomFactor} pawn={player} frameDelay={250} />
                 </CanvasLayer>
             </Viewport>
         </Canvas>

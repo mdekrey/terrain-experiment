@@ -1,5 +1,5 @@
 import { zoomFactor, localZoom } from "./ZoomLevels";
-import { TerrainService, VisualTerrainType } from "../rxjs-api";
+import { TerrainService, VisualTerrainType } from "../api";
 import { GameCoordinates } from "../game";
 
 export type TerrainTileInfo = VisualTerrainType[];

@@ -1,5 +1,5 @@
 import dw4Tiles from "../../images/dw4-world-sprites.png";
-import { VisualTerrainType } from "../../rxjs-api";
+import { VisualTerrainType } from "../../api";
 import { SpriteDefinition, useSpritelookup } from "../canvas";
 
 const tileSize = 16;

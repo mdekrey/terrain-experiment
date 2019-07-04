@@ -20,7 +20,7 @@ export const ViewportContext = React.createContext<IViewportContext>({
 });
 
 export function Viewport({ center, children, x, y, width, height, pixelSize }: {
-    center: { position(): GameCoordinates };
+    center(): GameCoordinates;
     x: number;
     y: number;
     width: number;
@@ -29,7 +29,7 @@ export function Viewport({ center, children, x, y, width, height, pixelSize }: {
     children?: React.ReactNode
 }) {
     const result = React.useMemo((): IViewportContext => ({
-        center: () => center.position(),
+        center: () => center(),
         x, y, width, height, pixelSize
     }), [center, x, y, width, height, pixelSize]);
     return (<ViewportContext.Provider value={result}>{children}</ViewportContext.Provider>)

@@ -1,7 +1,7 @@
 import {
   GameCoordinates
 } from "../game/GameCoordinates";
-import { TerrainService } from "../rxjs-api";
+import { TerrainService } from "../api";
 
 export interface Cave {
   offset: GameCoordinates;

@@ -6,12 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Game.Domain;
 
 namespace Game.Application.Controllers
 {
     using Game.Application.Models;
-    using Game.Domain;
 
+    [Authorize]
     public partial class TerrainApiController : ITerrainApiController
     {
         private static readonly TerrainSettings settings = new TerrainSettingsGenerator().Generate();

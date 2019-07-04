@@ -23,7 +23,7 @@ export class Pawn {
         return isInterpolated(this._position) ? this._position.isComplete : true;
     }
 
-    position(): GameCoordinates {
+    readonly position = (): GameCoordinates => {
         return isInterpolated(this._position) ? this._position.value() : this._position;
     }
 }

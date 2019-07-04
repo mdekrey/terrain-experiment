@@ -62,6 +62,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
+  /my/character:
+    get:
+      tags:
+        - My
+      description: Gets the current user's characters
+      operationId: getMyCharacters
+      responses:
+        200:
+          description: list of characters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedListOfCharacters'
+  /my/character/{characterId}:
+    get:
+      tags:
+        - My
+      description: Get a character owned by the current user
+      operationId: getMyCharacter
+      parameters:
+      - name: characterId
+        in: path
+        description: ID of character to fetch
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: character response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Character'
   # /pets/{id}:
   #   get:
   #     description: Returns a user based on a single ID, if the user does not have
@@ -232,6 +266,35 @@ components:
           $ref: '#/components/schemas/IntCoordinate'
         target:
           $ref: '#/components/schemas/IntCoordinate'
+    PaginatedListOfCharacters:
+      required:
+      - totalCount
+      - initialOffset
+      - items
+      type: object
+      properties:
+        totalCount:
+          type: integer
+        initialOffset:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Character'
+    Character:
+      required:
+      - id
+      - pawnType
+      - coordinate
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        pawnType:
+          type: string
+        coordinate:
+          $ref: '#/components/schemas/IntCoordinate'
     VisualTerrainType:
       type: string
       enum:
@@ -259,6 +322,54 @@ components:
       - DarkRedTile
       - Flowers
       - DogStatue
+    PawnType:
+      type: string
+      enum:
+      - Hero
+      - MaleSoldier
+      - FemaleSoldier
+      - MaleSage
+      - FemaleSage
+      - MaleGoofoff
+      - FemaleGoofoff
+      - MaleWizard
+      - FemaleWizard
+      - MaleMerchant
+      - FemaleMerchant
+      - MalePilgrim
+      - FemalePilgrim
+      - MaleFighter
+      - FemaleFighter
+      - Woman
+      - Guard
+      - OldMan
+      - Priest1
+      - Priest2
+      - Princess
+      - King
+      - Ship
+      - Demon
+      - HornedMan
+      - Boy
+      - Bard
+      - Seneschal
+      - Man
+      - Warrior
+      - Bellydancer
+      - Ghost
+      - Shopkeeper
+      - Horse
+      - Cat
+      - Girl1
+      - Girl2
+      - Dragon
+      - Girl3
+      - Elf
+      - Slime
+      - Dwarf
+      - Prisoner
+      - Dancer
+      - Skeleton
     # Pet:
     #   allOf:
     #   - $ref: '#/components/schemas/NewPet'
