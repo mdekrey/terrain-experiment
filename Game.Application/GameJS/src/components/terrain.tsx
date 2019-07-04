@@ -14,9 +14,11 @@ function* coordinates(startX: number, startY: number, endX: number, endY: number
     const gridEndY = Math.ceil(endY / gridSize / step) * step;
     const columns = (gridEndX - gridStartX);
     const rows = (gridEndY - gridStartY);
+    const terrainStartX = startX / gridSize;
+    const terrainStartY = startY / gridSize;
     for (let x = 0; x < columns; x += step) {
         for (let y = 0; y < rows; y += step) {
-            yield { screenX: x, screenY: y, terrainX: x * gridSize + startX, terrainY: y * gridSize + startY }
+            yield { screenX: x, screenY: y, terrainX: Math.round(x + terrainStartX) * gridSize, terrainY: Math.round(y + terrainStartY) * gridSize }
         }
     }
 }
@@ -37,8 +39,10 @@ export function TerrainGrid(props: { detail: boolean }) {
 
     useCanvas(React.useCallback(context => {
         const { x: centerX, y: centerY } = center();
-        const leftX = x + centerX / gridSize - gridWidth / 2;
-        const topY = y + centerY / gridSize - gridHeight / 2;
+        const animX = Math.round(centerX / gridSize * pixelSize) / pixelSize;
+        const animY = Math.round(centerY / gridSize * pixelSize) / pixelSize;
+        const leftX = x + animX - gridWidth / 2;
+        const topY = y + animY - gridHeight / 2;
         const tileCountStartX = Math.floor(leftX / tileCache.tileStep) * tileCache.tileStep;
         const tileCountStartY = Math.floor(topY / tileCache.tileStep) * tileCache.tileStep;
         const startX = tileCountStartX * gridSize;
