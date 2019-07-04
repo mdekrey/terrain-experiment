@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Game.Application.Account;
+using Game.Application.Hubs;
 
 namespace WoostiDatasetReview
 {
@@ -53,6 +54,8 @@ namespace WoostiDatasetReview
             var keySecret = Configuration["JwtSigningKey"];
             var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keySecret));
 
+            services.AddSignalR();
+
             services.AddAuthentication(options =>
                 {
                     options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.Google.GoogleDefaults.AuthenticationScheme;
@@ -67,6 +70,28 @@ namespace WoostiDatasetReview
 
                     options.TokenValidationParameters.ValidateAudience = false;
                     options.TokenValidationParameters.ValidateIssuer = false;
+
+                    // We have to hook the OnMessageReceived event in order to
+                    // allow the JWT authentication handler to read the access
+                    // token from the query string when a WebSocket or 
+                    // Server-Sent Events request comes in.
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+
+                            // If the request is for our hub...
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                (path.StartsWithSegments("/hub")))
+                            {
+                                // Read the token out of the query string
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 })
                 .AddCookie();
             services.AddAuthorization(options =>
@@ -97,6 +122,7 @@ namespace WoostiDatasetReview
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<CharacterHub>("/hub");
             });
 
             app.UseSpaStaticFiles();

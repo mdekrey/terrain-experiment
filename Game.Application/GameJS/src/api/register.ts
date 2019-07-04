@@ -2,11 +2,13 @@ import { injectorBuilder, Scope, InjectedServices } from "../injector";
 import { TerrainService, MyService } from "../rxjs-api";
 import "../authentication";
 import { GenericResolver } from "../injector/generalized/GenericResolver";
+import { HubClient } from "./HubClient";
 
 declare module "../injector/InjectedServices" {
   interface InjectedServices {
     terrainService: TerrainService;
     myService: MyService;
+    hubClient: HubClient;
   }
 }
 
@@ -30,4 +32,10 @@ injectorBuilder.set(
   "myService",
   Scope.Singleton,
   serviceConstructor(MyService)
+);
+
+injectorBuilder.set(
+  "hubClient",
+  Scope.Singleton,
+  () => new HubClient()
 );

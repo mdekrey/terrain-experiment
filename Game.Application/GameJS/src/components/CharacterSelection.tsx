@@ -19,8 +19,7 @@ export const DrawCharacter = ({ character }: { character: Character }) => {
         return result;
     }, [character]);
 
-    return <Canvas width={size} height={size} clear="white">
-        {/* TODO - clear */}
+    return <Canvas width={size} height={size} clear="transparent">
         <Viewport width={size * 2} height={size * 2} x={-size} y={-size} center={displayPosition} pixelSize={size}>
             <Avatar pawn={pawn} zoomFactor={0}
                 frameDelay={250} />
@@ -38,7 +37,7 @@ export const CharacterSelection = () => {
 
     return <>
         {characters.data.items.map(character =>
-            <Link key={character.id} to={"/play/" + character.id}>
+            <Link key={character.id} to={"/play/" + character.id} style={{ backgroundColor: "limegreen", display: "inline-block" }}>
                 <DrawCharacter character={character} />
             </Link>)}
     </>;

@@ -1,8 +1,10 @@
 import { Subject, of, concat } from "rxjs";
-import { switchMap, shareReplay, delay } from "rxjs/operators";
+import { switchMap, shareReplay, delay, filter, map, take } from "rxjs/operators";
 import { getJwtBody } from "./jwt";
+import { HubClient } from "../api";
 
 export class AuthenticationService {
+  private readonly hubClient: HubClient;
   private readonly rawToken = new Subject<string>();
   public readonly activeToken = this.rawToken.pipe(
     switchMap(token => {
@@ -13,15 +15,23 @@ export class AuthenticationService {
         const expiration = new Date(Number(body.exp) * 1000 + timeOffset);
         console.log(expiration);
 
-        return concat(of({ body, token }), of(null).pipe(delay(expiration)));
+        return concat(of({ body, token, expiration }), of(null).pipe(delay(expiration)));
       }
       return of(null);
     }),
     shareReplay(1)
   );
 
-  constructor(initialToken: string) {
+  constructor(initialToken: string, hub: HubClient) {
+    this.hubClient = hub;
     this.activeToken.subscribe();
     this.rawToken.next(initialToken);
+    this.activeToken
+      .pipe(
+        filter(r => Boolean(r)),
+        map(r => r!.token),
+        take(1),
+        switchMap(token => this.hubClient.jwt$(token))
+      ).subscribe(token => this.rawToken.next(token));
   }
 }

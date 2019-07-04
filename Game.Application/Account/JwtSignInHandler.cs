@@ -17,9 +17,11 @@ namespace Game.Application.Account
     {
         private const string HeaderValueNoCache = "no-cache";
         private const string HeaderValueEpocDate = "Thu, 01 Jan 1970 00:00:00 GMT";
+        private readonly JwtService jwtService;
 
-        public JwtSignInHandler(IOptionsMonitor<JwtBearerOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
+        public JwtSignInHandler(IOptionsMonitor<JwtBearerOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, JwtService jwtService) : base(options, logger, encoder, clock)
         {
+            this.jwtService = jwtService;
         }
 
         public async Task SignInAsync(ClaimsPrincipal user, AuthenticationProperties properties)
@@ -39,19 +41,7 @@ namespace Game.Application.Account
             Response.Headers[HeaderNames.CacheControl] = HeaderValueNoCache;
             Response.Headers[HeaderNames.Pragma] = HeaderValueNoCache;
             Response.Headers[HeaderNames.Expires] = HeaderValueEpocDate;
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(new Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor
-            {
-                Subject = user.Identities.First(),
-                Expires = DateTime.UtcNow.AddMinutes(5),
-                SigningCredentials = new SigningCredentials(Options.TokenValidationParameters.IssuerSigningKey, SecurityAlgorithms.HmacSha256Signature),
-                Audience = Options.TokenValidationParameters.ValidAudience,
-                Issuer = Options.TokenValidationParameters.ValidIssuer,
-                IssuedAt = DateTime.UtcNow,
-            });
-            var jwt = tokenHandler.WriteToken(token);
-
+            var jwt = jwtService.GetJwtFor(user);
 
             Context.Response.OnStarting(async () =>
             {
@@ -59,6 +49,5 @@ namespace Game.Application.Account
                 await Task.Yield();
             });
         }
-
     }
 }
