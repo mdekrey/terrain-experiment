@@ -5,13 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace Game.Application.Hubs
 {
-    [Authorize]
     public class CharacterHub : Hub
     {
         private readonly JwtService jwtService;
@@ -21,9 +21,25 @@ namespace Game.Application.Hubs
             this.jwtService = jwtService;
         }
 
-        public ChannelReader<string> Jwt(CancellationToken cancellation)
+        public string ContextJwt
         {
-            var observable = Observable.Interval(TimeSpan.FromSeconds(10)).Select(_ => jwtService.GetJwtFor(Context.User));
+            get => Context.Items["Jwt"] as string;
+            set { Context.Items["Jwt"] = value; }
+        }
+
+        public ClaimsPrincipal ContextUser
+        {
+            get => Context.Items["User"] as ClaimsPrincipal;
+            set { Context.Items["User"] = value; }
+        }
+
+        public ChannelReader<string> Jwt(string jwt, CancellationToken cancellation)
+        {
+            ContextJwt = jwt;
+            ContextUser = jwtService.CheckToken(jwt);
+            var observable = Observable
+                .Interval(TimeSpan.FromSeconds(10))
+                .Select(_ => ContextJwt = jwtService.GetJwtFor(ContextUser));
 
             var allCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellation, Context.ConnectionAborted);
             return observable.AsChannelReader(allCancellation.Token);

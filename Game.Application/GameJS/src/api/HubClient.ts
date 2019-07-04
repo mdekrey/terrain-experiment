@@ -1,6 +1,6 @@
 import * as signalR from "@aspnet/signalr";
 import { Observable } from "rxjs";
-import { map, switchMap, shareReplay, tap } from "rxjs/operators";
+import { map, switchMap, shareReplay, tap, take } from "rxjs/operators";
 
 function adapt<T = any>(stream: signalR.IStreamResult<T>): Observable<T> {
   return new Observable(observer => {
@@ -10,9 +10,8 @@ function adapt<T = any>(stream: signalR.IStreamResult<T>): Observable<T> {
 }
 
 export class HubClient {
-  private jwt: string | null = null;
   private readonly connection: signalR.HubConnection = new signalR.HubConnectionBuilder()
-    .withUrl("/hub", { accessTokenFactory: () => this.jwt! })
+    .withUrl("/hub")
     .build();
   private readonly connectivity = new Observable<signalR.HubConnection>(
     observer => {
@@ -25,6 +24,10 @@ export class HubClient {
     }
   ).pipe(shareReplay(1));
 
+  private get hubConnection() {
+    return this.connectivity.pipe(take(1)).toPromise();
+  }
+
   private hubObservable$<T>(
     methodName: string,
     cast: (d: any) => T,
@@ -34,14 +37,10 @@ export class HubClient {
       .pipe(switchMap(connection => adapt(connection.stream(methodName, ...args))))
       .pipe(
         map(cast),
-        shareReplay(1)
       );
   }
 
   public jwt$(originalJwt: string) {
-    this.jwt = originalJwt;
-    return this.hubObservable$("Jwt", s => s as string).pipe(
-      tap(v => this.jwt = v)
-    );
+    return this.hubObservable$("Jwt", s => s as string, originalJwt);
   }
 }

@@ -1,5 +1,5 @@
 import { Subject, of, concat } from "rxjs";
-import { switchMap, shareReplay, delay, filter, map, take } from "rxjs/operators";
+import { switchMap, shareReplay, delay, filter, map, switchAll } from "rxjs/operators";
 import { getJwtBody } from "./jwt";
 import { HubClient } from "../api";
 
@@ -30,8 +30,8 @@ export class AuthenticationService {
       .pipe(
         filter(r => Boolean(r)),
         map(r => r!.token),
-        take(1),
-        switchMap(token => this.hubClient.jwt$(token))
+        map(token => this.hubClient.jwt$(token)),
+        switchAll()
       ).subscribe(token => this.rawToken.next(token));
   }
 }
