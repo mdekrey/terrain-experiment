@@ -11,6 +11,7 @@ import { PawnType } from "../api";
 export const GameEngine = withRouter(function GameEngine({ match }: RouteComponentProps<{ characterId: string }>) {
     const { characterId } = match.params;
     const myService = useService("myService");
+    const hub = useService("hubClient");
     const characterApi = React.useMemo(() => myService.getMyCharacter(characterId), [characterId, myService]);
     const character = useObservable(characterApi, undefined);
     const pawn = React.useMemo(() => {
@@ -19,7 +20,12 @@ export const GameEngine = withRouter(function GameEngine({ match }: RouteCompone
         result.moveTo({ x: character.data.coordinate.x / localZoom, y: character.data.coordinate.y / localZoom }, Direction.Down);
         result.type = character.data.pawnType as PawnType;
         return result;
-    }, [character])
+    }, [character]);
+    React.useEffect(() => {
+        if (character) {
+            hub.setCharacter(character.data.id);
+        }
+    }, [character, hub]);
 
     if (!pawn) {
         return null;

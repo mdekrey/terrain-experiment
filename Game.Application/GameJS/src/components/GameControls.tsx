@@ -41,7 +41,8 @@ export function GameControls() {
         }
         centerX = Math.round(centerX);
         centerY = Math.round(centerY);
-        game.movePlayerTo({ x: centerX / zoomFactor, y: centerY / zoomFactor }, facing);
+        const coordinate = { x: centerX / zoomFactor, y: centerY / zoomFactor };
+        game.movePlayerTo(coordinate, facing);
     }, [player, zoomFactor, currentContinuous, game]));
 
     useSubscription(useCommand("ACTIVATE"), React.useCallback(() => {

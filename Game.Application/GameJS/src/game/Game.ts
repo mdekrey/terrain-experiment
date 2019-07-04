@@ -1,4 +1,4 @@
-import { TerrainService, VisualTerrainType } from "../api";
+import { TerrainService, VisualTerrainType, HubClient } from "../api";
 import { TerrainCache, overworldZoom, localZoom, zoomFactor } from "../terrain-generation";
 import { Pawn } from "./Pawn";
 import { Cave, CaveGenerator } from "../cave-generation";
@@ -32,8 +32,10 @@ export class Game {
     readonly gameMode$ = new BehaviorSubject<GameMode>(GameModes.Detail())
     readonly otherPlayers: Pawn[];
     readonly terrainService: TerrainService;
+    readonly hub: HubClient;
 
-    constructor(playerPawn: Pawn, service: TerrainService) {
+    constructor(playerPawn: Pawn, service: TerrainService, hub: HubClient) {
+        this.hub = hub;
         this.terrainService = service;
         this.terrain = new TerrainCache(service);
         this.playerPawn = playerPawn;
@@ -131,7 +133,8 @@ export class Game {
             return;
         }
         if (await this.isOpenSpace(worldCoordinate)) {
-            this.playerPawn.moveTo(worldCoordinate, facing, 100);
+            this.hub.setPosition(worldCoordinate);
+            this.playerPawn.moveTo(worldCoordinate, facing, 250);
         } else {
             this.playerPawn.facing = facing;
         }

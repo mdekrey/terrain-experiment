@@ -33,6 +33,12 @@ namespace Game.Application.Hubs
             set { Context.Items["User"] = value; }
         }
 
+        public Guid? ContextCharacterId
+        {
+            get => Context.Items["CharacterId"] as Guid?;
+            set { Context.Items["CharacterId"] = value; }
+        }
+
         public ChannelReader<string> Jwt(string jwt, CancellationToken cancellation)
         {
             ContextJwt = jwt;
@@ -43,6 +49,16 @@ namespace Game.Application.Hubs
 
             var allCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellation, Context.ConnectionAborted);
             return observable.AsChannelReader(allCancellation.Token);
+        }
+
+        public void SetCharacterId(Guid characterId)
+        {
+            ContextCharacterId = characterId;
+        }
+
+        public void SetPosition(Game.Application.Models.IntCoordinate coordinate)
+        {
+
         }
     }
 }

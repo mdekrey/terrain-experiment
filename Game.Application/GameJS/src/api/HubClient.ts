@@ -1,6 +1,8 @@
 import * as signalR from "@aspnet/signalr";
 import { Observable } from "rxjs";
-import { map, switchMap, shareReplay, tap, take } from "rxjs/operators";
+import { map, switchMap, shareReplay, take } from "rxjs/operators";
+import { GameCoordinates } from "../game";
+import { localZoom } from "../terrain-generation";
 
 function adapt<T = any>(stream: signalR.IStreamResult<T>): Observable<T> {
   return new Observable(observer => {
@@ -42,5 +44,15 @@ export class HubClient {
 
   public jwt$(originalJwt: string) {
     return this.hubObservable$("Jwt", s => s as string, originalJwt);
+  }
+
+  public async setCharacter(characterId: string) {
+    const connection = await this.hubConnection;
+    await connection.send("SetCharacterId", characterId);
+  }
+
+  public async setPosition(position: GameCoordinates) {
+    const connection = await this.hubConnection;
+    await connection.send("SetPosition", { x: Math.round(position.x * localZoom), y: Math.round(position.y * localZoom) });
   }
 }
