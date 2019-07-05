@@ -1,41 +1,44 @@
 ﻿using Game.Application.Models;
+using Game.Domain.Characters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Game.Application.Controllers
 {
+    [Authorize]
     public partial class MyApiController : IMyApiController
     {
-        private static readonly Guid hero = Guid.NewGuid();
-        private static readonly Guid femaleSoldier = Guid.NewGuid();
-        private static readonly Guid femaleMerchant = Guid.NewGuid();
-        private static readonly IntCoordinate initialPortal = new IntCoordinate { X = 3, Y = 7 };
-        private readonly Dictionary<Guid, Character> characters = new Dictionary<Guid, Character>
+        private readonly CharacterRepository repository;
+
+        public MyApiController(CharacterRepository repository)
         {
-            { hero,               new Character { Id = hero,            PawnType = PawnType.Hero.ToString("g"), Coordinate = initialPortal } },
-            { femaleSoldier,      new Character { Id = femaleSoldier,   PawnType = PawnType.FemaleSoldier.ToString("g"), Coordinate = initialPortal } },
-            { femaleMerchant,     new Character { Id = femaleMerchant,  PawnType = PawnType.FemaleMerchant.ToString("g"), Coordinate = initialPortal } },
-        };
+            this.repository = repository;
+        }
 
         public async Task<IActionResult> GetMyCharactersAsync()
         {
             await Task.Yield();
+            var characters = repository.GetCharactersForPlayer(User.FindFirst(ClaimTypes.NameIdentifier).Value)
+                .Select(c => c.ToApi(true))
+                .ToList();
             return Ok(new PaginatedListOfCharacters
             {
                 InitialOffset = 0,
-                TotalCount = 3,
-                Items = characters.Values.ToList()
+                TotalCount = characters.Count,
+                Items = characters,
             });
         }
 
         public async Task<IActionResult> GetMyCharacterAsync([FromRoute, Required] Guid? characterId)
         {
             await Task.Yield();
-            return Ok(characters[characterId.Value]);
+            return Ok(repository.GetCharacter(characterId.Value).ToApi(true));
         }
 
     }

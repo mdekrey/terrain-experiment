@@ -16,6 +16,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Game.Application.Account;
 using Game.Application.Hubs;
+using Game.Domain.Characters;
 
 namespace WoostiDatasetReview
 {
@@ -102,6 +103,8 @@ namespace WoostiDatasetReview
                     builder.RequireAuthenticatedUser();
                 options.DefaultPolicy = builder.Build();
             });
+
+            services.AddSingleton<CharacterRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

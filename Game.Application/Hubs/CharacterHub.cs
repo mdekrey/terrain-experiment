@@ -1,4 +1,6 @@
 ﻿using Game.Application.Account;
+using Game.Application.Models;
+using Game.Domain.Characters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System;
@@ -15,10 +17,12 @@ namespace Game.Application.Hubs
     public class CharacterHub : Hub
     {
         private readonly JwtService jwtService;
+        private readonly CharacterRepository repository;
 
-        public CharacterHub(JwtService jwtService)
+        public CharacterHub(JwtService jwtService, CharacterRepository repository)
         {
             this.jwtService = jwtService;
+            this.repository = repository;
         }
 
         public string ContextJwt
@@ -53,12 +57,13 @@ namespace Game.Application.Hubs
 
         public void SetCharacterId(Guid characterId)
         {
+            // TODO - authorize
             ContextCharacterId = characterId;
         }
 
-        public void SetPosition(Game.Application.Models.IntCoordinate coordinate)
+        public void SetPosition(IntCoordinate coordinate)
         {
-
+            repository.SetPosition(ContextCharacterId.Value, coordinate.FromApi(true));
         }
     }
 }
