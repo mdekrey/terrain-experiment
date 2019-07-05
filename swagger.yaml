@@ -370,6 +370,13 @@ components:
       - Prisoner
       - Dancer
       - Skeleton
+    Direction:
+      type: string
+      enum:
+      - Up
+      - Down
+      - Right
+      - Left
     # Pet:
     #   allOf:
     #   - $ref: '#/components/schemas/NewPet'

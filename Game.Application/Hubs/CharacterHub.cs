@@ -61,9 +61,9 @@ namespace Game.Application.Hubs
             ContextCharacterId = characterId;
         }
 
-        public void SetPosition(IntCoordinate coordinate)
+        public void SetPosition(IntCoordinate coordinate, string direction)
         {
-            repository.SetPosition(ContextCharacterId.Value, coordinate.FromApi(true));
+            repository.SetPosition(ContextCharacterId.Value, coordinate.FromApi(true), Enum.Parse<Direction>(direction).FromApi());
         }
     }
 }

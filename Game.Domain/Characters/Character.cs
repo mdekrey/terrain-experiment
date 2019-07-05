@@ -9,6 +9,7 @@ namespace Game.Domain.Characters
         public Guid Id { get; set; }
         public PawnType PawnType { get; set; }
         public GameCoordinate Coordinate { get; set; }
+        public Direction Facing { get; set; }
 
     }
 }

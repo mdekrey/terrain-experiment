@@ -133,7 +133,7 @@ export class Game {
             return;
         }
         if (await this.isOpenSpace(worldCoordinate)) {
-            this.hub.setPosition(worldCoordinate);
+            this.hub.setPosition(worldCoordinate, facing);
             this.playerPawn.moveTo(worldCoordinate, facing, 250);
         } else {
             this.playerPawn.facing = facing;

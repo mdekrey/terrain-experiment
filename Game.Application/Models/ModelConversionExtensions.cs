@@ -121,5 +121,18 @@ namespace Game.Application.Models
                 coordinate.Y.Value * (isDetail ? TerrainSettings.localGridSizeDiff : 1));
         }
 
+        public static Game.Domain.Direction FromApi(this Direction direction)
+        {
+            return direction switch
+            {
+                Direction.Down => Game.Domain.Direction.Down,
+                Direction.Up => Game.Domain.Direction.Up,
+                Direction.Right => Game.Domain.Direction.Right,
+                Direction.Left => Game.Domain.Direction.Left,
+
+                _ => Game.Domain.Direction.Down
+            };
+        }
+
     }
 }

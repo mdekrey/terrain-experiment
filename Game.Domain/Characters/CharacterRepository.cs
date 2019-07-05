@@ -28,9 +28,11 @@ namespace Game.Domain.Characters
             return characters[characterId];
         }
 
-        public void SetPosition(Guid characterId, GameCoordinate gameCoordinate)
+        public void SetPosition(Guid characterId, GameCoordinate gameCoordinate, Direction facing)
         {
-            characters[characterId].Coordinate = gameCoordinate;
+            var character = characters[characterId];
+            character.Coordinate = gameCoordinate;
+            character.Facing = facing;
         }
     }
 }
