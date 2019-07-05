@@ -65,5 +65,16 @@ namespace Game.Application.Hubs
         {
             repository.SetPosition(ContextCharacterId.Value, coordinate.FromApi(true), Enum.Parse<Direction>(direction).FromApi());
         }
+
+        public ChannelReader<Application.Models.Character> GetMovement(CancellationToken cancellation)
+        {
+            var observable = repository.MovementUpdates()
+                .Where(c => c.Id != ContextCharacterId)
+                .Select(c => c.ToApi(true));
+
+
+            var allCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellation, Context.ConnectionAborted);
+            return observable.AsChannelReader(allCancellation.Token);
+        }
     }
 }

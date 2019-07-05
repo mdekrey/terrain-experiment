@@ -3,6 +3,7 @@ import { Observable } from "rxjs";
 import { map, switchMap, shareReplay, take } from "rxjs/operators";
 import { GameCoordinates, Direction } from "../game";
 import { localZoom } from "../terrain-generation";
+import { Character } from "../rxjs-api";
 
 function adapt<T = any>(stream: signalR.IStreamResult<T>): Observable<T> {
   return new Observable(observer => {
@@ -54,5 +55,9 @@ export class HubClient {
   public async setPosition(position: GameCoordinates, facing: Direction) {
     const connection = await this.hubConnection;
     await connection.send("SetPosition", { x: Math.round(position.x * localZoom), y: Math.round(position.y * localZoom) }, Direction[facing]);
+  }
+
+  public getMovement$() {
+    return this.hubObservable$("GetMovement", s => s as Character);
   }
 }

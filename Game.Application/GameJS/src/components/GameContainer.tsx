@@ -3,6 +3,7 @@ import { Canvas, CanvasLayer } from "./canvas";
 import { TerrainGrid } from "./terrain";
 import { useService } from "../injector";
 import { Avatar } from "./Avatar";
+import { Avatars } from "./Avatars";
 import { Viewport } from "./Viewport";
 import { GameControls } from "./GameControls";
 import { CaveGrid } from "./CaveGrid";
@@ -48,9 +49,7 @@ export function GameContainer() {
                 </CanvasLayer>
                 <CanvasLayer>
                     {/* TODO - need an "avatars" display for this */}
-                    {game.otherPlayers.map((p, i) =>
-                        <Avatar zoomFactor={zoomFactor} key={i} pawn={p} frameDelay={250} />
-                    )}
+                    <Avatars zoomFactor={zoomFactor} pawns={game.otherPlayers} frameDelay={250} />
                 </CanvasLayer>
                 <CanvasLayer>
                     <Avatar zoomFactor={zoomFactor} pawn={player} frameDelay={250} />

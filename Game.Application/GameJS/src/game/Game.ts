@@ -5,8 +5,8 @@ import { Cave, CaveGenerator } from "../cave-generation";
 import { BehaviorSubject } from "rxjs";
 import { addCoordinates, GameCoordinates } from "./GameCoordinates";
 import { Direction } from "./Direction";
-import { PawnType } from "./PawnType";
 import { unionize, ofType, UnionOf } from "unionize";
+import { PawnType } from "./PawnType";
 
 export const GameModes = unionize({
     Overworld: {},
@@ -30,7 +30,7 @@ export class Game {
     readonly terrain: TerrainCache;
     readonly playerPawn: Pawn;
     readonly gameMode$ = new BehaviorSubject<GameMode>(GameModes.Detail())
-    readonly otherPlayers: Pawn[];
+    readonly otherPlayers: { [characterId: string]: Pawn } = {};
     readonly terrainService: TerrainService;
     readonly hub: HubClient;
 
@@ -43,14 +43,24 @@ export class Game {
             (window as any).game = this;
         }
 
-        const types = Object.values(PawnType);
-        const generatePlayer = () => {
-            const result = new Pawn();
-            result.moveTo({ x: Math.floor((Math.random() - 0.5) * 50) / overworldZoom, y: Math.floor((Math.random() - 0.5) * 50) / overworldZoom }, Math.floor(Math.random() * 4));
-            result.type = types[Math.floor(Math.random() * types.length)];
-            return result;
-        }
-        this.otherPlayers = [generatePlayer(), generatePlayer(), generatePlayer(), generatePlayer()];
+        this.hub.getMovement$().subscribe(v => {
+            if (!this.otherPlayers[v.id]) {
+                const p = new Pawn();
+                p.moveTo({ x: v.coordinate.x / localZoom, y: v.coordinate.y / localZoom }, Direction.Down, 0);
+                p.type = v.pawnType as PawnType;
+                this.otherPlayers[v.id] = p;
+            } else {
+                this.otherPlayers[v.id].moveTo({ x: v.coordinate.x / localZoom, y: v.coordinate.y / localZoom }, Direction.Down, 250);
+            }
+        });
+        // const types = Object.values(PawnType);
+        // const generatePlayer = () => {
+        //     const result = new Pawn();
+        //     result.moveTo({ x: Math.floor((Math.random() - 0.5) * 50) / overworldZoom, y: Math.floor((Math.random() - 0.5) * 50) / overworldZoom }, Math.floor(Math.random() * 4));
+        //     result.type = types[Math.floor(Math.random() * types.length)];
+        //     return result;
+        // }
+        // this.otherPlayers = [generatePlayer(), generatePlayer(), generatePlayer(), generatePlayer()];
     }
 
     async enterDetail() {

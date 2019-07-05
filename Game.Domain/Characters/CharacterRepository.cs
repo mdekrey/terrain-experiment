@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 
 namespace Game.Domain.Characters
@@ -11,6 +13,7 @@ namespace Game.Domain.Characters
         private static readonly Guid femaleSoldier = Guid.NewGuid();
         private static readonly Guid femaleMerchant = Guid.NewGuid();
         private static readonly GameCoordinate initialPortal = new GameCoordinate(0.03, 0.07);
+        private static readonly Subject<Character> movementUpdates = new Subject<Character>();
         private readonly Dictionary<Guid, Character> characters = new Dictionary<Guid, Character>
         {
             { hero,               new Character { Id = hero,            PawnType = PawnType.Hero, Coordinate = initialPortal } },
@@ -33,6 +36,12 @@ namespace Game.Domain.Characters
             var character = characters[characterId];
             character.Coordinate = gameCoordinate;
             character.Facing = facing;
+            movementUpdates.OnNext(character);
+        }
+
+        public IObservable<Character> MovementUpdates()
+        {
+            return movementUpdates.Select(c => c);
         }
     }
 }
